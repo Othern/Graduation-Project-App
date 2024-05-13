@@ -15,3 +15,7 @@
 2. Add the following code snippet at the bottom of the file `android/app/build.gradle`:
    ```gradle
    apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+   
+3. Import Project to index.js to with following code:
+   ```javascript
+   import Project from './Graduation-Project-App';
