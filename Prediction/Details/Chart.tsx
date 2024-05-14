@@ -3,7 +3,7 @@ import { StyleSheet, View,Text } from 'react-native';
 import { BarChart } from "react-native-gifted-charts";
 
         
-export default () => {
+export default ({data}:any) => {
     const barData = [
         { value: 80, label: '9'  , frontColor: '#177AD5'},
         { value: 50, label: '10' },
@@ -20,6 +20,7 @@ export default () => {
     return (
         <View style = {styles.chart}>
             <Text style={{color:"white", fontWeight: "bold",marginBottom:10}}> 獼猴出現機率</Text>
+            {/* 如果要使用Networking，barData要改成data */}
             <BarChart
                 barWidth={10}
                 noOfSections={3}
