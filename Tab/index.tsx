@@ -10,6 +10,7 @@ import HeaderTitle from "./headerTitle";
 import HeaderRight from './headerRight';
 import ReportModal from './reportModal';
 import { StyleSheet } from "react-native";
+import headerTitle from "./headerTitle";
 
 
 
@@ -45,13 +46,15 @@ export default () => {
                             headerRight: () => <HeaderRight name={"notification-add"} size={25} onPress={() => setModalVisible(true)} />
 
                         }} />
-                    <Tab.Screen name="Predict" component={Prediction}
+                    <Tab.Screen name="Predict" 
                         options={{
                             headerShown: false,
                             tabBarIcon: ({ color, size }) => (
                                 <Ionicons name="flask-sharp" color={color} size={size} />
-                            ),
-                        }} />
+                            ),}} >
+                            {()=> (<Prediction previewTitle={() => <HeaderTitle name={'Preview'} />} detailsTitle={() => <HeaderTitle name={'Details'} />}
+                                headerRight={() => <HeaderRight  name={"notification-add"} size={25} onPress={() => setModalVisible(true)}/>}/>)}
+                    </Tab.Screen>
                 </Tab.Navigator>
             </NavigationContainer>
         </>

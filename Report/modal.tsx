@@ -48,36 +48,36 @@ function CheckElement({title="數量:", onPress,selected}:any){
 function Seperator(){
   return ( <View style = {styles.Separator}/>)
 }
-async function submit(data:any) {
-  try {
-    const response = await fetch('your-flask-server-url', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (response.ok) {
-      console.log('Data sent successfully');
-      // Handle successful response if needed
-    } else {
-      console.error('Failed to send data');
-      // Handle failure if needed
-    }
-  } catch (error) {
-    console.error('Error sending data:', error);
-    // Handle error if needed
-  }
-}
 
 function ReportModal({ modalVisible, setModalVisible }: any) {
-
-  const [data, setData] = useState({
+  const initialReport = {
     fraid: false,
     frequency: false,
-    textInputValue: ''
-  });
+    textInputValue: '0'
+  }
+
+  const [data, setData] = useState(initialReport);
+  // 做後端串接使用，url要改
+  async function submit() {
+    try {
+      const response = await fetch('http://172.20.10.2:4000'+'/reportSubmit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then(response => response.json());
+      if(response.success == 1){
+        setModalVisible(!modalVisible);
+        setData(initialReport);
+        Alert.alert("Submition Succeeded.");
+      }
+      else Alert.alert("Submition failed.");
+      
+    } catch (error) {
+      console.error('Error sending data:', error);
+    }
+  }
   return (
     <Modal
       animationType="slide"
@@ -89,36 +89,41 @@ function ReportModal({ modalVisible, setModalVisible }: any) {
         Alert.alert('Modal has been closed.');
         setModalVisible(!modalVisible);
       }}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalHeaderText}>獼猴通報</Text>
-          </View>
-          <Seperator/>
-          <View style={styles.modalContent}>
-            <CheckElement title="是否經常遇到" onPress ={() => setData(prevState => ({ ...prevState, frequency: !data.frequency}))} selected={data.frequency}/>
-            <CheckElement title="是否會感到恐懼" onPress ={() =>  setData(prevState => ({ ...prevState, fraid: !data.fraid}))} selected={data.fraid}/>
-            <View style={styles.notificationElement}>
-              <Text>獼猴數量</Text>
-              <View style={styles.textInputSection}>
-                <TextInput keyboardType='numeric'  maxLength={40} style={{fontSize:15, textAlign:'center'}} onChangeText={(value) =>  setData(prevState => ({ ...prevState, textInputValue: value}))} />
-              </View>
-            </View>
-          </View>
-          <Seperator/>
-          <View style={styles.modalFooter}>
-            <Button color={'#2196F3'} onPress = {() => setModalVisible(!modalVisible)} title={"關閉通報"}/>
+      <TouchableOpacity  style={{flex:1}} onPress={() => setModalVisible(!modalVisible)}>
+          <View style={styles.centeredView}>
+            <TouchableOpacity style={styles.modalView} activeOpacity={1} >
             
-            <Button color={'#FF5733'} onPress = {() => {data.frequency && data.fraid? Alert.alert(data.textInputValue):Alert.alert("Fail","Fail")} } title={"發送通報"}/>
-   
-          </View>
-        </View>
-      </View>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalHeaderText}>獼猴通報</Text>
+              </View>
+              <Seperator/>
+              <View style={styles.modalContent}>
+                <CheckElement title="是否經常遇到" onPress ={() => setData(prevState => ({ ...prevState, frequency: !data.frequency}))} selected={data.frequency}/>
+                <CheckElement title="是否會感到恐懼" onPress ={() =>  setData(prevState => ({ ...prevState, fraid: !data.fraid}))} selected={data.fraid}/>
+                <View style={styles.notificationElement}>
+                  <Text>獼猴數量</Text>
+                  <View style={styles.textInputSection}>
+                    <TextInput keyboardType='numeric'  maxLength={40} style={{fontSize:15, textAlign:'center'}} onChangeText={(value) =>  setData(prevState => ({ ...prevState, textInputValue: value}))} />
+                  </View>
+                </View>
+              </View>
+              <Seperator/>
+              <View style={styles.modalFooter}>
+                <Button color={'#2196F3'} onPress = {() => {setModalVisible(!modalVisible); setData(initialReport);}} title={"關閉通報"}/>
+                <Button color={'#FF5733'} onPress = {() => {data.frequency && data.fraid? Alert.alert(data.textInputValue):Alert.alert("Fail","Fail")} } title={"發送通報"}/>      
+      
+              </View>
+            
+            </TouchableOpacity>
+          </View>  
+      </TouchableOpacity>
     </Modal>
   );
 }
 //<Button color={'#FF5733'} onPress = {submit(data)} title={"發送通報"}/>
-//         
+// submit 後端串接後可以改
+// <Button color={'#FF5733'} onPress = {submit} title={"發送通報"}/>
+  
 export default ReportModal;
 
 
@@ -126,7 +131,7 @@ export default ReportModal;
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
+    //justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
   },

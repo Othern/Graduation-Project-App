@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import ReportModal from './modal';
+import ReportModal from './Modal';
 import {Alert, StyleSheet, Text, Pressable, View} from 'react-native';
 
 const App = () => {
