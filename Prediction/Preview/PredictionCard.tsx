@@ -1,56 +1,61 @@
-import React from "react"
-import { StyleSheet, Text,View ,ImageBackground, TouchableOpacity} from "react-native"
+import React from "react";
+import { StyleSheet, ImageBackground, TouchableOpacity } from "react-native";
+import { Card, Title,Paragraph } from 'react-native-paper';
 
-export default ({onPress,name,percentage}:any)=> {
+export default ({ onPress, name, percentage }: any) => {
     const image =
         percentage >= 60 ? require("../../asset/rain.png") :
-        percentage >= 30 ? require("../../asset/cloud.png") :
-        require("../../asset/sun.png");
+            percentage >= 30 ? require("../../asset/cloud.png") :
+                require("../../asset/sun.png");
 
-    return( <View style={[styles.container]}>
-        <TouchableOpacity style={{flex:1}} onPress={onPress}>
-            <ImageBackground style = {styles.background} imageStyle={{ borderRadius: 6}} source={image}>
-                <View style={styles.header}>
-                    <Text style = {[styles.font,styles.title]}>{name}</Text>
-                    <Text style = {[styles.font,styles.percentage]}>{percentage}%</Text>
-                </View>
-                <View style={styles.footer}>
-                    <Text style={[styles.font]}>獼猴出現機率</Text>
-                </View>
-            </ImageBackground>
+    return (
+        <TouchableOpacity style={{ flex: 1 }} onPress={onPress} activeOpacity={1}>
+
+            <Card style={[styles.container]}>
+                <ImageBackground style={[styles.background]} imageStyle={{ borderRadius: 6 }} source={image}>
+                    <Card.Title title={name} titleStyle={[styles.font, styles.title,styles.header]} right={
+                        () => <Title style={[styles.font, styles.percentage,styles.header]}>{percentage}%</Title>
+                    }  />
+                    <Card.Content>
+                        <Paragraph style={[styles.font]}>獼猴出現機率</Paragraph>
+                    </Card.Content>
+                </ImageBackground>
+            </Card>
+
         </TouchableOpacity>
-    </View>)
+    )
 }
-
+//
 
 const styles = StyleSheet.create({
-    container :{
-        height: 120,
+    container: {
+        //height: 120,
         marginTop: 10,
-        marginHorizontal: 10,
+        marginHorizontal: 8,
+
     },
-    background:{
-        flex:1,
+    background: {
+        flex: 1,
         resizeMode: "cover",
         borderRadius: 15,
-        padding:10
+        padding: 3
     },
-    header:{
-        flexDirection: "row",
-        flex:2.5,
-        justifyContent: "space-between"
+    footer: {
+        flex: 1.5
     },
-    footer:{
-        flex:1.5
-    },
-    font:{
+    font: {
         color: "white",
         fontWeight: "bold"
     },
-    title:{
+    title: {
         fontSize: 25,
+        paddingTop: 5
     },
-    percentage:{
-        fontSize: 25,
+    percentage: {
+        fontSize: 35,
+        
+    },
+    header: {
+        paddingTop: 5
     }
 })

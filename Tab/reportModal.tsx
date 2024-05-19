@@ -1,52 +1,55 @@
-import { Alert, Modal, StyleSheet, TouchableOpacity, Text, Pressable, View, TextInput  } from 'react-native';
+import { Alert, Modal, StyleSheet, TouchableOpacity, Text, Pressable, View, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import React, { useState } from "react";
+import Toast from 'react-native-toast-message';
 
-function Button({onPress,title,color}:any){
-  return(
+function Button({ onPress, title, color }: any) {
+  return (
     <Pressable
-              style={[styles.button,{backgroundColor: color}]}
-              onPress={onPress}>
-              <Text style={[styles.textStyle]}>{title}</Text>
+      style={[styles.button, { backgroundColor: color }]}
+      onPress={onPress}>
+      <Text style={[styles.textStyle]}>{title}</Text>
     </Pressable>
   )
 }
-function CheckBox({size = 30,color = 'gray',onPress,selected,value}: any){
-  return(
+function CheckBox({ size = 30, color = 'gray', onPress, selected, value }: any) {
+  return (
     <TouchableOpacity style={[styles.checkBox]} onPress={onPress}>
-                <Text>{value}</Text>
-                <Icon
-                  size={size}
-                  color={color}
-                  name={selected ? 'check-box' : 'check-box-outline-blank'}
-                />
-                
+      <Text>{value}</Text>
+      <Icon
+        size={size}
+        color={color}
+        name={selected ? 'check-box' : 'check-box-outline-blank'}
+      />
+
     </TouchableOpacity>
   )
 }
-function createNumberArray(maxNumber:number) {
+function createNumberArray(maxNumber: number) {
   // 使用 Array.from() 方法创建一个由给定数字范围内的数字组成的数组
   // Array.from() 方法接受一个类似数组的对象或可迭代对象，并返回一个新的、浅拷贝的数组实例
   // 第一个参数是要创建的数组的长度，第二个参数是一个映射函数，用来对数组的每个元素进行处理，这里我们只需要数组的索引加 1
   return Array.from({ length: maxNumber }, (_, index) => index + 1);
 }
-function CheckBoxSets({number=1,onPress,selected}:any){
-  return(<View style={styles.checkBoxSets}>
-          {createNumberArray(number).map((item,key)=>{return(
-            <CheckBox onPress={onPress} selected={selected} value={""} key={key}/>
-          )})}
-        </View>)
+function CheckBoxSets({ number = 1, onPress, selected }: any) {
+  return (<View style={styles.checkBoxSets}>
+    {createNumberArray(number).map((item, key) => {
+      return (
+        <CheckBox onPress={onPress} selected={selected} value={""} key={key} />
+      )
+    })}
+  </View>)
 }
-function CheckElement({title="數量:", onPress,selected}:any){
-  return(<View style={styles.notificationElement}>
+function CheckElement({ title = "數量:", onPress, selected }: any) {
+  return (<View style={styles.notificationElement}>
     <View style={styles.checkSetsTitle}>
       <Text>{title}</Text>
     </View>
-    <CheckBoxSets onPress={onPress} selected={selected}/>
+    <CheckBoxSets onPress={onPress} selected={selected} />
   </View>)
 }
-function Seperator(){
-  return ( <View style = {styles.Separator}/>)
+function Seperator() {
+  return (<View style={styles.Separator} />)
 }
 
 function ReportModal({ modalVisible, setModalVisible }: any) {
@@ -55,25 +58,31 @@ function ReportModal({ modalVisible, setModalVisible }: any) {
     frequency: false,
     textInputValue: '0'
   }
-
+  const showToast = (text1: string, text2: string) => {
+    Toast.show({
+      type: 'success',
+      text1: text1,
+      text2: text2
+    });
+  }
   const [data, setData] = useState(initialReport);
   // 做後端串接使用，url要改
   async function submit() {
     try {
-      const response = await fetch('http://172.20.10.2:4000'+'/reportSubmit', {
+      const response = await fetch('http://172.20.10.2:4000' + '/reportSubmit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       }).then(response => response.json());
-      if(response.success == 1){
+      if (response.success == 1) {
         setModalVisible(!modalVisible);
         setData(initialReport);
-        Alert.alert("Submition Succeeded.");
+        showToast('Submition Succeeded.', '');
       }
       else Alert.alert("Submition failed.");
-      
+
     } catch (error) {
       console.error('Error sending data:', error);
     }
@@ -89,41 +98,47 @@ function ReportModal({ modalVisible, setModalVisible }: any) {
         Alert.alert('Modal has been closed.');
         setModalVisible(!modalVisible);
       }}>
-      <TouchableOpacity  style={{flex:1}} onPress={() => setModalVisible(!modalVisible)}>
-          <View style={styles.centeredView}>
-            <TouchableOpacity style={styles.modalView} activeOpacity={1} >
-            
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalHeaderText}>獼猴通報</Text>
-              </View>
-              <Seperator/>
-              <View style={styles.modalContent}>
-                <CheckElement title="是否經常遇到" onPress ={() => setData(prevState => ({ ...prevState, frequency: !data.frequency}))} selected={data.frequency}/>
-                <CheckElement title="是否會感到恐懼" onPress ={() =>  setData(prevState => ({ ...prevState, fraid: !data.fraid}))} selected={data.fraid}/>
-                <View style={styles.notificationElement}>
-                  <Text>獼猴數量</Text>
-                  <View style={styles.textInputSection}>
-                    <TextInput keyboardType='numeric'  maxLength={40} style={{fontSize:15, textAlign:'center'}} onChangeText={(value) =>  setData(prevState => ({ ...prevState, textInputValue: value}))} />
-                  </View>
+      <TouchableOpacity style={{ flex: 1 }} onPress={() => setModalVisible(!modalVisible)} activeOpacity={1}>
+        <View style={styles.centeredView}>
+          <TouchableOpacity style={styles.modalView} activeOpacity={1} >
+
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalHeaderText}>獼猴通報</Text>
+            </View>
+            <Seperator />
+            <View style={styles.modalContent}>
+              <CheckElement title="是否經常遇到" onPress={() => setData(prevState => ({ ...prevState, frequency: !data.frequency }))} selected={data.frequency} />
+              <CheckElement title="是否會感到恐懼" onPress={() => setData(prevState => ({ ...prevState, fraid: !data.fraid }))} selected={data.fraid} />
+              <View style={styles.notificationElement}>
+                <Text>獼猴數量</Text>
+                <View style={styles.textInputSection}>
+                  <TextInput keyboardType='numeric' maxLength={40} style={{ fontSize: 15, textAlign: 'center' }} onChangeText={(value) => setData(prevState => ({ ...prevState, textInputValue: value }))} />
                 </View>
               </View>
-              <Seperator/>
-              <View style={styles.modalFooter}>
-                <Button color={'#2196F3'} onPress = {() => {setModalVisible(!modalVisible); setData(initialReport);}} title={"關閉通報"}/>
-                <Button color={'#FF5733'} onPress = {() => {data.frequency && data.fraid? Alert.alert(data.textInputValue):Alert.alert("Fail","Fail")} } title={"發送通報"}/>      
-      
-              </View>
-            
-            </TouchableOpacity>
-          </View>  
+            </View>
+            <Seperator />
+            <View style={styles.modalFooter}>
+              <Button color={'#2196F3'} onPress={() => { setModalVisible(!modalVisible); setData(initialReport); }} title={"關閉通報"} />
+              <Button 
+                color={'#FF5733'} 
+                onPress={() => { 
+                  setModalVisible(!modalVisible);
+                  setData(initialReport);
+                  showToast('Submition Succeeded.', '')} 
+                  }
+                title={"發送通報"} />
+            </View>
+
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     </Modal>
   );
 }
-//<Button color={'#FF5733'} onPress = {submit(data)} title={"發送通報"}/>
 // submit 後端串接後可以改
 // <Button color={'#FF5733'} onPress = {submit} title={"發送通報"}/>
-  
+// <Button color={'#FF5733'} onPress={() => { data.frequency && data.fraid ? Alert.alert(data.textInputValue) : Alert.alert("Fail", "Fail") }} title={"發送通報"} />
+
 export default ReportModal;
 
 
@@ -154,7 +169,7 @@ const styles = StyleSheet.create({
   },
   Separator: {
     marginTop: 8,
-    marginBottom:8,
+    marginBottom: 8,
     borderBottomColor: '#737373',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -165,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  
+
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
@@ -175,16 +190,16 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 20,
   },
-  modalHeaderText:{
+  modalHeaderText: {
     fontSize: 30,
     fontWeight: "bold"
   },
   modalContent: {
     flex: 5,
-    justifyContent:'center',
+    justifyContent: 'center',
     //justifyContent: "center"
   },
-  modalFooter:{
+  modalFooter: {
     flex: 1,
     paddingTop: 10,
     flexDirection: "row",
@@ -197,25 +212,25 @@ const styles = StyleSheet.create({
     marginBottom: 20
 
   },
-  textInputSection:{
+  textInputSection: {
     height: 40,
     width: 45,
     backgroundColor: '#f2f2f2',
     borderRadius: 10,
-    
+
   },
-  checkSetsTitle:{
-    
+  checkSetsTitle: {
+
   },
   checkBoxSets: {
-    
+
     flexDirection: 'row',
-    
+
   },
   checkBox: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  
+
 })
 

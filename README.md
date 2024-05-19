@@ -11,6 +11,8 @@
    - `npm install @react-navigation/bottom-tabs`
    - `npm install react-native-vector-icons`
    - `npm install --save-dev @types/react-native-vector-icons`
+   - `npm i react-native-toast-message`
+   - `npm i react-native-paper`
 
 2. Add the following code snippet at the bottom of the file `android/app/build.gradle`:
    ```gradle
