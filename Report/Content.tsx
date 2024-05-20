@@ -48,12 +48,12 @@ export default ({data,setData}:any) =>{
         <Text style={styles.elementText}>獼猴數量</Text>
         <TextInput 
           cursorColor='black'
-          activeOutlineColor = 'gray'
+          activeOutlineColor = '#4A4A4A'
           keyboardType='numeric' 
           mode={"outlined"} 
           maxLength={40} 
           style={styles.textInputSection}
-          outlineColor="gray"
+          outlineColor="#4A4A4A"
           onChangeText={(value) => setData((prevState:any) => ({ ...prevState, textInputValue: value }))} />
         </View> 
         </View>)
@@ -79,9 +79,7 @@ const styles = StyleSheet.create({
     textInputSection: {
         height: 35,
         width: 50,
-        backgroundColor: '#f2f2f2',
-        borderRadius: 10,
-    
+        backgroundColor: '#4A4A4A',
       },
     element: {
         flex:1,

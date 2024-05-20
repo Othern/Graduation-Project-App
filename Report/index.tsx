@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import Content from './Content';
 import Footer from './Footer';
 
-function ReportModal({ modalVisible, setModalVisible }: any) {
+function ReportModal({ modalVisible, setModalVisible,theme }: any) {
   const initialReport = {
     fraid: false,
     frequency: false,
@@ -52,7 +52,15 @@ function ReportModal({ modalVisible, setModalVisible }: any) {
     setData(initialReport);
     showToast('Submission Succeeded.', '')
   }
-  const containerStyle = { backgroundColor: 'white', paddingVertical: 20, paddingHorizontal: 20, height: 500 };
+  const containerStyle = 
+    { 
+      backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white',
+      paddingVertical: 20,
+      paddingHorizontal: 20,
+      height: 500 
+
+    };
+  console.log(theme)
   return (
     <Portal>
       <Modal visible={modalVisible} onDismiss={() => { setModalVisible(!modalVisible) }} contentContainerStyle={containerStyle}>

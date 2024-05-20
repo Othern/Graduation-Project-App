@@ -7,10 +7,10 @@ import Details from "./Details";
 
 const Stack = createNativeStackNavigator();
 
-export default ({onPress}:any) => {
+export default ({onPress,theme}:any) => {
     return (<Stack.Navigator initialRouteName="Preview" screenOptions={
         {
-            header: (props) => <Header {...props} onPress={onPress}/>
+            header: (props) => <Header {...props} onPress={onPress} theme={theme}/>
         }} >
         <Stack.Screen name="Preview" component={Preview}  />
         <Stack.Screen name="Details" component={Details}  />

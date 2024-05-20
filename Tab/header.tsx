@@ -5,11 +5,10 @@ import { Appbar } from "react-native-paper";
 import { getHeaderTitle } from '@react-navigation/elements';
 
 const fontColor = '#E7F5F3';
-export default ({route, options,back,navigation, onPress }: any) => {
+export default ({route, options,back,navigation, theme,onPress }: any) => {
     const title = getHeaderTitle(options, route.name);
-
     return (
-        <Appbar.Header style={{backgroundColor: "#F0C750"}}>
+        <Appbar.Header style={{backgroundColor: theme === "dark"  ? "#1C1C1E" : "#F0C750"}}>
             {back ? <Appbar.BackAction onPress={navigation.goBack} color={fontColor}/> : null}
             <Appbar.Content
                 title={title}

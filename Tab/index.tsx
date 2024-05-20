@@ -8,19 +8,19 @@ import Home from "../Home";
 import Header from "./header";
 import Report from '../Report';
 import { StyleSheet } from "react-native";
-
+import { DefaultTheme,DarkTheme } from "@react-navigation/native";
 
 
 const Tab = createBottomTabNavigator();
-export default () => {
+export default ({theme}: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     return (
         <>
-            <Report modalVisible={modalVisible} setModalVisible={setModalVisible} />
-            <NavigationContainer>
+            <Report modalVisible={modalVisible} setModalVisible={setModalVisible} theme={theme}/>
+            <NavigationContainer theme={theme === 'dark' ? DarkTheme: DefaultTheme}>
                 <Tab.Navigator initialRouteName="Home" 
                     screenOptions={{
-                        header: (props)=> <Header {...props} onPress={() => setModalVisible(true)}/>
+                        header: (props)=> <Header {...props} onPress={() => setModalVisible(true)} theme={theme}/>
                     }}>
                     <Tab.Screen name="Home" component={Home}
                         options={{
@@ -41,7 +41,7 @@ export default () => {
                                 <Ionicons name="flask-sharp" color={color} size={size} />
                             ),}} >
                             {()=> 
-                                (<Prediction onPress={() => setModalVisible(true)}/>)
+                                (<Prediction onPress={() => setModalVisible(true)} theme={theme}/>)
                             }
                     </Tab.Screen>
                 </Tab.Navigator>

@@ -1,21 +1,15 @@
 import React,{createContext} from "react";
-import { StyleSheet } from "react-native";
+import { useColorScheme } from "react-native";
 import ToastMessage from './toastMessage';
-import { MD3LightTheme as DefaultTheme,PaperProvider } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
 import Tab from "./Tab";
-const theme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: 'tomato',
-      secondary: 'yellow',
-    },
-  };
+
 export default function(){
+  const theme = useColorScheme();
     return (
-    <PaperProvider theme={theme}>
-      <Tab/>
-      <ToastMessage/>
-    </PaperProvider>
+    <PaperProvider>
+      <Tab theme= {theme}/>
+      <ToastMessage theme={theme}/>
+    </PaperProvider >
     )
 }
