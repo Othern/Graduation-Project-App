@@ -2,14 +2,12 @@ import React, { useState ,useEffect} from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
-import Report from '../Report'
 import ForFun from '../ForFun'
 import Prediction from '../Prediction'
 import Home from "../Home";
 import Header from "./header";
-import ReportModal from './reportModal';
+import Report from '../Report';
 import { StyleSheet } from "react-native";
-import headerTitle from "./header";
 
 
 
@@ -18,7 +16,7 @@ export default () => {
     const [modalVisible, setModalVisible] = useState(false);
     return (
         <>
-            <ReportModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+            <Report modalVisible={modalVisible} setModalVisible={setModalVisible} />
             <NavigationContainer>
                 <Tab.Navigator initialRouteName="Home" 
                     screenOptions={{
@@ -51,20 +49,4 @@ export default () => {
         </>
     )
 }
-
-/**
- <Tab.Screen name="Report" component={Report}
-                        options={{
-                            tabBarIcon: ({ color, size }) => (
-                                <Ionicons name="notifications" color={color} size={size} />
-                            ),
-                            headerStyle: {
-                                backgroundColor: '#FFA500',
-                                
-                              },
-                            headerTitle: () => <HeaderTitle name={'Report'} />,
-                            headerRight: () => <HeaderRight name={"notification-add"} size={25} onPress={() => setModalVisible(true)}/>
-
-                        }} />
-*/
 
