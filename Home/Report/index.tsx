@@ -6,6 +6,7 @@ import Header from './Header';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const initialReport = {
   fraid: false,
@@ -21,7 +22,7 @@ const showToast = (text1: string, text2: string) => {
     topOffset: 65
   });
 }
-async function submit(data:any,success: any,fail: any) {
+async function submit(data: any, success: any, fail: any) {
   try {
     const response = await fetch('http://172.20.10.2:4000/reportSubmit', {
       method: 'POST',
@@ -40,17 +41,12 @@ async function submit(data:any,success: any,fail: any) {
   }
 }
 
-function ReportModal({ modalVisible, setModalVisible, theme }: any) {
+function ReportModal(props:any,{ theme }: any) {
   const [data, setData] = useState(initialReport);
 
-  function closeButton() {
-    setModalVisible(!modalVisible);
-    setData(initialReport);
-  }
-
   function submitButton() {
-    setModalVisible(!modalVisible);
     setData(initialReport);
+    props.navigation.pop();
     showToast('Submission Succeeded.', '')
   }
 
@@ -64,17 +60,12 @@ function ReportModal({ modalVisible, setModalVisible, theme }: any) {
   };
 
   return (
-    <Portal>
-      <Modal visible={modalVisible} onDismiss={() => { setModalVisible(!modalVisible) }} contentContainerStyle={containerStyle}>
-        <View style={{ flex: 1 }}>
-          <Header />
-          <Seperator />
-          <Content data={data} setData={setData} />
-          <Seperator />
-          <Footer submit={submitButton} close={closeButton} />
-        </View>
-      </Modal>
-    </Portal>
+    
+      <View style={{ flex: 1 }}>
+        <Content data={data} setData={setData} />
+        <Seperator />
+        <Footer submit={submitButton}  />
+      </View>
   );
 }
 

@@ -18,6 +18,6 @@ export default ({route, options,back,navigation, theme,onPress }: any) => {
                 onPress={onPress} />
         </Appbar.Header>
     )
-}
+}            
 
 
