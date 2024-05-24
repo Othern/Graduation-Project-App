@@ -25,7 +25,7 @@ export default ({theme}: any) => {
                             ({ route }) => ({
                                 tabBarStyle: ((route) => {
                                   const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-                                  if (routeName == 'Report'  || routeName == 'Camera') {
+                                  if (routeName == 'Report'  || routeName == 'Camera' || routeName == 'Preview') {
                                     return { display: "none" }
                                   }
                                   return

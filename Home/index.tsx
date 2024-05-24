@@ -4,6 +4,7 @@ import Report from './Report';
 import Home from './Home';
 import Header from './Header';
 import Camera from './Camera';
+import Preview from './Preview';
 
 
 
@@ -26,6 +27,7 @@ const App = ({theme}:any) => {
       <Stack.Screen name= 'Map' component={Home} />
       <Stack.Screen name='Report'component={Report}/>
       <Stack.Screen name='Camera'component={Camera} />
+      <Stack.Screen name='Preview' component={Preview}/>
     </Stack.Navigator>
   );
 };

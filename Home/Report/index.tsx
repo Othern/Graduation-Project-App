@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ViewStyle } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Alert, ViewStyle,Platform } from 'react-native';
 import { Portal, Modal } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
-import Header from './Header';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const initialReport = {
   fraid: false,
@@ -22,6 +20,28 @@ const showToast = (text1: string, text2: string) => {
     topOffset: 65
   });
 }
+type BodyType = {
+  [key: string]: string | number | Blob | Boolean;
+};
+
+const createFormData = (photo:any, body: BodyType = {}) => {
+  const data = new FormData();
+  if (photo != null){
+    data.append('photo', {
+      name: photo.fileName,
+      type: photo.type,
+      uri: photo.path,
+    });
+  }
+  Object.keys(body).forEach((key) => {
+    const value = body[key];
+    data.append(key, value.toString());
+    
+  });
+
+  return data;
+};
+
 async function submit(data: any, success: any, fail: any) {
   try {
     const response = await fetch('http://172.20.10.2:4000/reportSubmit', {
@@ -41,10 +61,19 @@ async function submit(data: any, success: any, fail: any) {
   }
 }
 
-function ReportModal(props:any,{ theme }: any) {
+const ReportModal=(props:any,{ theme }: any)=>{
   const [data, setData] = useState(initialReport);
-
+  const [photo, setPhoto] = useState(null);
+  useEffect(
+    ()=>{
+      if(props.route.params?.photo){
+        setPhoto(props.route.params?.photo)
+      }
+    }
+    ,[props.route.params?.photo])
   function submitButton() {
+    const formData = createFormData(props.route.params?.photo,data);
+    console.log(formData);
     setData(initialReport);
     props.navigation.pop();
     showToast('Submission Succeeded.', '')
@@ -64,7 +93,7 @@ function ReportModal(props:any,{ theme }: any) {
       <View style={{ flex: 1 }}>
         <Content data={data} setData={setData} />
         <Seperator />
-        <Footer submit={submitButton}  />
+        <Footer submit={submitButton} photo={photo} />
       </View>
   );
 }

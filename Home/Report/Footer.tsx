@@ -1,4 +1,4 @@
-import { View,StyleSheet } from "react-native";
+import { View,Image,StyleSheet } from "react-native";
 import { Text,Button } from "react-native-paper";
 
 function ModalButton({ onPress, title, color }: any) {
@@ -10,9 +10,13 @@ function ModalButton({ onPress, title, color }: any) {
       </Button>
     )
   }
-export default ({submit}:any) => {
+export default ({submit,photo}:any) => {
     return (
         <View style={styles.modalFooter}>
+            {photo 
+            ?<Image source={{uri:photo.path}}style={styles.image}/>
+            :<View style={styles.image}></View>
+            }
             <ModalButton
                 color={'#FF5733'}
                 onPress={submit}
@@ -25,7 +29,8 @@ const styles = StyleSheet.create({
         flex: 0.8,
         paddingTop: 10,
         flexDirection: "row",
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+        alignItems: 'center'
       },
     button: {
     height: 40,
@@ -40,4 +45,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     },
+    image:{
+      height: 80,
+      width : 80,
+      backgroundColor : 'gray', 
+      borderWidth: 4,
+      borderColor: 'white',
+      borderRadius: 10
+    }
 })
