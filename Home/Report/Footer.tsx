@@ -1,7 +1,7 @@
 import { View,Image,StyleSheet } from "react-native";
 import { Text,Button } from "react-native-paper";
 
-function ModalButton({ onPress, title, color }: any) {
+function ReportButton({ onPress, title, color }: any) {
     return (
       <Button
         style={[styles.button, { backgroundColor: color }]}
@@ -12,12 +12,12 @@ function ModalButton({ onPress, title, color }: any) {
   }
 export default ({submit,photo}:any) => {
     return (
-        <View style={styles.modalFooter}>
+        <View style={styles.footer}>
             {photo 
             ?<Image source={{uri:photo.path}}style={styles.image}/>
             :<View style={styles.image}></View>
             }
-            <ModalButton
+            <ReportButton
                 color={'#FF5733'}
                 onPress={submit}
                 title={"發送通報"} />
@@ -25,7 +25,7 @@ export default ({submit,photo}:any) => {
 }
 
 const styles = StyleSheet.create({
-    modalFooter: {
+    footer: {
         flex: 0.8,
         paddingTop: 10,
         flexDirection: "row",

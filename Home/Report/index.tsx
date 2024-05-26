@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ViewStyle,Platform } from 'react-native';
-import { Portal, Modal } from 'react-native-paper';
+import { View, StyleSheet, Alert, ViewStyle,Platform,ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
-
+import Modal from './Modal';
 const initialReport = {
   fraid: false,
   frequency: false,
@@ -61,9 +60,10 @@ async function submit(data: any, success: any, fail: any) {
   }
 }
 
-const ReportModal=(props:any,{ theme }: any)=>{
+export default (props:any,{ theme }: any)=>{
   const [data, setData] = useState(initialReport);
   const [photo, setPhoto] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   useEffect(
     ()=>{
       if(props.route.params?.photo){
@@ -87,23 +87,23 @@ const ReportModal=(props:any,{ theme }: any)=>{
     width: 300,
     alignSelf: 'center' // Explicitly set to a valid literal type
   };
-
   return (
     
       <View style={{ flex: 1 }}>
-        <Content data={data} setData={setData} />
-        <Seperator />
-        <Footer submit={submitButton} photo={photo} />
+        <ScrollView>
+          <Content data={data} setData={setData} uploadPicture={()=>{setModalVisible(true)}}/>
+          <Seperator />
+          <Footer submit={submitButton} photo={photo} />
+          <Modal 
+            ModalVisible={modalVisible} 
+            theme={theme}
+            camera={()=>{
+              setModalVisible(false);
+              props.navigation.push('Camera');
+            }} 
+            close={()=>{setModalVisible(false)}}/>
+          </ScrollView>
       </View>
   );
 }
-
-export default ReportModal;
-
-
-
-
-const styles = StyleSheet.create({
-
-})
 

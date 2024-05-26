@@ -7,10 +7,8 @@ import { getHeaderTitle } from '@react-navigation/elements';
 
 const fontColor = '#E7F5F3';
 export default ({ title, push }: any) => {
-    
     return (    
             <>
-                
             </>
     )
 }

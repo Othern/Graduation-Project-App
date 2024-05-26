@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, Pressable, View, Image, Text } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import Ionicon from "react-native-vector-icons/Ionicons";
-import Octicons from "react-native-vector-icons/Octicons";
+
 
 export default (props: any) => {
   const device = useCameraDevice('back');
@@ -38,11 +38,13 @@ export default (props: any) => {
       if (tempPhoto) {
         const photo = {...tempPhoto,path:`file://${tempPhoto.path}`};
         props.navigation.push('Preview',{'photo':photo})
+        console.log(photo)
       }
       setSelected(false);
     } catch (error) {
       console.error("Error taking photo:", error);
     }
+    
     
 
   };

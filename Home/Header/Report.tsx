@@ -12,10 +12,7 @@ export default ({ title, push }: any) => {
         <>
         <Appbar.Content
             title={title}
-            titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor }} />
-        <Appbar.Action
-            icon={'camera'}
-            onPress={push} />
+            titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor}} />
     </>
     )
 }
