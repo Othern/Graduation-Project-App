@@ -38,7 +38,6 @@ export default (props: any) => {
       if (tempPhoto) {
         const photo = {...tempPhoto,path:`file://${tempPhoto.path}`};
         props.navigation.push('Preview',{'photo':photo})
-        console.log(photo)
       }
       setSelected(false);
     } catch (error) {
