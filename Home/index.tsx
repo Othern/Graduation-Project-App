@@ -5,11 +5,13 @@ import Home from './Home';
 import Header from './Header';
 import Camera from './Camera';
 import Preview from './Preview';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 
 
 const Stack = createStackNavigator();
 const App = ({theme}:any) => {
+  //console.log(result);
   return (
     <Stack.Navigator screenOptions={{
         header: (props) => <Header {...props} push ={props.navigation.push} theme={theme}/>,

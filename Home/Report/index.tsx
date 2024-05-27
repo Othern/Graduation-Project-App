@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, ViewStyle,Platform,ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
@@ -8,7 +9,8 @@ import Modal from './Modal';
 const initialReport = {
   fraid: false,
   frequency: false,
-  textInputValue: '0'
+  textInputValue: '0',
+  photo: ''
 }
 
 const showToast = (text1: string, text2: string) => {
@@ -20,18 +22,11 @@ const showToast = (text1: string, text2: string) => {
   });
 }
 type BodyType = {
-  [key: string]: string | number | Blob | Boolean;
+  [key: string]: string | number | Blob | Boolean ;
 };
 
-const createFormData = (photo:any, body: BodyType = {}) => {
+const createFormData = (body: BodyType = {}) => {
   const data = new FormData();
-  if (photo != null){
-    data.append('photo', {
-      name: photo.fileName,
-      type: photo.type,
-      uri: photo.path,
-    });
-  }
   Object.keys(body).forEach((key) => {
     const value = body[key];
     data.append(key, value.toString());
@@ -62,31 +57,43 @@ async function submit(data: any, success: any, fail: any) {
 
 export default (props:any,{ theme }: any)=>{
   const [data, setData] = useState(initialReport);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<string | null >(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const ShowImageLibrary = async()=>{
+    const result = await launchImageLibrary({mediaType:'photo'},(response)=> {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+        
+      } else if (response.errorMessage) {
+        console.log('Image picker error: ', response.errorMessage);
+        
+      } else {
+        let image = response.assets?.[0];
+        if (image?.uri == undefined){
+          setPhoto(null);
+        }
+        else {
+          setData((prev)=>({...prev,image}));
+          setPhoto(image?.uri);
+        }
+      }
+    });
+  }
   useEffect(
     ()=>{
       if(props.route.params?.photo){
-        setPhoto(props.route.params?.photo)
+        setPhoto(props.route.params?.photo?.path)
+        setData({...data,photo:props.route.params?.photo?.path})
       }
     }
     ,[props.route.params?.photo])
-  function submitButton() {
-    const formData = createFormData(props.route.params?.photo,data);
+  const submitButton = ()=> {
+    const formData = createFormData(data);
     console.log(formData);
     setData(initialReport);
     props.navigation.pop();
     showToast('Submission Succeeded.', '')
   }
-
-  const containerStyle: ViewStyle = {
-    backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white',
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    height: 500,
-    width: 300,
-    alignSelf: 'center' // Explicitly set to a valid literal type
-  };
   return (
     
       <View style={{ flex: 1 }}>
@@ -101,6 +108,11 @@ export default (props:any,{ theme }: any)=>{
               setModalVisible(false);
               props.navigation.push('Camera');
             }} 
+            gallery={()=>{
+              ShowImageLibrary();
+              setModalVisible(false);
+              
+            }}
             close={()=>{setModalVisible(false)}}/>
           </ScrollView>
       </View>

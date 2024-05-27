@@ -13,8 +13,8 @@ function ReportButton({ onPress, title, color }: any) {
 export default ({submit,photo}:any) => {
     return (
         <View style={styles.footer}>
-            {photo 
-            ?<Image source={{uri:photo.path}}style={styles.image}/>
+            {photo != null
+            ?<Image source={{uri:photo}}style={styles.image}/>
             :<View style={styles.image}></View>
             }
             <ReportButton

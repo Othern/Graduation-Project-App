@@ -14,6 +14,7 @@
    - `npm i react-native-toast-message`
    - `npm i react-native-vision-camera`
    - `npm i react-native-paper`
+   - `npm i react-native-image-picker`
    
 2. Add the following code snippet at the bottom of the file `android/app/build.gradle`:
    ```gradle
