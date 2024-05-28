@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Index Page</title>
+</head>
+<body>
+    <h1>Welcome to Flask Index Page</h1>
+    <button onclick="sendMessage()">Send Message</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function sendMessage() {
+            socket.emit('button_click');
+        }
+    </script>
+</body>
+</html>

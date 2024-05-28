@@ -1,0 +1,1 @@
+configs = {"UPLOAD_FOLDER" : "./server/uploads"}
