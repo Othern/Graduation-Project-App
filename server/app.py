@@ -3,10 +3,11 @@ from flask import Flask, render_template,jsonify,request,url_for
 from flask_socketio import SocketIO
 import json
 import time
-from testNotification import send_test
 from werkzeug.utils import secure_filename
-import os
+from notification import send_test
 from config import configs
+import os
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
