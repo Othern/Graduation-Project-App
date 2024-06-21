@@ -16,7 +16,7 @@ This project is a React Native application utilizing various libraries to enhanc
    npm install react-native-screens
    npm install react-native-safe-area-context
    npm install @react-navigation/bottom-tabs
-   npm install react-native-vector-icons
+   npm install @react-native-firebase/app @react-native-firebase/messaging
    npm install --save-dev @types/react-native-vector-icons
    npm i react-native-toast-message
    npm i react-native-vision-camera
@@ -26,13 +26,17 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-maps
    ```
 
-2. **Add configuration for `react-native-vector-icons`:**
-   Add the following code snippet at the bottom of the file `android/app/build.gradle`:
+2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**
    ```gradle
    apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+   apply plugin: 'com.google.gms.google-services’
+   ```
+3. **Add the following code snippet at the bottom of the file `android/build.gradle`:**
+   ```gradle
+   classpath 'com.google.gms:google-services:4.3.13'
    ```
 
-3. **Configure API key and permissions:**
+4. **Configure API key and permissions:**
    In the `android/app/src/main/AndroidManifest.xml` file, inside the `<application ...>...</application>` tag, add the following lines:
    ```xml
    <meta-data
@@ -41,7 +45,7 @@ This project is a React Native application utilizing various libraries to enhanc
    <uses-library android:name="org.apache.http.legacy" android:required="false"/>
    ```
 
-4. **Add required permissions:**
+5. **Add required permissions:**
    In the `AndroidManifest.xml` file, inside the `<manifest>` tag, add the following lines:
    ```xml
    <uses-permission android:name="android.permission.INTERNET" />
@@ -65,7 +69,7 @@ This project is a React Native application utilizing various libraries to enhanc
    <!--取得影像-->
    ```
 
-5. **Modify `VisionCameraProxy.kt`:**
+6. **Modify `VisionCameraProxy.kt`:**
    In the `./node_modules/react-native-vision-camera/android/src/main/java/com/mrousavy/camera/frameprocessors/VisionCameraProxy.kt` file, add the following import statement:
    ```kotlin
    import com.facebook.react.common.annotations.FrameworkAPI
@@ -73,7 +77,7 @@ This project is a React Native application utilizing various libraries to enhanc
    @OptIn(FrameworkAPI::class)
    ```
 
-6. **Import the project in `index.js`:**
+7. **Import the project in `index.js`:**
    In the `index.js` file, add the following import statement:
    ```javascript
    import Project from './Graduation-Project-App';
