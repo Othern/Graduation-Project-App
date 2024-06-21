@@ -12,7 +12,7 @@ export default ({title,push }: any) => {
             <>
                 <Appbar.Content
                     title={title}
-                    titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor }} />
+                    titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor ,padding:10}} />
                 <Appbar.Action
                     icon={() => (<MaterialIcons name={"notification-add"} size={25} color={fontColor} />)}
                     onPress={push} />
