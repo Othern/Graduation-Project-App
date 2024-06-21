@@ -23,6 +23,7 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-paper
    npm i react-native-image-picker
    npm i react-native-element-dropdown
+   npm i react-native-maps
    ```
 
 2. **Add configuration for `react-native-vector-icons`:**
