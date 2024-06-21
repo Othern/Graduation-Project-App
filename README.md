@@ -32,7 +32,7 @@ This project is a React Native application utilizing various libraries to enhanc
    apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
    apply plugin: 'com.google.gms.google-services’
    ```
-3. **Add the following code snippet at the bottom of the file `android/build.gradle`:**
+3. **Add the following code snippet in the dependency tags of the file `android/build.gradle`:**
    ```gradle
    classpath 'com.google.gms:google-services:4.3.13'
    ```
