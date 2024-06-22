@@ -1,10 +1,13 @@
-import { Text,Button } from "react-native-paper";
-import { StyleSheet, View,Pressable } from "react-native";
+import { Text, Button } from "react-native-paper";
+import { StyleSheet, View, Pressable } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { MultiSelect } from 'react-native-element-dropdown';
+import { requestGeolocationPermission } from "./requestGeolocationPermission";
+
+
 
 const data = [
   {
@@ -42,31 +45,30 @@ const list = [
 ];
 
 export default () => {
-  const icon =require('../../asset/monkey.png');
-  const [selected,setSelected] = useState(['RT','PD'])
-  const [show,setShow] = useState({
-    RT : true,
-    PD : true
-  });
-  const renderItem = (item:any) => {
+  const icon = require('../../asset/monkey.png');
+  const [selected, setSelected] = useState(['RT', 'PD'])
+  
+  
+  requestGeolocationPermission();
+  const renderItem = (item: any) => {
     const color = item.value == "PD" ? 'green' : 'red';
     return (
       <View style={styles.item}>
-        <View style={{flexDirection:'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <FontAwesome6
             color={color}
             name="location-dot"
             size={16}
-            style={{marginRight:5, marginTop:2}}
+            style={{ marginRight: 5, marginTop: 2 }}
           />
           <Text style={styles.itemText}>{item.label}</Text>
         </View>
         {selected.includes(item.value) && (
           <AntDesign
-            color= "black"
+            color="black"
             name="Safety"
             size={20}
-            style={{position:'absolute',right:10}}
+            style={{ position: 'absolute', right: 10 }}
           />
         )}
       </View>
@@ -74,7 +76,7 @@ export default () => {
   };
   return (
     <>
-      
+
       <MapView
         style={styles.map}
         initialRegion={{
@@ -84,53 +86,53 @@ export default () => {
           longitudeDelta: 0.01,
         }}
         showsUserLocation={true}>
-        
-        { selected.includes("RT") &&
-          <>
-          {data.map((item, key) => (
-            
-            <Marker coordinate={{ longitude: item.longitude, latitude: item.latitude }} key={key} pinColor="red">
-              
-                  <Callout style={styles.callout}>
-                    <View style={styles.callout}>
-                      <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
-                    </View>
-                  </Callout>
-              
-            </Marker>
-          ))}
-          </>}
 
-        { selected.includes("PD") &&
-        <>
-        {data.map((item, key) => (
-          <Marker coordinate={{ longitude: item.longitude-0.001, latitude: item.latitude }} key={key} pinColor="green">
-            
+        {selected.includes("RT") &&
+          <>
+            {data.map((item, key) => (
+
+              <Marker coordinate={{ longitude: item.longitude, latitude: item.latitude }} key={key} pinColor="red">
+
                 <Callout style={styles.callout}>
                   <View style={styles.callout}>
                     <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
                   </View>
                 </Callout>
-             
-          </Marker>
-        ))}
-        </>} 
+
+              </Marker>
+            ))}
+          </>}
+
+        {selected.includes("PD") &&
+          <>
+            {data.map((item, key) => (
+              <Marker coordinate={{ longitude: item.longitude - 0.001, latitude: item.latitude }} key={key} pinColor="green">
+
+                <Callout style={styles.callout}>
+                  <View style={styles.callout}>
+                    <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
+                  </View>
+                </Callout>
+
+              </Marker>
+            ))}
+          </>}
       </MapView>
       <MultiSelect
-          style={styles.dropdown}
-          placeholderStyle={{color:'black',alignSelf:'center',justifyContent:'center'}}
-          data={list}
-          labelField="label"
-          valueField="value"
-          placeholder="顯示項目"
-          
-          value={selected}
-          onChange={item => {
-            setSelected(item);
-            
-          }}     
-          renderItem={renderItem}     
-        />
+        style={styles.dropdown}
+        placeholderStyle={{ color: 'black', alignSelf: 'center', justifyContent: 'center' }}
+        data={list}
+        labelField="label"
+        valueField="value"
+        placeholder="顯示項目"
+
+        value={selected}
+        onChange={item => {
+          setSelected(item);
+
+        }}
+        renderItem={renderItem}
+      />
     </>)
 }
 
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%'
   },
-  dropdown:{
+  dropdown: {
     position: 'absolute',
     left: 10,
     top: 10,
@@ -147,29 +149,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderBottomColor: 'gray',
     borderBottomWidth: 0.5,
-    width:140,
-    paddingHorizontal:10,
+    width: 140,
+    paddingHorizontal: 10,
     padding: 5
 
   },
-  callout:{
-    padding:3
+  callout: {
+    padding: 3
   },
-  text:{
-    color:'black'
+  text: {
+    color: 'black'
   },
-  
-  item:{
+
+  item: {
     height: 40,
     backgroundColor: 'white',
     alignItems: 'center',
-    
+
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
-  itemText:{
+  itemText: {
     color: 'black',
     fontWeight: "100",
-    
+
   }
 });
