@@ -2,6 +2,7 @@ import { Alert } from "react-native";
 import Toast from 'react-native-toast-message';
 import { launchImageLibrary } from "react-native-image-picker";
 
+//Submit Report
 export async function submit(data: any, success = () => { }, fail = () => { }) {
     try {
         const response = await fetch('http://172.20.10.2:4000/reportSubmit', {
@@ -24,7 +25,7 @@ export async function submit(data: any, success = () => { }, fail = () => { }) {
 type BodyType = {
     [key: string]: any
 };
-
+//Turn submission data to Form Data
 export const createFormData = (body: BodyType = {}) => {
     const data = new FormData();
     Object.keys(body).forEach((key) => {

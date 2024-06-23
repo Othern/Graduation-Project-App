@@ -9,6 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
 export default ({onPress,theme}:any) => {
+    
     return (<Stack.Navigator initialRouteName="Preview" screenOptions={
         {
             header: (props) => <Header {...props} onPress={onPress} theme={theme}/>

@@ -13,10 +13,9 @@ export default ({ route, options, back, navigation, theme, push }: any) => {
     title = title != 'Map' ? title : 'Home';
     return (
         <Appbar.Header style={{ backgroundColor: theme === "dark" ? "#1C1C1E" : "#F0C750" }} >
-            {back ?
-                <Appbar.Action onPress={navigation.goBack}
+            {title != 'Home' && <Appbar.Action onPress={navigation.goBack}
                     icon={() => (<Entypo name={"cross"} size={25} color={fontColor} />)}
-                    color={fontColor} /> : null}
+                    color={fontColor} /> }
 
             {title == 'Home' ?
                 <Home title={title} push={() => { push('Report') }}/>

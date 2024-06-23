@@ -7,7 +7,7 @@ import Modal from './Modal';
 import { submit, createFormData, showToast,ShowImageLibrary } from './function';
 const initialReport = {
   fraid: false,
-  frequency: false,
+  frequency: 'always',
   textInputValue: '0',
   photo: {}
 }

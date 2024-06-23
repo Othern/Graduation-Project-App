@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Pressable, StyleSheet } from 'react-native';
 import { NavigationContainer, getFocusedRouteNameFromRoute, DefaultTheme, DarkTheme } from "@react-navigation/native";
-import Tab from '../Tab';
 import { createStackNavigator } from "@react-navigation/stack";
 
 //已完成:s
@@ -24,7 +23,7 @@ const LoginAssociate = (props: any) => {
     const handleLogin = () => {
         // Implement login logic here
         console.log('Logging in with username:', usernameL, 'and password:', passwordL);
-        props.navigation.push('Tab', { From: 'Login' })
+        props.navigation.push('tab', { From: 'login' })
     };
 
     const handleRegister = () => {

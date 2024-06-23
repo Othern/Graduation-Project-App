@@ -4,6 +4,7 @@ import { useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+
 const selectList = [
   { label: '總是', value: 'always' },
   { label: '常常', value: 'often' },
@@ -12,10 +13,8 @@ const selectList = [
 ];
 
 export default ({ data, setData, uploadPicture, theme }: any) => {
-  console.log(theme)
-  const styles = theme === 'light' ? lightModeMergedStyles:darkModeMergedStyles ;
+  const styles = theme === 'light' ? lightModeMergedStyles:darkModeMergedStyles;
   const [select, setSelect] = useState('always')
-  console.log(styles)
   const renderItem = (item:any) => {
     return (
       <View style={styles.item}>
@@ -45,6 +44,8 @@ export default ({ data, setData, uploadPicture, theme }: any) => {
           value={select}
           onChange={item => {
             setSelect(item.value);
+            setData((prevState: any) => ({ ...prevState, frequency: item.value }))
+            
           }}
           renderLeftIcon={() => (
             <AntDesign
@@ -76,7 +77,7 @@ export default ({ data, setData, uploadPicture, theme }: any) => {
 }
 
 // 通用樣式
-const commonStyles = StyleSheet.create({
+const commonStyles:any = StyleSheet.create({
   content: {
     flex: 5,
     flexDirection: 'column',
@@ -208,7 +209,7 @@ const lightModeStyles = StyleSheet.create({
     color: 'black'
   },
 });
-// 合并样式
+// 合併樣式
 const createMergedStyles = (modeStyles:any) => {
   return {
     ...commonStyles,

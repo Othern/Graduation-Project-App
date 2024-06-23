@@ -9,11 +9,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 
 
-const Stack = createStackNavigator();
+const HomeStack = createStackNavigator();
 const App = ({theme}:any) => {
   //console.log(result);
   return (
-    <Stack.Navigator screenOptions={{
+    <HomeStack.Navigator screenOptions={{
         header: (props) => <Header {...props} push ={props.navigation.push} theme={theme}/>,
         
         gestureEnabled: true,
@@ -26,11 +26,11 @@ const App = ({theme}:any) => {
         
     }} >
 
-      <Stack.Screen name= 'Map' component={Home} />
-      <Stack.Screen name='Report'component={Report} />
-      <Stack.Screen name='Camera'component={Camera} />
-      <Stack.Screen name='Preview' component={Preview}/>
-    </Stack.Navigator>
+      <HomeStack.Screen name= 'Map' component={Home} />
+      <HomeStack.Screen name='Report'component={Report} />
+      <HomeStack.Screen name='Camera'component={Camera} />
+      <HomeStack.Screen name='Preview' component={Preview}/>
+    </HomeStack.Navigator>
   );
 };
 
