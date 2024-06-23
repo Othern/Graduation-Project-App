@@ -45,7 +45,6 @@ const list = [
 ];
 
 export default () => {
-  const icon = require('../../asset/monkey.png');
   const [selected, setSelected] = useState(['RT', 'PD'])
   
   

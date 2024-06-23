@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView,useColorScheme } from 'react-native';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
@@ -12,10 +12,11 @@ const initialReport = {
   photo: {}
 }
 
-export default (props: any, { theme }: any) => {
+export default (props: any,  ) => {
   const [data, setData] = useState(initialReport);
   const [photo, setPhoto] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const theme = useColorScheme();
   const successSelected = (image:any)=>{
     setData((prev) => ({ ...prev, photo: image }));
     setPhoto(image?.uri);
@@ -49,9 +50,9 @@ export default (props: any, { theme }: any) => {
   }
   return (
 
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 ,padding:40}}>
       <ScrollView>
-        <Content data={data} setData={setData} uploadPicture={() => { setModalVisible(true) }} />
+        <Content data={data} theme={theme} setData={setData} uploadPicture={() => { setModalVisible(true) }} />
         <Seperator />
         <Footer submit={submitClicked} photo={photo} />
         <Modal

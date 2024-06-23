@@ -1,89 +1,89 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity,StyleSheet, TextStyle, ViewStyle, ImageStyle} from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+const selectList = [
+  { label: '總是', value: 'always' },
+  { label: '常常', value: 'often' },
+  { label: '有時', value: 'sometimes' },
+  { label: '偶爾', value: 'seldom' },
+];
 
-function CheckBox({ size = 30, color = 'gray', onPress, selected, value }: any) {
-  return (
-    <TouchableOpacity style={[commonStyles.checkBox]} onPress={onPress}>
-      <Text>{value}</Text>
-      <Icon
-        size={size}
-        color={color}
-        name={selected ? 'check-box' : 'check-box-outline-blank'}
-      />
-
-    </TouchableOpacity>
-  )
-}
-function createNumberArray(maxNumber: number) {
-  // 使用 Array.from() 方法创建一个由给定数字范围内的数字组成的数组
-  // Array.from() 方法接受一个类似数组的对象或可迭代对象，并返回一个新的、浅拷贝的数组实例
-  // 第一个参数是要创建的数组的长度，第二个参数是一个映射函数，用来对数组的每个元素进行处理，这里我们只需要数组的索引加 1
-  return Array.from({ length: maxNumber }, (_, index) => index + 1);
-}
-function CheckBoxSets({ number = 1, onPress, selected,styles }: any) {
-  return (<View style={commonStyles.checkBoxSets}>
-    {createNumberArray(number).map((item, key) => {
-      return (
-        <CheckBox onPress={onPress} selected={selected} value={""} key={key} />
-      )
-    })}
-  </View>)
-}
-function CheckElement({ title = "數量:", onPress, selected,styles }: any) {
-  return (<View style={styles.element}>
-    <View style={commonStyles.checkSetsTitle}>
-      <Text style={styles.elementText}>{title}</Text>
-    </View>
-    <CheckBoxSets onPress={onPress} selected={selected} />
-  </View>)
-}
-
-
-export default ({ data, setData,uploadPicture,theme }: any) => {
+export default ({ data, setData, uploadPicture, theme }: any) => {
+  console.log(theme)
   const styles = theme === 'light' ? lightModeMergedStyles:darkModeMergedStyles ;
+  const [select, setSelect] = useState('always')
+  console.log(styles)
+  const renderItem = (item:any) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.textItem}>{item.label}</Text>
+        {item.value === select && (
+          <AntDesign
+            style={styles.icon}
+            name="Safety"
+            size={20}
+          />
+        )}
+      </View>
+    );
+  };
   return (
     <View style={styles.content}>
-      <CheckElement title="是否經常遇到" onPress={() => setData((prevState: any) => ({ ...prevState, frequency: !data.frequency }))} selected={data.frequency} styles ={styles}/>
-      <CheckElement title="是否會感到恐懼" onPress={() => setData((prevState: any) => ({ ...prevState, fraid: !data.fraid }))} selected={data.fraid} styles ={styles}/>
+      <View style={styles.element}>
+        <Text style={styles.elementText}>遇見頻率</Text>
+        <Dropdown
+          style={styles.dropdown}
+          selectedTextStyle={styles.selectedTextStyle}
+          containerStyle ={styles.containerStyle}
+          data={selectList}
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          value={select}
+          onChange={item => {
+            setSelect(item.value);
+          }}
+          renderLeftIcon={() => (
+            <AntDesign
+              style={styles.icon}
+              name="Safety"
+              size={20}
+            />
+          )}
+          renderItem={renderItem}
+        />
+      </View>
       <View style={styles.element}>
         <Text style={styles.elementText}>獼猴數量</Text>
         <TextInput
-          cursorColor='black'
-          activeOutlineColor='#1B1B1D'
+          cursorColor='#007AFF'
+          activeOutlineColor='#007AFF'
           keyboardType='numeric'
           mode={"outlined"}
           maxLength={3}
           style={styles.textInputSection}
-          outlineColor="#1B1B1D"
+          
           onChangeText={(value) => setData((prevState: any) => ({ ...prevState, textInputValue: value }))} />
       </View>
       <View style={styles.element}>
         <Text style={styles.elementText}>上傳獼猴照片</Text>
-        <Button style={styles.button} onPress={uploadPicture}><Text style={{fontWeight: 'bold', color:'white'}}>選擇</Text></Button>
+        <Button style={styles.button} onPress={uploadPicture}><Text style={{ fontWeight: 'bold', color: 'white' }}>選擇</Text></Button>
       </View>
     </View>)
 }
+
 // 通用樣式
 const commonStyles = StyleSheet.create({
   content: {
     flex: 5,
     flexDirection: 'column',
   },
-  checkSetsTitle: {
-    // 保持空白，讓不同模式定義自己的字體顏色
-  },
-  checkBoxSets: {
-    flexDirection: 'row',
-  },
-  checkBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   textInputSection: {
-    height: 35,
-    width: 50,
+    height: 40,
+    width: 90,
   },
   element: {
     height: 80,
@@ -100,6 +100,47 @@ const commonStyles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#007AFF',
   },
+  dropdown: {
+    width: 110,
+    borderRadius: 12,
+    paddingHorizontal: 7,
+    paddingVertical:5,
+  },
+  icon: {
+    marginLeft: 5,
+  },
+  containerStyle:{
+    overflow: 'hidden',
+    backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    borderRadius: 12,
+    borderWidth: 0,
+    
+  },
+  item: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#1D1D1D',
+    alignItems: 'center',
+    
+  },
+  textItem: {
+    fontWeight: '100',
+    flex: 1,
+    fontSize: 16,
+    
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    marginBottom: 4,
+    textAlign: 'center',
+    
+
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
 });
 
 // Dark mode特定樣式
@@ -108,44 +149,78 @@ const darkModeStyles = StyleSheet.create({
     backgroundColor: '#1B1B1D',
     borderColor: '#333333',
   },
-  element: {
-    backgroundColor: '#252428',
-    borderColor: '#333333',
+  dropdown: {
+    
+    backgroundColor: '#1D1D1D',
   },
-  elementText: {
-    color: '#FFFFFF',
+  containerStyle:{
+    backgroundColor: 'gray',
   },
-  button: {
+  item: {
+    backgroundColor: '#1D1D1D',
+  },
+  selectedTextStyle: {
+    
+    color:'white'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  icon: {
+    color: 'white'
   },
 });
 
 // Light mode特定樣式
 const lightModeStyles = StyleSheet.create({
   textInputSection: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E0E0E0',
+    backgroundColor: '#F1F3F4',
+    borderColor: '#333333',
   },
-  element: {
-    backgroundColor: '#F8F8F8',
-    borderColor: '#E0E0E0',
+  dropdown: {
+    backgroundColor: 'white',
+      borderRadius: 12,
+      padding: 12,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.41,
+      elevation: 2,
   },
-  elementText: {
-    color: '#333333',
+  containerStyle:{
+    backgroundColor: 'gray',
   },
-  button: {
+  item: {
+    backgroundColor: 'white',
+  },
+  selectedTextStyle: {
+    color:'black'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  icon: {
+    color: 'black'
   },
 });
+// 合并样式
+const createMergedStyles = (modeStyles:any) => {
+  return {
+    ...commonStyles,
+    ...Object.keys(commonStyles).reduce((acc:any, key) => {
+      acc[key] = { ...commonStyles[key], ...modeStyles[key] };
+      return acc;
+    }, {}),
+  };
+};
 
-// 合併樣式
-const darkModeMergedStyles = StyleSheet.create({
-  ...darkModeStyles,
-  ...commonStyles,
-  
-});
+const darkModeMergedStyles = createMergedStyles(darkModeStyles);
+const lightModeMergedStyles = createMergedStyles(lightModeStyles);
 
-const lightModeMergedStyles = StyleSheet.create({
-  ...lightModeStyles,
-  ...commonStyles,
-});
 
 
