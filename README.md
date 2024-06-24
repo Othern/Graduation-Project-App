@@ -25,6 +25,8 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-element-dropdown
    npm i react-native-maps
    npm i react-native-gesture-handler
+   npm install react-native-keychain
+   npm install @react-native-async-storage/async-storage
    ```
 
 2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**
