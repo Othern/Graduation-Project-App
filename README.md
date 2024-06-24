@@ -8,16 +8,16 @@ This project is a React Native application utilizing various libraries to enhanc
 
 1. **Install the required packages:**
    ```sh
-   npm install react-native-gifted-charts
-   npm install react-native-linear-gradient
-   npm install react-native-svg
-   npm install @react-navigation/native
+   npm i react-native-gifted-charts
+   npm i react-native-linear-gradient
+   npm i react-native-svg
+   npm i @react-navigation/native
    npm i @react-navigation/stack
-   npm install react-native-screens
-   npm install react-native-safe-area-context
-   npm install @react-navigation/bottom-tabs
-   npm install @react-native-firebase/app @react-native-firebase/messaging
-   npm install --save-dev @types/react-native-vector-icons
+   npm i react-native-screens
+   npm i react-native-safe-area-context
+   npm i @react-navigation/bottom-tabs
+   npm i @react-native-firebase/app @react-native-firebase/messaging
+   npm i --save-dev @types/react-native-vector-icons
    npm i react-native-toast-message
    npm i react-native-vision-camera
    npm i react-native-paper
@@ -25,8 +25,10 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-element-dropdown
    npm i react-native-maps
    npm i react-native-gesture-handler
-   npm install react-native-keychain
-   npm install @react-native-async-storage/async-storage
+   npm i react-native-keychain
+   npm i @react-native-async-storage/async-storage
+   npm i @react-native-firebase/app
+   npm i @react-native-firebase/messaging
    ```
 
 2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**

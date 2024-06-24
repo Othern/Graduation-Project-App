@@ -12,11 +12,6 @@ export async function requestGeolocationPermission() {
             buttonPositive: "OK"
         }
         );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("You can use the geolocation")
-      } else {
-        console.log("Geolocation permission denied")
-      }
     } catch (err) {
       console.warn(err)
     }

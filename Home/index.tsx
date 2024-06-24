@@ -11,7 +11,6 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const HomeStack = createStackNavigator();
 const App = ({theme}:any) => {
-  //console.log(result);
   return (
     <HomeStack.Navigator screenOptions={{
         header: (props) => <Header {...props} push ={props.navigation.push} theme={theme}/>,

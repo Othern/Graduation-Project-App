@@ -5,22 +5,24 @@ import datetime
 
 cred = credentials.Certificate("./serviceAccountKey.json")
 default_app = firebase_admin.initialize_app(credential=cred)
-registration_token = "dBJAFpW5RW6_5CszD0RQtV:APA91bF08YN14x5aHgaTJb-Dy5I24wUkAW91NBlvueXlJPTRh-G5MLlCrNYeJiZw8EjsBPfdiUvnJVePSwTSXNuf6VKl48PYjL6oMBREjgXd4iC0qzI_9KcgWD23m4Fw91cdNp5h_rL0"
+registration_token = "fofD1N3ISXC3Q2cElLAFTJ:APA91bHzwuP9R2hRxz6Sly3G97PFh1vlO37UMTx2ojeFv7CgCnjJHumxG8Wa6TJkJVNU6gF-58lO38khlGIc2Iun9xr2MfiIPZ9bJxm4sY8tKWuZYJhI95g46APptQqg2fV4usB_0N3o"
 messages = [
     messaging.Message(
         notification=messaging.Notification(
-            title="你好",
-            body="通知測試",
+            title="武嶺宿舍獼猴入侵",
+            body="‼️⚠️請關緊門窗⚠️‼️",
             image="https://cdn-icons-png.flaticon.com/512/7246/7246727.png",
         ),
         data={
             "screen_name": "RRRR",
             "title": "great match!",
         },
-        #token=registration_token, 可以用topic 或 token 其一
-        topic="all_devices",
+        token=registration_token,
     ),
 ]
 def send_test():
     response = messaging.send_all(messages)
     print("{0} messages were sent successfully".format(response.success_count))
+
+if __name__ == "__main__":
+    send_test()

@@ -36,7 +36,29 @@ export default ({theme}:any)=>{
         }}
       />
     ),
-    /* create a completely new type - `tomatoToast` */
+    /* create a 'notification' type */
+    notification: (props: any) => (
+      <BaseToast 
+        {...props}
+        style={{ borderLeftColor: 'red' , position: 'relative' }}
+        contentContainerStyle={{
+          
+          
+          backgroundColor: theme === 'dark' ? "#4A4A4A" :"white"
+          }}
+        text1Style={{
+          fontSize: 15,
+          color: theme === 'dark' ? "white" :"black",
+          fontWeight: '400'
+        }}
+        text2Style={{
+          fontSize: 11,
+          
+          color: theme === 'dark' ? "white" :"black",
+          
+        }}
+      />
+    ),
   };
 
   return (<Toast config={toastConfig}/>)
