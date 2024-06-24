@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer, getFocusedRouteNameFromRoute, } from "@react-navigation/native";
-import ForFun from '../ForFun'
+import ForFun from '../ForFun';
+import Profile from '../Profile';
 import Prediction from '../Prediction'
 import Home from "../Home";
 import Header from "./header";
@@ -55,6 +56,12 @@ export default ({ theme }: any) => {
                         (<Prediction onPress={() => setModalVisible(true)} theme={theme} />)
                     }
                 </Tab.Screen>
+                <Tab.Screen name="Profile" component={Profile}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <Ionicons name="person" color={color} size={size} />
+                        ),
+                    }} />
             </Tab.Navigator>
 
         </>
