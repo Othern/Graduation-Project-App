@@ -39,12 +39,17 @@ export default ({ theme }: any) => {
                     } >
                     {() => <Home theme={theme} />}
                 </Tab.Screen>
-                <Tab.Screen name="ForFun" component={ForFun}
+                <Tab.Screen name="ForFun" 
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <Ionicons name="game-controller" color={color} size={size} />
                         ),
-                    }} />
+                        headerShown: false
+                    }} >
+                    {() =>
+                        (<ForFun theme={theme} />)
+                    }
+                </Tab.Screen>
                 <Tab.Screen name="Predict"
                     options={{
                         headerShown: false,

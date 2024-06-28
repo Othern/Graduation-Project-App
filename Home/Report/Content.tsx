@@ -22,8 +22,8 @@ export default ({ data, setData, uploadPicture, theme }: any) => {
         {item.value === select && (
           <AntDesign
             style={styles.icon}
-            name="Safety"
-            size={20}
+            name="checkcircleo"
+            size={18}
           />
         )}
       </View>
@@ -50,8 +50,8 @@ export default ({ data, setData, uploadPicture, theme }: any) => {
           renderLeftIcon={() => (
             <AntDesign
               style={styles.icon}
-              name="Safety"
-              size={20}
+              name="checkcircleo"
+              size={18}
             />
           )}
           renderItem={renderItem}
@@ -68,6 +68,7 @@ export default ({ data, setData, uploadPicture, theme }: any) => {
           style={styles.textInputSection}
           
           onChangeText={(value) => setData((prevState: any) => ({ ...prevState, textInputValue: value }))} />
+           
       </View>
       <View style={styles.element}>
         <Text style={styles.elementText}>上傳獼猴照片</Text>

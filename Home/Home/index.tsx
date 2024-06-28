@@ -5,7 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { useState,useEffect } from "react";
 import { MultiSelect } from 'react-native-element-dropdown';
-import { requestGeolocationPermission } from "./requestGeolocationPermission";
+import { requestGeolocationPermission } from "./function";
 
 
 
@@ -45,9 +45,35 @@ const list = [
 ];
 
 export default () => {
-  const [selected, setSelected] = useState(['RT', 'PD'])
-  
-  
+  const [selected, setSelected] = useState(['RT', 'PD']);
+  const [loading, setLoading] = useState(true);
+  const [RTData,setRTData] = useState(data);
+  const [PDData,setPDData] = useState(data);
+  // 要使用Networking 取消quote，並要改成你的url
+  // const getData = async () => {
+  //     const PDUrl = "http://172.20.10.2:4000//api/data/getPredictData";
+  //     try {
+  //         const response = await fetch(PDUrl)
+  //             .then(response => response.json())
+  //         setPDData(response)
+  //         setLoading(false);
+  //     }
+  //     catch (error) {
+  //         console.error(error)
+  //     }
+  //     const RTUrl = "http://172.20.10.2:4000//api/data/getPredictData";
+  //     try {
+  //         const response = await fetch(RTUrl)
+  //             .then(response => response.json())
+  //         setRTData(response)
+  //         setLoading(false);
+  //     }
+  //     catch (error) {
+  //         console.error(error)
+  //     }
+  // }
+  // useEffect(() => { getData() }, [])
+  //NetWorking to get detail data
   requestGeolocationPermission();
   const renderItem = (item: any) => {
     const color = item.value == "PD" ? 'green' : 'red';
@@ -73,7 +99,8 @@ export default () => {
       </View>
     );
   };
-  return (
+  //提供後端串接後使用 return (loading?<Text>loading...</Text>:
+  return(
     <>
 
       <MapView
@@ -88,7 +115,7 @@ export default () => {
 
         {selected.includes("RT") &&
           <>
-            {data.map((item, key) => (
+            {RTData.map((item, key) => (
 
               <Marker coordinate={{ longitude: item.longitude, latitude: item.latitude }} key={key} pinColor="red">
 
@@ -103,8 +130,9 @@ export default () => {
           </>}
 
         {selected.includes("PD") &&
+        // 未來使用將 - 0.001 拿掉即可
           <>
-            {data.map((item, key) => (
+            {PDData.map((item, key) => (
               <Marker coordinate={{ longitude: item.longitude - 0.001, latitude: item.latitude }} key={key} pinColor="green">
 
                 <Callout style={styles.callout}>

@@ -59,6 +59,32 @@ export default ({theme}:any)=>{
         }}
       />
     ),
+    /* create a 'forfun' type */
+    forfun: (props: any) => (
+      <BaseToast 
+        {...props}
+        style={{ borderLeftColor: '#B62619' , position: 'relative',
+          borderTopRightRadius:10,
+          borderBottomRightRadius:10,}}
+        contentContainerStyle={{
+          borderTopRightRadius:10,
+          borderBottomRightRadius:10,
+          backgroundColor: theme === 'dark' ? "#4A4A4A" :"white"
+          }}
+        text1Style={{
+          fontSize: 13.5,
+          color: theme === 'dark' ? "white" :"black",
+          fontWeight: '400'
+        }}
+        text2Style={{
+          fontSize: 11,
+          
+          color: theme === 'dark' ? "white" :"black",
+          
+        }}
+      />
+    ),
+    
   };
 
   return (<Toast config={toastConfig}/>)

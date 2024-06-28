@@ -5,7 +5,6 @@ import Home from './Home';
 import Header from './Header';
 import Camera from './Camera';
 import Preview from './Preview';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 
 
