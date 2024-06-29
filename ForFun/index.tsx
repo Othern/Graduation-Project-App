@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Overview from './Overview'
 import Header from './Header';
@@ -19,16 +18,17 @@ export default (theme: any) => {
         } 
     };
     useEffect(()=>{init()},[]);
-    console.log(hearts)
     return (
         <stack.Navigator>
-            <stack.Screen name={'Overview'} component={Overview}
-                options={{
+            <stack.Screen name={'Overview'} options={{
                     header: (props) => <Header {...props} onPress={
                         () => {
                             processDailyReward(dailyReward, setdailyReward)
                         }} theme={theme} heart={dailyReward} />
-                }} />
+                }}>
+                {(props:any)=>(<Overview theme={theme}/>)}
+            </stack.Screen>
+                 
 
         </stack.Navigator>)
 }

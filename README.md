@@ -29,6 +29,8 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i @react-native-async-storage/async-storage
    npm i @react-native-firebase/app
    npm i @react-native-firebase/messaging
+   npm install @react-navigation/material-top-tabs react-native-tab-view
+   npm install react-native-pager-view
    ```
 
 2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**
