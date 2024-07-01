@@ -1,34 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { Animated } from "react-native";
 import Overview from './Overview'
-import Header from './Header';
-import { processDailyReward,initDailyRewardStatus,initHearts } from "./function";
+import Header from './Overview/Header';
+import { processDailyReward, initDailyRewardStatus, initHearts } from "./function";
 const stack = createStackNavigator();
-export default (theme: any) => {
-    const [dailyReward, setdailyReward] = useState(true);
-    const [hearts, setHearts] = useState(0);
-    const init = async()=>{
-        const status = await initDailyRewardStatus();
-        const heart = await initHearts();
-        if(status != undefined){
-            setdailyReward(status);
-        } 
-        if(heart){
-            setHearts(heart);
-        } 
-    };
-    useEffect(()=>{init()},[]);
+export default ({ theme }: any) => {
     return (
         <stack.Navigator>
             <stack.Screen name={'Overview'} options={{
-                    header: (props) => <Header {...props} onPress={
-                        () => {
-                            processDailyReward(dailyReward, setdailyReward)
-                        }} theme={theme} heart={dailyReward} />
-                }}>
-                {(props:any)=>(<Overview theme={theme}/>)}
+                header: () => { return null }
+            }}>
+                {(props: any) => (
+                    <Overview theme={theme}/>
+                        
+                )}
             </stack.Screen>
-                 
+
 
         </stack.Navigator>)
 }

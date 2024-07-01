@@ -5,7 +5,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 const Button = ({styles,name,icon,onPress}:any) => {
     return (<Pressable style={styles.pressable} onPress={onPress}>
                 <Icon name={icon} size={25} />
-                <Text>{name}</Text>
+                <Text style={styles.text}>{name}</Text>
             </Pressable >)
 }
 
@@ -43,6 +43,9 @@ const darkModeStyles = StyleSheet.create({
         
         fontWeight: 'bold'
     },
+    text:{
+        color:'white'
+    },
     buttonContainer:{
         
         flexDirection: 'row',
@@ -77,6 +80,9 @@ const lightModeStyles = StyleSheet.create({
         fontSize: 25,
         marginBottom: 30,
         fontWeight: 'bold',
+    },
+    text:{
+        color:'#656565'
     },
     buttonContainer: {
         flexDirection: 'row',

@@ -4,11 +4,12 @@
 //修改帳號名 有 {當前帳號名, 新帳號名輸入欄, 確認, 取消}
 //修改密碼 有 {當前密碼輸入欄, 新密碼輸入欄, 確認, 取消}
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, TextInput, Button, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Button, Pressable, StyleSheet, Image,useColorScheme } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackActions, useFocusEffect } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Modify from "./Modify"
 import Setting from "./Setting"
@@ -45,7 +46,7 @@ const Profile = (props: any) => {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [headImg, setHeadImg] = useState('');
-
+    const theme = useColorScheme();
 
     getDataJSON('UserData', (data) => {
         if (data) {
@@ -78,7 +79,7 @@ const Profile = (props: any) => {
     return (
 
         <View style={styles.container}>
-            <View style={styles.UserInfo}>
+            <View style={[styles.UserInfo,]}>
                 <Image
                     style={styles.headImg}
                     source={image}
@@ -86,42 +87,34 @@ const Profile = (props: any) => {
                 <Text style={styles.username}>{username}</Text>
             </View>
 
-            <View style={styles.line} />
+            <Pressable
+                onPress={() => props.navigation.push('modifyPages',
+                    { From: 'profile', Email: email, Username: username, HeadImg: headImg })}
+                style={styles.pressable}
+            >
+                <Icon style={styles.icon} name={'person-circle'} size={30} />
+                <Text style={styles.pressableText}>修改帳號資訊</Text>
+                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
 
-            <Pressable onPress={() => props.navigation.push('modifyPages', { From: 'profile', Email: email, Username: username, HeadImg: headImg })} style={({ pressed }) => [
-                styles.pressable,
-                {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
-                }
-            ]}><Text style={styles.pressableText}>修改帳號資訊</Text>
             </Pressable>
 
-            <Pressable onPress={() => props.navigation.push('setting', { From: 'profile' })} style={({ pressed }) => [
-                styles.pressable,
-                {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
-                }
-            ]}><Text style={styles.pressableText}>設定系統權限</Text>
+            <Pressable onPress={() => props.navigation.push('setting', { From: 'profile' })} style={styles.pressable}>
+                <Icon style={styles.icon} name={'settings'} size={30} />
+                <Text style={styles.pressableText}>設定系統權限</Text>
+                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+
             </Pressable>
 
-            <Pressable onPress={() => props.navigation.push('intro', { From: 'profile' })} style={({ pressed }) => [
-                styles.pressable,
-                {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
-                }
-            ]}><Text style={styles.pressableText}>系統使用說明</Text>
+            <Pressable onPress={() => props.navigation.push('intro', { From: 'profile' })} style={styles.pressable}>
+                <Icon style={styles.icon} name={'information-circle'} size={30} />
+                <Text style={styles.pressableText}>系統使用說明</Text>
+                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
             </Pressable>
 
-            <Pressable onPress={() => Logout(props)} style={({ pressed }) => [
-                styles.pressable,
-                {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
-                }
-            ]}><Text style={styles.pressableText}>登出當前帳號</Text>
+            <Pressable onPress={() => Logout(props)} style={styles.pressable}>
+                <Icon style={styles.icon} name={'log-out'} size={30} />
+                <Text style={styles.pressableText}>登出當前帳號</Text>
+                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
             </Pressable>
 
         </View>
@@ -131,53 +124,67 @@ const Profile = (props: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 10,
 
-        alignItems: 'center',
-        backgroundColor: 'white',
     },
     UserInfo: {
-        justifyContent: 'center',
+        height:150,
         alignItems: 'center',
+        flexDirection: 'row',
         marginBottom: '4%',
+        borderRadius: 10,
+        padding: 10,
         marginTop: '10%',
+
     },
     headImg: {
-        width: 140,
-        height: 140,
+        width: 100,
+        height: 100,
         borderRadius: 100,
-        margin: '3%',
+        marginRight:20
     },
     username: {
         textAlign: 'center',
-        color: 'black',
-        fontSize: 24,
+        fontSize: 30,
+        fontWeight: 'bold'
     },
     line: {
         height: 1,
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         width: '80%',
         marginBottom: '2%',
     },
     pressable: {
-        width: '60%',
-        height: 40,
+        width: '100%',
+        height: 70,
         borderRadius: 10,
-        borderWidth: 1,
+        
+        alignItems: 'center',
+
+        flexDirection: 'row',
+        padding: 5,
         marginTop: '7%',
-        paddingTop: 3,
+    },
+    icon: {
+        marginTop: 5,
+        marginRight: 20,
     },
     pressableText: {
-        textAlign: 'center',
-        color: 'white',
-        fontSize: 24,
+        justifyContent: 'center',
+        fontSize: 20,
     },
+    forward:{
+        position:'absolute',
+        
+        right:5,
+    }
 });
 
 export default (props: any) => {
     // 主要一個頁面 有 {頭像圖片, 登出按鈕(清除登入資訊，user資訊,並navigate到登入頁面), setting按鈕(進入調整權限頁面), 修改資料按鈕(進入修改資料頁面)}
     return (
         <UserStack.Navigator initialRouteName="profile">
-            <UserStack.Screen component={Profile} name="profile" options={{ headerShown: false }} />
+            <UserStack.Screen component={Profile} name="profile" options={{ header: ()=>(null) }} />
             <UserStack.Screen component={Modify} name="modifyPages" options={{ headerShown: false }} />
             <UserStack.Screen component={Setting} name="setting" options={{ headerShown: false }} />
             <UserStack.Screen component={Intro} name="intro" options={{ headerShown: false }} />

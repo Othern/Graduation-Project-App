@@ -268,10 +268,12 @@ const styles = StyleSheet.create({
     input: {
         height: 45,
         margin: 12,
-        padding: 10,
-        borderWidth: 1,
+        padding: 5,
+        elevation:1,
+        
         borderColor: 'gray',
         color: '#000000',
+        backgroundColor:'white',
         fontSize: 20,
         borderRadius: 8,
 
@@ -283,17 +285,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pressable: {
-
-        width: 140,
-        height: 38,
+        elevation:1,
+        width: 120,
+        height: 45,
         padding: 5,
-        borderRadius: 10,
+        borderRadius: 20,
         borderWidth: 1,
         margin: 5,
     },
     pressableText: {
         textAlign: 'center',
-        color: 'black',
+        color: 'white',
+        fontWeight:'bold',
         fontSize: 20,
     },
     hintNormal: {

@@ -24,7 +24,7 @@ export default function(){
       
         <LoginStack.Navigator>
           <LoginStack.Screen component={LoginAssociate} name="login" options={{headerShown:false}}/>
-          <LoginStack.Screen  name="tab" options={{headerShown:false}}>
+          <LoginStack.Screen  name="tab" options={{header:()=>(null)}}>
               {(props)=>(<Tab theme= {theme}/> )}
           </LoginStack.Screen>
         </LoginStack.Navigator>
