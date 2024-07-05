@@ -33,7 +33,7 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-pager-view
    npm i react-native-app-intro-slider
    npm i @gorhom/bottom-sheet
-   npx install react-native-reanimated react-native-gesture-handler
+   npm i react-native-reanimated react-native-gesture-handler
    ```
 
 2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**
