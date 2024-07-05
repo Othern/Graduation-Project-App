@@ -93,7 +93,7 @@ This project is a React Native application utilizing various libraries to enhanc
    import Project from './Graduation-Project-App';
    ```
 8. **Add `react-native-reanimated/plugin` plugin to your `babel.config.js`**
-   In the `babel.config.js` file, add the `react-native-reanimated/plugin` into plugins 
+   In the `babel.config.js` file, add the `react-native-reanimated/plugin` into plugins and restart your project with following instructions `npm start --reset-cache`
    ```kotlin
    plugins: [
       ...
