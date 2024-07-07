@@ -59,6 +59,7 @@ const DATA = [
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC28lvhB3X_P4cDQ17N2RQvttJRUYagluoPw&s',
     image: true,
     contentUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTreBuOexL-mU-nxKgDnvnXQfLFmar1NhcfJg&s',
+    like:true,
     hearts: 100
   },
   {
@@ -68,6 +69,7 @@ const DATA = [
     avatarUrl: 'https://steamuserimages-a.akamaihd.net/ugc/1651094778160293860/28F0B5713A2F4D69F937C017E49E2CD0AE719CE5/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false',
     image: true,
     contentUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTreBuOexL-mU-nxKgDnvnXQfLFmar1NhcfJg&s',
+    like:false,
     hearts: 50
 
   },
@@ -78,17 +80,18 @@ const DATA = [
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC28lvhB3X_P4cDQ17N2RQvttJRUYagluoPw&s',
     image: false,
     contentUri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    like:false,
     hearts: 10
 
   },
 ];
 
-type ItemProps = { name: string, avatarUrl: string, description: string, image: boolean, contentUri: string, hearts: number, handleComment: any };
+type ItemProps = { name: string, avatarUrl: string, description: string, image: boolean, contentUri: string, hearts: number,like:boolean, handleComment: any };
 
-const Item = ({ name, avatarUrl, description, image, contentUri, hearts, handleComment }: ItemProps,) => {
+const Item = ({ name, avatarUrl, description, image, contentUri, hearts,like, handleComment }: ItemProps,) => {
   const theme = useColorScheme();
   const color = theme === "dark" ? "white" : "black";
-  const [heart, setHeart] = useState(false);
+  const [heart, setHeart] = useState(like);
   const [showMore, setShowMore] = useState(false);
   const desc = (description).substring(0, 49)
   const moredesc = (description).substring(49)
@@ -260,7 +263,7 @@ export default ({ kind, scrollY }: any) => {
           <View style={{ height: 80 }} />
 
           {postData.map((item, key) => (
-            <Item name={item.name} avatarUrl={item.avatarUrl} description={item.description} image={item.image} contentUri={item.contentUri} hearts={item.hearts} key={key}
+            <Item name={item.name} avatarUrl={item.avatarUrl} description={item.description} image={item.image} contentUri={item.contentUri} hearts={item.hearts} like={item.like} key={key}
               handleComment={
                 () => {
                   handleSnapPress(0);
