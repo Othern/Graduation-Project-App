@@ -66,7 +66,7 @@ const LoginAssociate = (props: any) => {
     const handleLogin = () => {
         // Implement login logic here
         // submit email and password
-        if (false) {
+        if (true) {
             saveCredentials(emailL, passwordL);
             const usernameLS = 'James';
             const headImgLS = '';
@@ -103,7 +103,7 @@ const LoginAssociate = (props: any) => {
     const handleRegister = () => {
         // Implement registration logic here
         // submit email and password and username
-        if (false) {
+        if (true) {
             saveCredentials(email, password);
             const headImgRS = '';
             const UserData = JSON.stringify({ email, username, headImg: headImgRS });
