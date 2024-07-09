@@ -39,6 +39,19 @@ export const initHearts = async()=>{
         return 0;
     }
 }
+export const reviceHeart = async(heart:boolean,success:any)=>{
+    const hearts = await AsyncStorage.getItem('Hearts');
+    const leftover = Number(hearts) - 1;
+    
+    if(leftover >= 0 && !heart){
+        AsyncStorage.setItem('Hearts',(Number(hearts) - 1).toString())
+        success()
+    }
+    if(leftover < 0){
+        showToast('本日愛心已使用完畢,請隔日再來領取', '')
+    }
+    
+}
 
 export const initDailyRewardStatus = async () => {
     try {

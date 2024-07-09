@@ -89,7 +89,7 @@ const LoginAssociate = (props: any) => {
                 props.navigation.push('tab', { From: 'login' });
             }, (data: any) => {
                 // fail = show the reason (setHint)
-                if (data.stat == 'wrongEmail') {
+                if (data == 'wrongEmail') {
                     setHint('該電子郵件未註冊');
                 }
                 else {
@@ -127,10 +127,10 @@ const LoginAssociate = (props: any) => {
                 props.navigation.push('tab', { From: 'login' });
             }, (data: any) => {
                 // fail = show the reason (setHint)
-                if (data.stat == 'wrongEmail') {
+                if (data == 'wrongEmail') {
                     setHint('該電子郵件已註冊或格式錯誤');
                 }
-                else if (data.stat == 'wrongUsername') {
+                else if (data == 'wrongUsername') {
                     setHint('該用戶名已註冊或格式錯誤');
                 }
                 else {

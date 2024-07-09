@@ -18,8 +18,12 @@ export default ({ theme }: any) => {
             <Report modalVisible={modalVisible} setModalVisible={setModalVisible} theme={theme} />
 
             <Tab.Navigator initialRouteName="Forfun"
+
                 screenOptions={{
-                    header: (props) => <Header {...props} onPress={() => setModalVisible(true)} theme={theme} />
+                    header: (props) => <Header {...props} onPress={() => setModalVisible(true)} theme={theme} />,
+                    tabBarStyle: { backgroundColor: theme != "dark" ? "#fc7b13" : "#1C1C1E" },
+                    tabBarInactiveTintColor: theme != "dark" ? "white" : "white",
+                    tabBarActiveTintColor: theme != "dark" ? "#2b2b2b" : "#20a8f2"
                 }}>
                 <Tab.Screen name="Home"
                     options={
@@ -29,17 +33,18 @@ export default ({ theme }: any) => {
                                 if (routeName == 'Report' || routeName == 'Camera' || routeName == 'Preview') {
                                     return { display: "none" }
                                 }
-                                return
+                                return { backgroundColor: theme != "dark" ? "#fc7b13" : "#1C1C1E"}
                             })(route),
                             tabBarIcon: ({ color, size }) => (
                                 <Ionicons name="home" color={color} size={size} />
                             ),
+
                             headerShown: false
                         })
                     } >
                     {() => <Home theme={theme} />}
                 </Tab.Screen>
-                <Tab.Screen name="ForFun" 
+                <Tab.Screen name="ForFun"
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <Ionicons name="tv" color={color} size={size} />
@@ -66,7 +71,7 @@ export default ({ theme }: any) => {
                         tabBarIcon: ({ color, size }) => (
                             <Ionicons name="person" color={color} size={size} />
                         ),
-                        header:()=>(null),
+                        header: () => (null),
                     }} />
             </Tab.Navigator>
 
