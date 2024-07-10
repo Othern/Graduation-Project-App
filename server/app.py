@@ -17,6 +17,10 @@ app.config.update(configs)
 def index():
     return render_template('index.html')
 
+@app.route('/api/data/getPostData', methods=['POST'])
+def get_PostData():
+    data = {'message': 'Hello from Flask API with GET method.'}
+    return jsonify(data)
 
 
 @app.route('/api/data/get', methods=['GET'])

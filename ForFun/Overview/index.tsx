@@ -57,10 +57,10 @@ export default ({ theme, props }: any) => {
                     {(props: any) => { return <Recent scrollY={scrollY} /> }}
                 </Tab.Screen>
                 <Tab.Screen name="Cute">
-                    {(props: any) => { return <Recent scrollY={scrollY} /> }}
+                    {(props: any) => { return <Cute scrollY={scrollY} /> }}
                 </Tab.Screen>
                 <Tab.Screen name="Funny">
-                    {(props: any) => { return <Recent scrollY={scrollY} /> }}
+                    {(props: any) => { return <Funny scrollY={scrollY} /> }}
                 </Tab.Screen>
             </Tab.Navigator>
 
