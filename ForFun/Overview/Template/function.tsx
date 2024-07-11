@@ -1,5 +1,5 @@
 // 取得貼文資料
-export const getPostData = async (setPostData: any,kind:string) => {
+export const getPostData = async (setPostData: any,kind:string, page:number) => {
     const Url = "http://192.168.0.18:4000/api/data/getPostData";
     try {
         const response = await fetch(Url, {
@@ -7,7 +7,10 @@ export const getPostData = async (setPostData: any,kind:string) => {
             headers:{
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({"kind": kind})
+            body: JSON.stringify(
+              { "kind": kind,
+                "page": page
+              })
         }).then(response => response.json())
         
         setPostData(response)
@@ -54,7 +57,24 @@ export const sendHeart = async (uid:any,pid: string) => {
     }
 }
 
-
+export const sendComment = async (uid:number,pid: number,comment:string) => {
+  const Url = "http://192.168.0.18:4000/api/data/sendComment";
+  try {
+      const response = await fetch(Url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              "uid": uid,
+              "comment": String,
+              "pid": pid })
+      }
+      );
+  } catch (error) {
+      console.error(error)
+  }
+}
 // 目前所需的回傳資料格式
 // Comment data
 

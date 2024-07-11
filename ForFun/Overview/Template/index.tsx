@@ -1,10 +1,10 @@
-import { View, Text, Image, StyleSheet, FlatList, SafeAreaView, Animated, useColorScheme, ScrollView, Pressable, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, FlatList, SafeAreaView, Animated, useColorScheme, ScrollView, Pressable, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Card } from "react-native-paper";
 import { reviceHeart } from "../../function";
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { getPostData, getCommentData,sendHeart,COMMENTDATA,POSTDATA } from "./function";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { getPostData, getCommentData, sendHeart, sendComment, COMMENTDATA, POSTDATA } from "./function";
 import Video, { VideoRef } from 'react-native-video';
 
 
@@ -25,10 +25,10 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
   const videoRef = useRef<VideoRef>(null);
   const [muted, setMuted] = useState(true)
   const [paused, setPaused] = useState(false)
-  useEffect(() => { 
+  useEffect(() => {
     setPaused(!viewable)
     setMuted(!viewable)
-   }, [viewable])
+  }, [viewable])
   return (
     <View style={styles.item}>
 
@@ -43,6 +43,7 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
           <Image source={{ uri: contentUri }} style={styles.content} /> :
           <TouchableOpacity
             activeOpacity={1}
+            touchSoundDisabled={true}
             onPress={() => {
               setPaused((prev) => (!prev))
             }}
@@ -90,7 +91,7 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
               // sendHeart(uid,pid)
 
             }}>
-            <Icon name={!heart ? "heart-outline" : "heart"} color={!heart ? color : 'red'} size={30}/>
+            <Icon name={!heart ? "heart-outline" : "heart"} color={!heart ? color : 'red'} size={30} />
           </Pressable>
           <Text style={[{ color: color, fontSize: 15 }]}>{hearts}</Text>
 
@@ -145,12 +146,15 @@ const CommentItem = ({ id, username, content, avatarUrl, timestamp }: CommentIte
 export default ({ kind, scrollY }: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
+  const [moreData, setMoreData] = useState(POSTDATA);
   const [commentData, setCommentData] = useState(COMMENTDATA);
+  const [comment, setComment] = useState('');
+  const [page, setPage] = useState(1);
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
 
   // useEffect(()=>{
-  //   getPostData(setPostData,kind)
+  //   getPostData(setPostData,kind,page)
   //   setLoading(false)
   // }
   //   ,[])
@@ -158,7 +162,7 @@ export default ({ kind, scrollY }: any) => {
 
 
   const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["50%", "90%"], []);
+  const snapPoints = useMemo(() => ["60%"], []);
   // 設定當前觀看的item是哪一個
   const [viewItem, setViewItem] = useState(0);
   // for item focus
@@ -169,9 +173,19 @@ export default ({ kind, scrollY }: any) => {
   const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
     viewableItems.forEach((item: any) => {
       setViewItem(item.index)
-      console.log(item.index)
     });
   }, []);
+  const loadMoreData = useCallback(() => {
+    if (!loading) {
+      setLoading(true);
+      // 調用getpostdata 來獲取更多數據，如果寫好則可以替代下面兩行
+      // getPostData(setMoreData,page + 1, kind)
+      // setPostData((prev)=>[...prev,...MoreData])
+      setMoreData(POSTDATA);
+      setPostData((prev) => [...prev, ...prev])
+      setLoading(false)
+    }
+  }, [page, kind, loading]);
 
   // for comment area
   const handleSnapPress = useCallback((index: any) => {
@@ -206,6 +220,7 @@ export default ({ kind, scrollY }: any) => {
                   // getCommentData(item.id);
                 }}
               />)
+
           }}
           keyExtractor={(item, index) => index.toString()}
           ListHeaderComponent={<View style={{ height: 80 }} />}
@@ -216,6 +231,10 @@ export default ({ kind, scrollY }: any) => {
           scrollEventThrottle={16}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
+          // onEndReached={loadMoreData}
+          // onEndReachedThreshold={1}
+          // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
+          
         />
 
         <BottomSheet
@@ -225,17 +244,38 @@ export default ({ kind, scrollY }: any) => {
           snapPoints={snapPoints}
           backgroundStyle={[styles.commentContainer, { backgroundColor: theme === "dark" ? "#1C1C1E" : "white" }]}
         >
-          <BottomSheetScrollView contentContainerStyle={{}}>
-            {commentData.map((item, index) => (
-              <CommentItem
-                id={item.id}
-                username={item.username}
-                content={item.content}
-                timestamp={item.timestamp}
-                avatarUrl={item.avatarUrl}
-                key={index} />
-            ))}
-          </BottomSheetScrollView>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <BottomSheetFlatList
+              data={commentData}
+              ListHeaderComponent={<View style={{ height: 60 }}></View>}
+              keyExtractor={(item, index) => item.id.toString()} // Ensure each id is a string or use a different keyExtractor
+              renderItem={({ item, index }) => (
+                <CommentItem
+                  id={item.id}
+                  username={item.username}
+                  content={item.content}
+                  timestamp={item.timestamp}
+                  avatarUrl={item.avatarUrl}
+                  key={index} // key is not necessary here, as FlatList handles keys internally
+                />
+              )}
+            />
+            <View style={[styles.inputContainer, { backgroundColor: theme === "dark" ? "#1C1C1E" : "white" }]}>
+              <TextInput
+                style={[styles.input, { color: theme === "dark" ? "white" : "black" }]}
+                value={comment}
+                onChangeText={setComment}
+                placeholder="寫下你的評論..."
+                placeholderTextColor={theme === "dark" ? "#999" : "#666"}
+              />
+              <TouchableOpacity onPress={() => { sendComment(0, 0, comment) }} style={styles.submitButton}>
+                <Text style={styles.submitButtonText}>發送</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
         </BottomSheet>
 
       </>
@@ -275,5 +315,32 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 350
 
-  }
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 10,
+
+    borderTopColor: '#ccc',
+    position: 'absolute',
+    top: 0
+  },
+  input: {
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  submitButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
