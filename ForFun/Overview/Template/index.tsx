@@ -88,7 +88,7 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
               // 修改愛心剩餘數量
               reviceHeart(heart, () => { setHeart((prev) => (!prev)) })
               // 回傳後端用戶喜歡某貼文
-              // sendHeart(uid,pid)
+              // sendHeart(pid)
 
             }}>
             <Icon name={!heart ? "heart-outline" : "heart"} color={!heart ? color : 'red'} size={30} />
@@ -234,7 +234,7 @@ export default ({ kind, scrollY }: any) => {
           // onEndReached={loadMoreData}
           // onEndReachedThreshold={1}
           // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
-          
+
         />
 
         <BottomSheet
@@ -271,7 +271,7 @@ export default ({ kind, scrollY }: any) => {
                 placeholder="寫下你的評論..."
                 placeholderTextColor={theme === "dark" ? "#999" : "#666"}
               />
-              <TouchableOpacity onPress={() => { sendComment(0, 0, comment) }} style={styles.submitButton}>
+              <TouchableOpacity onPress={() => { sendComment(0,  comment) }} style={styles.submitButton}>
                 <Text style={styles.submitButtonText}>發送</Text>
               </TouchableOpacity>
             </View>
