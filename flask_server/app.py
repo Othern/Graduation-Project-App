@@ -2,6 +2,7 @@ from flask import Flask, Blueprint
 from flask_cors import CORS
 from login import login
 from modify import modify
+from predict import predict
 import secrets
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ app.secret_key = secrets.token_hex(16) # 保護session
 # 註冊附屬檔案在APP上
 app.register_blueprint(login)
 app.register_blueprint(modify)
+app.register_blueprint(predict)
 
 # 執行程式
 if __name__ == '__main__':
