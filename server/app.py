@@ -25,7 +25,7 @@ def get_PostData():
 
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
-    data = {'message': 'Hello from Flask API with GET method.'}
+    data = {'message': 'Hello from Flask API with GET method'}
     return jsonify(data)
 
 @app.route('/api/data/post', methods=['POST'])
