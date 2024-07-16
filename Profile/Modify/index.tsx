@@ -96,6 +96,7 @@ const Modify = (props: any) => {
                 onClose={handleCloseUsername}
                 onSave={handleSaveUserame}
                 currentUsername={username}
+                currentEmail={Email}
             />
 
             <Pressable onPress={handleOpenPassword} style={({ pressed }) => [
@@ -110,6 +111,7 @@ const Modify = (props: any) => {
                 visible={passwordVisible}
                 onClose={handleClosePassword}
                 onSave={handleSavePassword}
+                currentEmail={Email}
             />
 
             <Pressable onPress={() => props.navigation.goBack()} style={({ pressed }) => [
