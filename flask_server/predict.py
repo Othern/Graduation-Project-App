@@ -14,7 +14,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 import json
 
-predict = Blueprint('predict', __name__, template_folder='C:\\Users\\work\\AwesomeProject\\Graduation-Project-App')
+predict = Blueprint('predict', __name__, template_folder='/Users/wengwulin/Desktop/rn2/Graduation-Project-App')
 CORS(predict) # 跨平台使用
 
 predict.secret_key = secrets.token_hex(16) # 保護session
@@ -457,37 +457,78 @@ def preprocess_endpoint():
 
 @predict.route('/predict_model', methods=['GET'])
 def predict_model_endpoint():
-    global final_counts  # 使用全域變數
-
-    if final_counts is None:
-        return jsonify({"error": "No data available."}), 404
+    # global final_counts  # 使用全域變數
+    # Location, Category
+    # if final_counts is None:
+    #     return jsonify({"error": "No data available."}), 404
 
     # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
-    json_data = final_counts.to_dict(orient='records')
-
+    # json_data = final_counts.to_dict(orient='records')
+    json_data = [
+    { "Location": "國研大樓和體育館", "Category": "少量" },
+    { "Location": "教學區", "Category": "大量" },
+    { "Location": "教學區西側", "Category": "中量" },
+    { "Location": "武嶺", "Category": "大量" },
+    { "Location": "活動中心", "Category": "大量" },
+    { "Location": "海院", "Category": "中量" },
+    { "Location": "翠亨", "Category": "中量" },
+    { "Location": "電資大樓", "Category": "大量" },
+    { "Location": "體育場和海提", "Category": "少量" }
+    ]
     return jsonify(json_data)
 
 
 @predict.route('/details', methods=['POST'])
 def get_details():
     # 從資料庫中抓取資料，返回給前端
+    # 'Date_time',  'Number'
+    req_data = request.get_json()
+    location = req_data['location']
     try:
-        conn = mariadb.connect(**DB_CONFIG)
-        cur = conn.cursor()
-        tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        query = """
-        SELECT Date_time, Location, Number
-        FROM monkey_predict
-        WHERE Date_time BETWEEN ? AND ?
-        """
-        start_time = f"{tomorrow} 00:00:00"
-        end_time = f"{tomorrow} 23:59:59"
-        cur.execute(query, (start_time, end_time))
-        results = cur.fetchall()
-        columns = [desc[0] for desc in cur.description]
-        data = [dict(zip(columns, row)) for row in results]
-        cur.close()
-        conn.close()
+        # conn = mariadb.connect(**DB_CONFIG)
+        # cur = conn.cursor()
+        # tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        # query = """
+        # SELECT Date_time, Number
+        # FROM monkey_predict
+        # WHERE Date_time BETWEEN ? AND ? AND Location == ? 
+        # """
+        # start_time = f"{tomorrow} 00:00:00"
+        # end_time = f"{tomorrow} 23:59:59"
+        # cur.execute(query, (start_time, end_time, location))
+        # results = cur.fetchall()
+        # columns = [desc[0] for desc in cur.description]
+        # data = [dict(zip(columns, row)) for row in results]
+        # cur.close()
+        # conn.close()
+        data = [
+    { "Number": 12, "Date_time": '0' },
+    { "Number": 3, "Date_time": '1' },
+    { "Number": 15, "Date_time": '2' },
+    { "Number": 8, "Date_time": '3' },
+    { "Number": 7, "Date_time": '4' },
+    { "Number": 10, "Date_time": '5' },
+    { "Number": 5, "Date_time": '6' },
+    { "Number": 13, "Date_time": '7' },
+    { "Number": 1, "Date_time": '8' },
+    { "Number": 14, "Date_time": '9' },
+    { "Number": 6, "Date_time": '10' },
+    { "Number": 2, "Date_time": '11' },
+    { "Number": 11, "Date_time": '12' },
+    { "Number": 4, "Date_time": '13' },
+    { "Number": 9, "Date_time": '14' },
+    { "Number": 0, "Date_time": '15' },
+    { "Number": 3, "Date_time": '16' },
+    { "Number": 8, "Date_time": '17' },
+    { "Number": 12, "Date_time": '18' },
+    { "Number": 7, "Date_time": '19' },
+    { "Number": 15, "Date_time": '20' },
+    { "Number": 1, "Date_time": '21' },
+    { "Number": 14, "Date_time": '22' },
+    { "Number": 9, "Date_time": '23' },
+    { "Number": 5, "Date_time": '24' }
+]
+
         return jsonify(data)
     except mariadb.Error as e:
         print(f"Error fetching data from MariaDB Platform: {e}")
