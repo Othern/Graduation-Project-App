@@ -1,8 +1,10 @@
 import React from "react";
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Appbar } from "react-native-paper";
-import { Animated } from "react-native";
+import { Animated,Image } from "react-native";
 const fontColor = '#E7F5F3';
+const emptyBanana =  '../../asset/emptyBanana.png'
+const fullBanana = '../../asset/fullBanana.png'
 export default ({ theme, onPress, heart, translateY }: any) => {
     return (
         <Animated.View style={{ transform: [{translateY: translateY}],
@@ -18,7 +20,9 @@ export default ({ theme, onPress, heart, translateY }: any) => {
                     title={'ForFun'}
                     titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor }} />
                 <Appbar.Action
-                    icon={() => (<Icon name={"heart"} size={23} color={heart ? '#B62619' : '#E7F5F3'} />)}
+                    icon={() => (<Image source={!heart ? require(emptyBanana) : require(fullBanana)} 
+                    style={{height:28,width:28, marginRight: 10}} 
+                    tintColor={theme== 'light' && !heart ? 'white' : !heart ? 'white' : undefined}/>)}
                     onPress={onPress} />
             </Appbar.Header>
         </Animated.View>

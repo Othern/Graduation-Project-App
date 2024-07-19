@@ -21,9 +21,7 @@ export default ({ theme }: any) => {
 
                 screenOptions={{
                     header: (props) => <Header {...props} onPress={() => setModalVisible(true)} theme={theme} />,
-                    tabBarStyle: { backgroundColor: theme != "dark" ? "#fc7b13" : "#1C1C1E" },
-                    tabBarInactiveTintColor: theme != "dark" ? "white" : "white",
-                    tabBarActiveTintColor: theme != "dark" ? "#2b2b2b" : "#20a8f2"
+                    
                 }}>
                 <Tab.Screen name="Home"
                     options={
@@ -33,7 +31,7 @@ export default ({ theme }: any) => {
                                 if (routeName == 'Report' || routeName == 'Camera' || routeName == 'Preview') {
                                     return { display: "none" }
                                 }
-                                return { backgroundColor: theme != "dark" ? "#fc7b13" : "#1C1C1E"}
+                                
                             })(route),
                             tabBarIcon: ({ color, size }) => (
                                 <Ionicons name="home" color={color} size={size} />

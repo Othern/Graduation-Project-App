@@ -7,7 +7,8 @@ import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { getPostData, getCommentData, sendHeart, sendComment, COMMENTDATA, POSTDATA } from "./function";
 import Video, { VideoRef } from 'react-native-video';
 
-
+const emptyBanana =  '../../../asset/emptyBanana.png'
+const fullBanana = '../../../asset/fullBanana.png'
 
 type ItemProps = {
   name: string, avatarUrl: string, description: string,
@@ -19,6 +20,7 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
   const theme = useColorScheme();
   const color = theme === "dark" ? "white" : "black";
   const [heart, setHeart] = useState(like);
+  const [heartNum, setHeartNum] = useState(hearts);
   const [showMore, setShowMore] = useState(false);
   const desc = (description).substring(0, 49)
   const moredesc = (description).substring(49)
@@ -86,14 +88,20 @@ const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, v
           <Pressable
             onPress={() => {
               // 修改愛心剩餘數量
-              reviceHeart(heart, () => { setHeart((prev) => (!prev)) })
+              reviceHeart(heart, () => { 
+                setHeart((prev) => (!prev));
+                setHeartNum((prev)=>(prev+1))
+               })
+              
               // 回傳後端用戶喜歡某貼文
               // sendHeart(pid)
 
             }}>
-            <Icon name={!heart ? "heart-outline" : "heart"} color={!heart ? color : 'red'} size={30} />
+              <Image source={!heart ? require(emptyBanana) : require(fullBanana)} 
+                style={{height:30,width:30, marginRight: 10}} 
+                tintColor={theme== 'light' && !heart ?'black' : !heart ? 'white' : undefined}/>
           </Pressable>
-          <Text style={[{ color: color, fontSize: 15 }]}>{hearts}</Text>
+          <Text style={[{ color: color, fontSize: 15 }]}>{heartNum}</Text>
 
         </View>
 
