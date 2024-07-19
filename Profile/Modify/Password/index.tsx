@@ -59,19 +59,21 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
                     <Text style={styles.intro}>輸入舊密碼</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="舊密碼"
+                        placeholder="舊密碼 - Max Length 20"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
                         value={newPassword}
+                        maxLength={20}
                         onChangeText={setNewPassword}
                     />
                     <Text style={styles.intro}>輸入新密碼</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="新密碼"
+                        placeholder="新密碼 - Max Length 20"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
                         value={oldPassword}
+                        maxLength={20}
                         onChangeText={setOldPassword}
                     />
 
