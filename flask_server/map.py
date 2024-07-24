@@ -1,4 +1,9 @@
 import requests
+import json
+
+with open('Graduation-Project-App/config.json') as f:
+    config = json.load(f)
+
 
 def get_elevation(lat, lng, api_key):
     url = f"https://maps.googleapis.com/maps/api/elevation/json?locations={lat},{lng}&key={api_key}"
@@ -16,7 +21,7 @@ def get_elevation(lat, lng, api_key):
         return f"HTTP Error: {response.status_code}"
 
 # 使用示例
-api_key = ""
+api_key = config[ "GOOGLE_MAP_API"]
 latitude = 23.4443894  # 例如：玉山國家公園
 longitude = 121.03351  # 例如：玉山國家公園
 
