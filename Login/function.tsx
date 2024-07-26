@@ -5,6 +5,21 @@ import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+export const checkFastLoginSelection = async () => { //should use saveData to set 'FastLogin' to 'true'
+    try {
+        const value = await AsyncStorage.getItem('FastLogin');
+        if (value) {
+            return (value);
+        }
+        else {
+            return ('false');
+        }
+    } catch (e) {
+        console.log("error", e);
+    }
+};
+
+
 export const showToast = (text1: string, text2: string, type = 'success') => {
     Toast.show({
         type: type,

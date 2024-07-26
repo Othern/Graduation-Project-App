@@ -53,9 +53,10 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
                     <Text style={styles.currentUsername}>當前帳號名稱:{currentUsername}</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="輸入新帳號"
+                        placeholder="輸入新帳號 最多20字"
                         value={newUsername}
                         onChangeText={setNewUsername}
+                        maxLength={20}
                     />
                     <View style={styles.buttonContainer}>
                         <Pressable onPress={handleClose} style={({ pressed }) => [
