@@ -23,11 +23,12 @@ const locationImages: {[key: string]: any} = {
   體育場和海提: require('../../asset/backGround/體育場和海提.png'),
   文學院和藝術學院: require('../../asset/backGround/體育場和海提.png'),// 文學院和藝術學院沒放先用體育場和海提隨便替代
 };
+
 const PredictionCard = ({onPress, location, category}: any) => {
   let image;
-  try{
+  try {
     image = locationImages[location];
-  }catch{
+  } catch {
     image = require('../../asset/backGround/體育場和海提.png');
   }
   const theme = useColorScheme();
@@ -122,27 +123,25 @@ export default (props: any) => {
   // }, [])
 
   return (
-    <>
-      <FlatList
-        data={data}
-        renderItem={({item, index}) => {
-          return (
-            <PredictionCard
-              key={index}
-              location={item.Location}
-              category={item.Category}
-              props={props}
-              onPress={() =>
-                handlePress('Details', {
-                  title: item.Location,
-                  category: item.Category,
-                })
-              }
-            />
-          );
-        }}
-      />
-    </>
+    <FlatList
+      data={data}
+      renderItem={({item, index}) => {
+        return (
+          <PredictionCard
+            key={index}
+            location={item.Location}
+            category={item.Category}
+            props={props}
+            onPress={() =>
+              handlePress('Details', {
+                title: item.Location,
+                category: item.Category,
+              })
+            }
+          />
+        );
+      }}
+    />
   );
 };
 
@@ -169,21 +168,5 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  footer: {
-    flex: 1.5,
-  },
-  font: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  title: {
-    fontSize: 25,
-  },
-  category: {
-    fontSize: 30,
-  },
-  header: {
-    paddingTop: 5,
   },
 });
