@@ -21,6 +21,7 @@ const locationImages: {[key: string]: any} = {
   翠亨: require('../../asset/backGround/翠亨.png'),
   電資大樓: require('../../asset/backGround/電資大樓.png'),
   體育場和海提: require('../../asset/backGround/體育場和海提.png'),
+  文學院和藝術學院: require('../../asset/backGround/體育場和海提.png'),// 文學院和藝術學院沒放先用體育場和海提隨便替代
 };
 const PredictionCard = ({onPress, location, category}: any) => {
   let image;
