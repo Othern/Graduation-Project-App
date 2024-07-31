@@ -63,7 +63,7 @@ const LoginAssociate = (props: any) => {
                         // success = save the logindata that response on clint device also their password
                         const usernameLS = data.username;
                         const headImgLS = data.headImg;
-                        const UserData = JSON.stringify({ email: logdata.email, usernameLS, headImgLS });
+                        const UserData = JSON.stringify({ email: logdata.email, username: usernameLS, headImg: headImgLS });
                         saveData('UserData', UserData);
                         showToast('登入成功.', '');
                         props.navigation.push('tab', { From: 'login' });

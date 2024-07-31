@@ -8,8 +8,10 @@ import Cute from './Cute';
 import Funny from './Funny';
 import Recent from './Recent';
 import Header from "./Header";
-
-//Upload ~~~~~~~~~~~~~For Testing~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//For Rank and Title~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~
+import RankModal from "./Rank";
+import TitleModal from "./UserTitle";
+//Upload ~~~~~~~~~~~~~For Upload~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import { Pressable } from "react-native";
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -27,6 +29,20 @@ export default ({ theme, props }: any) => {
         outputRange: [0, -40],
     });
 
+    //Rank and title Modal relative useStates and relative modal function~~~~~~~~~~~~~~~~~~
+    const [showRankModal, setShowRankModal] = useState(false)
+    const [showTitleModal, setShowTitleModal] = useState(false)
+
+    const handleCloseRank = () => {
+        setShowRankModal(false);
+    };
+
+    const handleCloseTitle = () => {
+        setShowTitleModal(false);
+    };
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~
     const [dailyReward, setdailyReward] = useState(true);
     const [hearts, setHearts] = useState(0);
     const init = async () => {
@@ -46,6 +62,15 @@ export default ({ theme, props }: any) => {
                 onPress={() => {
                     processDailyReward(dailyReward, setdailyReward)
                 }}
+                //Rank and title Modal relative Functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~
+                //Header onPress functions
+                onPressRank={() => {
+                    setShowRankModal(true);
+                }}
+                onPressTitle={() => {
+                    setShowTitleModal(true);
+                }}
+                //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~
                 theme={theme}
                 heart={dailyReward}
                 translateY={translateHeader}
@@ -64,7 +89,7 @@ export default ({ theme, props }: any) => {
                 </Tab.Screen>
             </Tab.Navigator>
 
-            {/* Upload ~~~~~~~~~~~~~~~~~~~For Testing~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+            {/* Upload ~~~~~~~~~~~~~~~~~~~For Upload~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
             < Pressable style={{
                 position: 'absolute',
                 right: 20,
@@ -79,6 +104,20 @@ export default ({ theme, props }: any) => {
             }} onPress={() => props.navigation.push('ForFunUpload')}>
                 <Icon name="add-outline" size={40} color="black" aria-label="上傳" />
             </Pressable >
+            {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+
+            {/* Upload ~~~~~~~~~~~~~~~~~~~For Rank~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+            {showRankModal &&
+                < RankModal
+                    visible={showRankModal}
+                    onClose={handleCloseRank}
+                />}
+            {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+            {/* Upload ~~~~~~~~~~~~~~~~~~~For Title~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+            {showTitleModal && < TitleModal
+                visible={showTitleModal}
+                onClose={handleCloseTitle}
+            />}
             {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
         </>
     );

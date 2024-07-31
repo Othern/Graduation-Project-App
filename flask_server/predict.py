@@ -13,11 +13,13 @@ from sklearn.metrics import mean_squared_error as MSE
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 import json
+import requests
+
 
 predict = Blueprint(
     "predict",
     __name__,
-    template_folder="/Users/wengwulin/Desktop/rn2/Graduation-Project-App",
+    template_folder="C:\\Users\\work\\AwesomeProject\\Graduation-Project-App",
 )
 CORS(predict)  # 跨平台使用
 
@@ -171,6 +173,51 @@ location_mapping = {
     "體育場和海堤": 9,
 }
 
+  # 定義各區域的中心點經緯度以及平均高度
+region_centers = {
+    "武嶺": {
+        "coordinates": (120.263751, 22.630101),
+        "avg_height": (25 + 60) / 2,
+    },
+    "翠亨": {
+        "coordinates": (120.268184, 22.627162),
+        "avg_height": (30 + 63) / 2,
+    },
+    "文學院和藝術學院": {
+        "coordinates": (120.261477, 22.634256),
+        "avg_height": (40 + 100) / 2,
+    },
+    "教學區": {
+        "coordinates": (120.265847, 22.626845),
+        "avg_height": (3 + 15) / 2,
+    },
+    "電資大樓": {
+        "coordinates": (120.267177, 22.627887),
+        "avg_height": (7 + 31) / 2,
+    },
+    "活動中心": {
+        "coordinates": (120.265060, 22.628629),
+        "avg_height": (7 + 33) / 2,
+    },
+    "海院": {
+        "coordinates": (120.262265, 22.629662),
+        "avg_height": (1 + 15) / 2,
+    },
+    "國研大樓和體育館": {
+        "coordinates": (120.265229, 22.624883),
+        "avg_height": (1 + 20) / 2,
+    },
+    "教學區西側": {
+        "coordinates": (120.264330, 22.626300),
+        "avg_height": (2 + 10) / 2,
+    },
+    "體育場和海堤": {
+        "coordinates": (120.264437, 22.623661),
+        "avg_height": (1 + 3) / 2,
+    },
+}
+
+
 # 模型超參數
 best_params = {
     "max_depth": 8,
@@ -182,8 +229,121 @@ best_params = {
     "colsample_bytree": 0.9873584134757056,
 }
 
+
+# 風向文字對應的角度
+wind_direction_dict = {
+    "北風": 0,
+    "偏北風": 22.5,
+    "東北風": 45,
+    "東風": 90,
+    "偏東風": 112.5,
+    "東南風": 135,
+    "南風": 180,
+    "偏南風": 202.5,
+    "西南風": 225,
+    "西風": 270,
+    "偏西風": 292.5,
+    "西北風": 315,
+}
+
 # 全域變數
-final_counts = None
+final_counts = pd.DataFrame() 
+
+
+def get_weather():
+    print("getting weather data...")
+
+    weather_url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-065'
+    
+    # 設定明天的日期，並指定時間範圍
+    tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+    time_from = f"{tomorrow}T06:00:00"
+    time_to = f"{tomorrow}T18:00:01"
+
+    parameters = {
+        'Authorization': 'Authorization code',
+        'format': 'JSON',
+        'locationName': ['鹽埕區'],  # 指定地點為鹽埕區
+        'elementName': ['WS', 'WD', 'PoP12h', 'T', 'RH', 'Wx'],  # 指定所需的天氣因子
+        'timeFrom': time_from,
+        'timeTo': time_to
+    }
+
+    response = requests.get(weather_url, params=parameters)
+
+    if response.status_code == 200:
+        weather_data = json.loads(response.text)
+        locations = weather_data["records"]["locations"][0]["location"]
+        
+        weather_dict = {}
+        precipitation_value = None  # 初始的降雨值
+        
+        for location in locations:
+            for weather_element in location['weatherElement']:
+                element_name = weather_element['elementName']
+                for time_data in weather_element['time']:
+                    obs_time = time_data.get('dataTime') or time_data.get('startTime')
+                    obs_datetime = datetime.fromisoformat(obs_time)
+                    obs_time_str = obs_datetime.strftime('%Y-%m-%d %H:%M:%S')
+                    
+                    if obs_time_str not in weather_dict:
+                        weather_dict[obs_time_str] = {
+                            'ObservationTime': obs_datetime,
+                            'Temperature': None,
+                            'Relative_Humidity': None,
+                            'Wind_Speed': None,
+                            'Wind_Direction': None,
+                            'Precipitation': None
+                        }
+                    
+                    if element_name == 'T':
+                        weather_dict[obs_time_str]['Temperature'] = float(time_data['elementValue'][0]['value'])
+                    elif element_name == 'RH':
+                        weather_dict[obs_time_str]['Relative_Humidity'] = float(time_data['elementValue'][0]['value'])
+                    elif element_name == 'WS':
+                        weather_dict[obs_time_str]['Wind_Speed'] = float(time_data['elementValue'][0]['value'])
+                    elif element_name == 'WD':
+                        wind_direction_text = time_data['elementValue'][0]['value']
+                        weather_dict[obs_time_str]['Wind_Direction'] = wind_direction_dict.get(wind_direction_text, None)
+                    elif element_name == 'PoP12h':
+                        # 只更新初始的降雨值
+                        if precipitation_value is None:
+                            precipitation_value = 1 if float(time_data['elementValue'][0]['value']) > 80 else 0
+        
+        # 更新所有紀錄中的降雨值
+        for obs_time_str in weather_dict:
+            weather_dict[obs_time_str]['Precipitation'] = precipitation_value
+        
+        weather_list = list(weather_dict.values())
+        weather_df = pd.DataFrame(weather_list)
+
+        # 確保每小時都有資料
+        start_time = datetime.strptime(f"{tomorrow} 06:00:00", '%Y-%m-%d %H:%M:%S')
+        end_time = datetime.strptime(f"{tomorrow} 18:00:00", '%Y-%m-%d %H:%M:%S')
+        all_times = pd.date_range(start=start_time, end=end_time, freq='H')
+
+        # 創建一個包含所有時間的DataFrame
+        all_times_df = pd.DataFrame(all_times, columns=['ObservationTime'])
+
+        # 將原有的weather_df與all_times_df合併
+        weather_df = all_times_df.merge(weather_df, on='ObservationTime', how='left')
+
+        # 將 DataFrame 中的 object 類型轉換為適當的數值類型
+        weather_df = weather_df.infer_objects()
+
+        # 使用線性插值填補缺失值
+        weather_df.interpolate(method='linear', inplace=True)
+
+        # 填補缺失的降雨值
+        weather_df['Precipitation'].fillna(precipitation_value, inplace=True)
+        print("2222")
+        return weather_df
+        
+    else:
+        print("Failed to retrieve data")
+        return pd.DataFrame()  # 保證總是返回一個 DataFrame
+
+
 
 
 # 處理資料函數
@@ -308,6 +468,7 @@ def preprocess_data():
         conn.commit()
         cur.close()
         conn.close()
+        print("1111")
     except mariadb.Error as e:
         print(f"Error updating MariaDB Platform: {e}")
 
@@ -315,6 +476,7 @@ def preprocess_data():
 # 預測資料函數
 def predict_model():
     print("Predicting model...")
+    
     try:
         conn = mariadb.connect(**DB_CONFIG)
     except mariadb.Error as e:
@@ -377,59 +539,66 @@ def predict_model():
     model = xgb.XGBRegressor(**best_params)
     model.fit(X, y)
 
-    # 設定明天的日期
-    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+    # # 設定今天的日期
+    # today = (datetime.now()).strftime("%Y-%m-%d")
+    tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
-    # 定義各區域的中心點經緯度
-    region_centers = {
-        "武嶺": (120.263751, 22.630101),
-        "翠亨": (120.268184, 22.627162),
-        "文學院和藝術學院": (120.261477, 22.634256),
-        "教學區": (120.265847, 22.626845),
-        "電資大樓": (120.267177, 22.627887),
-        "活動中心": (120.265060, 22.628629),
-        "海院": (120.262265, 22.629662),
-        "國研大樓和體育館": (120.265229, 22.624883),
-        "教學區西側": (120.264330, 22.626300),
-        "體育場和海堤": (120.264437, 22.623661),
-    }
+    weather_df = get_weather()
+    if weather_df.empty:
+     print("Weather data is not available.")
+     return
 
+
+    # 建立預測資料
     prediction_df = []
 
-    for region, (lon, lat) in region_centers.items():
-        for hour in range(8, 19):
-            input_data = {
-                "date": tomorrow,
-                "hour": f"{hour:02d}:00:00",
-                "Longitude": lon,
-                "Latitude": lat,
-                "Location": region,
-                "Time_type": (
-                    1 if (6 <= hour <= 12) else (2 if (13 <= hour <= 18) else 3)
-                ),
-                "Week": pd.to_datetime(tomorrow).weekday() + 1,
-                "Weekday": 0 if pd.to_datetime(tomorrow).weekday() in [5, 6] else 1,
-                # 以下氣象資料還未接爬取天氣資料，還會修改
-                "Altitude": data_df["Altitude"].mean(),  # 平均海拔高度
-                "Pressure": data_df["Pressure"].mean(),  # 平均氣壓
-                "Temperature": data_df["Temperature"].mean(),  # 平均氣溫
-                "Relative_humidity": data_df[
-                    "Relative_humidity"
-                ].mean(),  # 平均相對溼度
-                "Wind_speed": data_df["Wind_speed"].mean(),  # 平均風速
-                "Wind_direction": data_df["Wind_direction"].mean(),  # 平均風向
-                "Precipitation": 0,
-            }
-            input_data["Location"] = region
-            prediction_df.append(input_data)
+    if not weather_df.empty:
+        for region, info in region_centers.items():
+            lon, lat = info["coordinates"]
+            avg_height = info["avg_height"]
+            for hour in range(6, 19):
+                # 根據小時匹配天氣資料
+                weather_for_hour = weather_df[weather_df['ObservationTime'].dt.hour == hour]
+                if not weather_for_hour.empty:
+                    weather_for_hour = weather_for_hour.iloc[0].to_dict()
+                else:
+                    # 如果該小時沒有資料，填入缺失值
+                    weather_for_hour = {
+                        'Temperature': None,
+                        'Relative_Humidity': None,
+                        'Wind_Speed': None,
+                        'Wind_Direction': None,
+                        'Precipitation': None,
+                    }
+
+                input_data = {
+                    "date": tomorrow,
+                    "hour": f"{hour:02d}:00:00",
+                    "Longitude": lon,
+                    "Latitude": lat,
+                    "Altitude": avg_height,
+                    "Location": region,
+                    "Time_type": (
+                        1 if (6 <= hour <= 12) else (2 if (13 <= hour <= 18) else 3)
+                    ),
+                    "Week": pd.to_datetime(tomorrow).weekday() + 1,
+                    "Weekday": 0 if pd.to_datetime(tomorrow).weekday() in [5, 6] else 1,
+                    "Pressure": 1021.5,
+                    "Temperature": weather_for_hour['Temperature'],
+                    "Relative_humidity": weather_for_hour['Relative_Humidity'],
+                    "Wind_speed": weather_for_hour['Wind_Speed'],
+                    "Wind_direction": weather_for_hour['Wind_Direction'],
+                    "Precipitation": weather_for_hour['Precipitation'],
+                }
+                prediction_df.append(input_data)
 
     prediction_df = pd.DataFrame(prediction_df)
-
+    
     # 預處理預測資料
     # 確保 'hour' 列的數據類型為字符串
     if prediction_df["hour"].dtype != object:
         prediction_df["hour"] = prediction_df["hour"].astype(str)
-
+    
     # 提取小時數值
     prediction_df["hour"] = prediction_df["hour"].str.split(":").str[0].astype(int)
 
@@ -503,24 +672,7 @@ def predict_model():
     except mariadb.Error as e:
         print(f"Error inserting data into MariaDB Platform: {e}")
 
-    # 確保每個地區只有一行，將每小時的數量相加
-    total_counts = hourly_counts.groupby(["Location"])["Number"].sum().reset_index()
 
-    # 分級少量、中量、大量
-    def categorize_amount(number):
-        if number <= 40:
-            return "少量"
-        elif number <= 60:
-            return "中量"
-        else:
-            return "大量"
-
-    total_counts["Category"] = total_counts["Number"].apply(categorize_amount)
-
-    # 最後選擇需要的欄位
-    final_counts = total_counts[["Location", "Number", "Category"]]
-    # 返回結果
-    return jsonify(final_counts.to_dict(orient="records"))
 
 
 # 建立排程器並設置時區
@@ -528,7 +680,7 @@ scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 # 測試用，每分鐘呼叫function一次
 # scheduler.add_job(preprocess_data, 'cron', minute='*')
 # scheduler.add_job(predict_model, 'cron', minute='*')
-# 實際用
+# # 實際用
 scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
 scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
 
@@ -536,27 +688,60 @@ print("Scheduler started. Jobs are set up.")
 scheduler.start()
 
 
-# 渲染頁面
-@predict.route("/")
-def index():
-    return render_template("Prediction\\index.tsx")
-
-
-@predict.route("/preprocess", methods=["GET"])
-def preprocess_endpoint():
-    preprocess_data()
-    return jsonify({"message": "Data preprocessing completed successfully."})
 
 
 @predict.route("/predict_model", methods=["GET"])
 def predict_model_endpoint():
-    # global final_counts  # 使用全域變數
-    # Location, Category
-    # if final_counts is None:
-    #     return jsonify({"error": "No data available."}), 404
+    # try:
+    #     # 連接到 MariaDB 資料庫
+    #     conn = mariadb.connect(**DB_CONFIG)
+    # except mariadb.Error as e:
+    #     print(f"Error connecting to MariaDB Platform: {e}")
+    #     sys.exit(1)
 
-    # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
-    # json_data = final_counts.to_dict(orient='records')
+    # # 創建 Cursor
+    # cur = conn.cursor()
+
+    # try:
+    #     # 計算明天的日期
+    #     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    #     # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
+    #     query = "SELECT Date_time, Location, Number FROM monkey_predict WHERE DATE(Date_time) = %s"
+    #     cur.execute(query, (tomorrow,))
+    #     rows = cur.fetchall()
+
+    #     # 將結果轉換為 DataFrame
+    #     columns = [desc[0] for desc in cur.description]
+    #     total_count = pd.DataFrame(rows, columns=columns)
+
+    #     # 按照 Location 分組並彙總 Number
+    #     total_count = total_count.groupby("Location", as_index=False)["Number"].sum()
+
+    #     # 定義分級少量、中量、大量的函數
+    #     def categorize_amount(number):
+    #         if number <= 75:
+    #             return "少量"
+    #         elif number <= 90:
+    #             return "中量"
+    #         else:
+    #             return "大量"
+
+    #     # 新增分類欄位
+    #     total_count["Category"] = total_count["Number"].apply(categorize_amount)
+
+    #     # 最後選擇需要的欄位
+    #     final_counts = total_count[["Location", "Number", "Category"]]
+
+    #     # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
+    #     json_data = final_counts.to_dict(orient='records')
+
+    # finally:
+    #     # 確保在完成操作後關閉游標和連接
+    #     cur.close()
+    #     conn.close()
+
+
     json_data = [
         {"Location": "國研大樓和體育館", "Category": "少量"},
         {"Location": "教學區", "Category": "大量"},
@@ -573,27 +758,38 @@ def predict_model_endpoint():
 
 @predict.route("/details", methods=["POST"])
 def get_details():
-    # 從資料庫中抓取資料，返回給前端
-    # 'Date_time',  'Number'
-    req_data = request.get_json()
-    location = req_data["location"]
-    try:
-        # conn = mariadb.connect(**DB_CONFIG)
-        # cur = conn.cursor()
-        # tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        # query = """
-        # SELECT Date_time, Number
-        # FROM monkey_predict
-        # WHERE Date_time BETWEEN ? AND ? AND Location == ?
-        # """
-        # start_time = f"{tomorrow} 00:00:00"
-        # end_time = f"{tomorrow} 23:59:59"
-        # cur.execute(query, (start_time, end_time, location))
-        # results = cur.fetchall()
-        # columns = [desc[0] for desc in cur.description]
-        # data = [dict(zip(columns, row)) for row in results]
-        # cur.close()
-        # conn.close()
+    # # 從資料庫中抓取資料，返回給前端
+    # # 'Date_time',  'Number'
+    # req_data = request.get_json()
+    # location = req_data["location"]
+    # try:
+    #     conn = mariadb.connect(**DB_CONFIG)
+    # except mariadb.Error as e:
+    #     print(f"Error connecting to MariaDB Platform: {e}")
+    #     return jsonify({"message": "Error connecting to database."}), 500
+
+    # try:
+    #     cur = conn.cursor()
+
+    #     # 計算明天的日期
+    #     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    #     # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
+    #     query = """
+    #     SELECT Date_time, Location, Number
+    #     FROM monkey_predict
+    #     WHERE DATE(Date_time) = ? AND Location = ?
+    #     """
+    #     cur.execute(query, (tomorrow, location))
+    #     results = cur.fetchall()
+
+    #     # 將結果轉換為字典列表
+    #     columns = [desc[0] for desc in cur.description]
+    #     data = [dict(zip(columns, row)) for row in results]
+
+    #     cur.close()
+    #     conn.close()
+
         data = [
             {"Number": 12, "Date_time": "0"},
             {"Number": 3, "Date_time": "1"},
@@ -623,6 +819,6 @@ def get_details():
         ]
 
         return jsonify(data)
-    except mariadb.Error as e:
-        print(f"Error fetching data from MariaDB Platform: {e}")
-        return jsonify({"message": "Error fetching data from database."}), 500
+        # except mariadb.Error as e:
+        #     print(f"Error fetching data from MariaDB Platform: {e}")
+        #     return jsonify({"message": "Error fetching data from database."}), 500
