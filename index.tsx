@@ -7,17 +7,17 @@ import LoginAssociate from "./Login";
 import 'react-native-gesture-handler'
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer,DefaultTheme,DarkTheme } from "@react-navigation/native";
-// import messaging from '@react-native-firebase/messaging';
-// import { Notify } from "./Notification/function";
+import messaging from '@react-native-firebase/messaging';
+import { Notify } from "./Notification/function";
 import { useEffect } from "react";
 
-// messaging().setBackgroundMessageHandler(async remoteMessage => {
-//   console.log('Background message handled:', remoteMessage);
-// });
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Background message handled:', remoteMessage);
+});
 const LoginStack = createStackNavigator();
 export default function(){
   const theme = useColorScheme();
-  //useEffect(Notify,[]);
+  useEffect(Notify,[]);
     return (
     <PaperProvider>
       <NavigationContainer theme={theme === 'dark' ? DarkTheme: DefaultTheme}>

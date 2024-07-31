@@ -39,10 +39,11 @@ export default (props: any,  ) => {
           }
         })
       }
+      
     }
     , [props.route.params?.photo])
-  const submitClicked = () => {
-    const formData = createFormData(data);
+  const submitClicked = async() => {
+    const formData = await createFormData(data);
     submit(formData);
     setData(initialReport);
     props.navigation.pop();
