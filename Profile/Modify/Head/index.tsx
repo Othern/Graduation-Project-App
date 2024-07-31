@@ -37,7 +37,7 @@ const ShowImageLibrary = async (success = (img: any) => { }, fail = () => { }) =
 export default function (props: any) {
     const { From, Email, Username, HeadImg } = props.route.params;
     const image =
-        HeadImg == "" ? require("../../../asset/rain.png") : { uri: HeadImg }
+        HeadImg == "" ? require("../../../asset/rain.png") : { uri: HeadImg }//
     // 等決定預設頭項後，把該圖放入asset中，並把rain 改掉. require 可以接這裡面的，uri則是可以接網址，地址
 
     const [photo, setPhoto] = useState(image);
@@ -63,10 +63,11 @@ export default function (props: any) {
         else {
             const formData = new FormData();
             formData.append('image', {
-                uri: photo,
+                uri: photo.uri,
                 type: 'image/jpeg',
-                name: Username + '.jpg',
+                name: Username + Date.now() + '.jpg',
             });
+            formData.append('email', Email);
 
             try {
 
@@ -77,24 +78,24 @@ export default function (props: any) {
                 props.navigation.goBack();
                 props.navigation.goBack();//for reset the parameters
 
-                //     const response = await fetch('http://172.20.10.2:4000/ModifyHeadImg', {
-                //         method: 'POST',
-                //         body: formData,
-                //         headers: {
-                //             'Content-Type': 'multipart/form-data',
-                //         },
-                //     }).then(response => response.json());
-                //     if (response.success == 1) {
-                //         //需要回傳 新headImg位置
-                //         const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
-                //         AsyncStorage.setItem('UserData', value);
-                //         showToast('頭像修改成功', '');
-                //         props.navigation.goBack();
-                //         props.navigation.goBack();
-                //     }
-                //     else {
-                //         setError(true);
-                //     }
+                    // const response = await fetch('http://192.168.0.13:5000/ModifyHeadImg', {
+                    //     method: 'POST',
+                    //     body: formData,
+                    //     headers: {
+                    //         'Content-Type': 'multipart/form-data',
+                    //     },
+                    // }).then(response => response.json());
+                    // if (response.success == 1) {
+                    //     //需要回傳 新headImg位置
+                    //     const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
+                    //     AsyncStorage.setItem('UserData', value);
+                    //     showToast('頭像修改成功', '');
+                    //     props.navigation.goBack();
+                    //     props.navigation.goBack();
+                    // }
+                    // else {
+                    //     setError(true);
+                    // }
 
             } catch (error) {
                 console.error('Upload error:', error);

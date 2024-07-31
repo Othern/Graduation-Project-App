@@ -6,7 +6,7 @@ import sys
 
 
 # 建立實體
-login = Blueprint('login', __name__, template_folder='C:\\Users\\eva13\\AwesomeProject\\Graduation-Project-App')
+login = Blueprint('login', __name__, template_folder='..\\Login')
 CORS(login) # 跨平台使用
 
 login.secret_key = secrets.token_hex(16) # 保護session
@@ -20,7 +20,7 @@ login.secret_key = secrets.token_hex(16) # 保護session
 # 渲染頁面
 @login.route('/')
 def index():
-    return render_template("Login\\index.tsx")
+    return render_template("index.tsx")
 
 # 登入功能
 # 預設照片為no_pic，預設名字為no_name

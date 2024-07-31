@@ -26,7 +26,7 @@ const getUserData = async(key: string)=>{
 //Submit Report
 export async function submit(data: any, success = () => { }, fail = () => { }) {
     try {
-        const response = await fetch('http://172.20.10.2:4000/reportSubmit', {
+        const response = await fetch('http://192.168.0.13:5000/reportSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -92,7 +92,7 @@ export const createFormData = async(body: BodyType = {}) => {
         }
         else
             data.append(key, value.toString());
-
+        
     });
     console.log(data)
     return data;
