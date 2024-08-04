@@ -1,157 +1,260 @@
-import { View, Text, Image, StyleSheet, FlatList, SafeAreaView, Animated, useColorScheme, ScrollView, Pressable, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from "react-native";
-import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Card } from "react-native-paper";
-import { reviceHeart } from "../../function";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  FlatList,
+  Animated,
+  useColorScheme,
+  Pressable,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from 'react-native';
+import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
+import {Card} from 'react-native-paper';
+import {reviceHeart} from '../../function';
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { getPostData, getCommentData, sendHeart, sendComment, COMMENTDATA, POSTDATA } from "./function";
-import Video, { VideoRef } from 'react-native-video';
+import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
+import {
+  getPostData,
+  getCommentData,
+  sendHeart,
+  sendComment,
+  COMMENTDATA,
+  POSTDATA,
+} from './function';
+import Video, {VideoRef} from 'react-native-video';
+import {useIsFocused} from '@react-navigation/native';
 
-const emptyBanana =  '../../../asset/emptyBanana.png'
-const fullBanana = '../../../asset/fullBanana.png'
+const emptyBanana = '../../../asset/emptyBanana.png';
+const fullBanana = '../../../asset/fullBanana.png';
 
 type ItemProps = {
-  name: string, avatarUrl: string, description: string,
-  image: boolean, contentUri: string, hearts: number,
-  like: boolean, viewable: boolean, handleComment: any
+  name: string;
+  avatarUrl: string;
+  description: string;
+  image: boolean;
+  contentUri: string;
+  hearts: number;
+  like: boolean;
+  viewable: boolean;
+  handleComment: any;
 };
 
-const Item = ({ name, avatarUrl, description, image, contentUri, hearts, like, viewable, handleComment }: ItemProps,) => {
+const Item = ({
+  name,
+  avatarUrl,
+  description,
+  image,
+  contentUri,
+  hearts,
+  like,
+  viewable,
+  handleComment,
+}: ItemProps) => {
   const theme = useColorScheme();
-  const color = theme === "dark" ? "white" : "black";
+  const color = theme === 'dark' ? 'white' : 'black';
   const [heart, setHeart] = useState(like);
   const [heartNum, setHeartNum] = useState(hearts);
   const [showMore, setShowMore] = useState(false);
-  const desc = (description).substring(0, 49)
-  const moredesc = (description).substring(49)
+  const desc = description.substring(0, 49);
+  const moredesc = description.substring(49);
   const videoRef = useRef<VideoRef>(null);
-  const [muted, setMuted] = useState(true)
-  const [paused, setPaused] = useState(false)
+  const [muted, setMuted] = useState(true);
+  const [paused, setPaused] = useState(false);
   useEffect(() => {
-    setPaused(!viewable)
-    setMuted(!viewable)
-  }, [viewable])
+    setPaused(!viewable);
+    setMuted(!viewable);
+  }, [viewable]);
   return (
     <View style={styles.item}>
-
-      <View style={{ height: 50, flexDirection: 'row', alignItems: 'center' }}>
-        <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-        <Text style={[styles.name, { color: color }]}>{name}</Text>
-
+      <View style={{height: 50, flexDirection: 'row', alignItems: 'center'}}>
+        <Image source={{uri: avatarUrl}} style={styles.avatar} />
+        <Text style={[styles.name, {color: color}]}>{name}</Text>
       </View>
-      <View style={{ marginBottom: 10 }}>
-        {image
-          ?
-          <Image source={{ uri: contentUri }} style={styles.content} /> :
+      <View style={{marginBottom: 10}}>
+        {image ? (
+          <Image source={{uri: contentUri}} style={styles.content} />
+        ) : (
           <TouchableOpacity
             activeOpacity={1}
             touchSoundDisabled={true}
             onPress={() => {
-              setPaused((prev) => (!prev))
-            }}
-          >
+              setPaused(prev => !prev);
+            }}>
             <Video
               // Can be a URL or a local file.
-              source={{ uri: contentUri }}
+              source={{uri: contentUri}}
               ref={videoRef}
               muted={muted}
               paused={paused}
-              style={{ height: 350, width: '100%' }}
+              style={{height: 350, width: '100%'}}
               resizeMode="cover"
-
             />
-            <Pressable style={{ position: 'absolute', left: 5, bottom: 5, backgroundColor: "gray", borderRadius: 20, height: 30, width: 30, justifyContent: 'center' }}
-              onPress={() => {
-                setMuted((prev) => !prev)
-
+            <Pressable
+              style={{
+                position: 'absolute',
+                left: 5,
+                bottom: 5,
+                backgroundColor: 'gray',
+                borderRadius: 20,
+                height: 30,
+                width: 30,
+                justifyContent: 'center',
               }}
-            >
-              <Icon name={muted ? "volume-mute" : "volume-high"} size={20} style={{ alignSelf: "center" }} color="white" />
+              onPress={() => {
+                setMuted(prev => !prev);
+              }}>
+              <Icon
+                name={muted ? 'volume-mute' : 'volume-high'}
+                size={20}
+                style={{alignSelf: 'center'}}
+                color="white"
+              />
             </Pressable>
-            <Pressable style={{ position: 'absolute', alignSelf: 'center', right: 5, bottom: 5, backgroundColor: "gray", borderRadius: 20, height: 30, width: 30, justifyContent: 'center' }}
-              onPress={() => {
-                setPaused((prev) => !prev)
-
+            <Pressable
+              style={{
+                position: 'absolute',
+                alignSelf: 'center',
+                right: 5,
+                bottom: 5,
+                backgroundColor: 'gray',
+                borderRadius: 20,
+                height: 30,
+                width: 30,
+                justifyContent: 'center',
               }}
-            >
-              <Icon name={paused ? "play" : "pause"} size={20} style={{ alignSelf: "center" }} color="white" />
+              onPress={() => {
+                setPaused(prev => !prev);
+              }}>
+              <Icon
+                name={paused ? 'play' : 'pause'}
+                size={20}
+                style={{alignSelf: 'center'}}
+                color="white"
+              />
             </Pressable>
           </TouchableOpacity>
-        }
-
+        )}
       </View>
-      <View style={{ padding: 5 }} >
-        <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 5 }}>
-          <Pressable onPress={() => { handleComment() }} style={{ marginRight: 10 }}>
-            <Icon name="chatbubble-outline" color={color} size={28} style={{}} />
+      <View style={{padding: 5}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
+          <Pressable
+            onPress={() => {
+              handleComment();
+            }}
+            style={{marginRight: 10}}>
+            <Icon
+              name="chatbubble-outline"
+              color={color}
+              size={28}
+              style={{}}
+            />
           </Pressable>
           <Pressable
             onPress={() => {
               // 修改愛心剩餘數量
-              reviceHeart(heart, () => { 
-                setHeart((prev) => (!prev));
-                setHeartNum((prev)=>(prev+1))
-               })
-              
+              reviceHeart(heart, () => {
+                setHeart(prev => !prev);
+                setHeartNum(prev => prev + 1);
+              });
+
               // 回傳後端用戶喜歡某貼文
               // sendHeart(pid)
-
             }}>
-              <Image source={!heart ? require(emptyBanana) : require(fullBanana)} 
-                style={{height:30,width:30, marginRight: 10}} 
-                tintColor={theme== 'light' && !heart ?'black' : !heart ? 'white' : undefined}/>
+            <Image
+              source={!heart ? require(emptyBanana) : require(fullBanana)}
+              style={{height: 30, width: 30, marginRight: 10}}
+              tintColor={
+                theme == 'light' && !heart
+                  ? 'black'
+                  : !heart
+                  ? 'white'
+                  : undefined
+              }
+            />
           </Pressable>
-          <Text style={[{ color: color, fontSize: 15 }]}>{heartNum}</Text>
-
+          <Text style={[{color: color, fontSize: 15}]}>{heartNum}</Text>
         </View>
 
-        {(desc).length < 49 ?
+        {desc.length < 49 ? (
           <View>
-            <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>{desc}</Text>
-          </View> :
-          <View>
-            {!showMore ?
-              <View>
-                <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>{desc}</Text>
-                <Pressable onPress={() => { setShowMore((prev) => (!prev)) }}>
-                  <Text style={{ fontWeight: '500', fontSize: 16 }}>顯示更多...</Text>
-                </Pressable>
-              </View> :
-              <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>{desc}{moredesc}</Text>
-            }
-
+            <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+              {desc}
+            </Text>
           </View>
-
-        }
-
+        ) : (
+          <View>
+            {!showMore ? (
+              <View>
+                <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+                  {desc}
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    setShowMore(prev => !prev);
+                  }}>
+                  <Text style={{fontWeight: '500', fontSize: 16}}>
+                    顯示更多...
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+                {desc}
+                {moredesc}
+              </Text>
+            )}
+          </View>
+        )}
       </View>
     </View>
-  )
+  );
 };
 
 type CommentItemProps = {
-  id: number,
-  username: string,
-  content: string,
-  avatarUrl: string,
-  timestamp: string,
+  id: number;
+  username: string;
+  content: string;
+  avatarUrl: string;
+  timestamp: string;
 };
 
-const CommentItem = ({ id, username, content, avatarUrl, timestamp }: CommentItemProps,) => {
+const CommentItem = ({
+  id,
+  username,
+  content,
+  avatarUrl,
+  timestamp,
+}: CommentItemProps) => {
   const theme = useColorScheme();
-  const color = theme === "dark" ? "white" : "black";
+  const color = theme === 'dark' ? 'white' : 'black';
   return (
-    <View style={{ marginVertical: 10, padding: 10, flexDirection: 'row' }}>
-      <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+    <View style={{marginVertical: 10, padding: 10, flexDirection: 'row'}}>
+      <Image source={{uri: avatarUrl}} style={styles.avatar} />
       <View>
-        <Text style={{ color: color, fontWeight: "500", marginBottom: 5, fontSize: 18, width: 320 }}>{username}</Text>
-        <Text style={{ color: color, fontWeight: "500", width: 320 }}>{content}</Text>
+        <Text
+          style={{
+            color: color,
+            fontWeight: '500',
+            marginBottom: 5,
+            fontSize: 18,
+            width: 320,
+          }}>
+          {username}
+        </Text>
+        <Text style={{color: color, fontWeight: '500', width: 320}}>
+          {content}
+        </Text>
       </View>
     </View>
-  )
+  );
 };
 
-export default ({ kind, scrollY }: any) => {
+export default ({kind, scrollY}: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
@@ -167,10 +270,10 @@ export default ({ kind, scrollY }: any) => {
   // }
   //   ,[])
 
-
+  const focus = useIsFocused();
 
   const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["60%"], []);
+  const snapPoints = useMemo(() => ['60%'], []);
   // 設定當前觀看的item是哪一個
   const [viewItem, setViewItem] = useState(0);
   // for item focus
@@ -178,9 +281,9 @@ export default ({ kind, scrollY }: any) => {
     itemVisiblePercentThreshold: 70, // Percentage of item that needs to be visible to consider it "in view"
   };
   // 當目前觀看的item改變時
-  const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+  const onViewableItemsChanged = useCallback(({viewableItems}: any) => {
     viewableItems.forEach((item: any) => {
-      setViewItem(item.index)
+      setViewItem(item.index);
     });
   }, []);
   const loadMoreData = useCallback(() => {
@@ -190,8 +293,8 @@ export default ({ kind, scrollY }: any) => {
       // getPostData(setMoreData,page + 1, kind)
       // setPostData((prev)=>[...prev,...MoreData])
       setMoreData(POSTDATA);
-      setPostData((prev) => [...prev, ...prev])
-      setLoading(false)
+      setPostData(prev => [...prev, ...prev]);
+      setLoading(false);
     }
   }, [page, kind, loading]);
 
@@ -203,15 +306,18 @@ export default ({ kind, scrollY }: any) => {
     sheetRef.current?.close();
   }, []);
   if (loading) {
-    return <Text style={{ alignSelf: "center" }}>loading...</Text>
-  }
-  else {
+    return <Text style={{alignSelf: 'center'}}>loading...</Text>;
+  } else {
     return (
       <>
         <FlatList
           data={postData}
-          renderItem={({ item, index }) => {
-            const viewable = viewItem == index ? true : false;
+          renderItem={({item, index}) => {
+            let viewable = false;
+            if (viewItem == index && focus == true) {
+              viewable = true;
+            }
+
             return (
               <Item
                 name={item.name}
@@ -227,14 +333,14 @@ export default ({ kind, scrollY }: any) => {
                   handleSnapPress(0);
                   // getCommentData(item.id);
                 }}
-              />)
-
+              />
+            );
           }}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{ height: 80 }} />}
+          ListHeaderComponent={<View style={{height: 80}} />}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: false},
           )}
           scrollEventThrottle={16}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -242,7 +348,6 @@ export default ({ kind, scrollY }: any) => {
           // onEndReached={loadMoreData}
           // onEndReachedThreshold={1}
           // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
-
         />
 
         <BottomSheet
@@ -250,17 +355,18 @@ export default ({ kind, scrollY }: any) => {
           index={-1}
           enablePanDownToClose
           snapPoints={snapPoints}
-          backgroundStyle={[styles.commentContainer, { backgroundColor: theme === "dark" ? "#1C1C1E" : "white" }]}
-        >
+          backgroundStyle={[
+            styles.commentContainer,
+            {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
+          ]}>
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
-          >
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{flex: 1}}>
             <BottomSheetFlatList
               data={commentData}
-              ListHeaderComponent={<View style={{ height: 60 }}></View>}
+              ListHeaderComponent={<View style={{height: 60}}></View>}
               keyExtractor={(item, index) => item.id.toString()} // Ensure each id is a string or use a different keyExtractor
-              renderItem={({ item, index }) => (
+              renderItem={({item, index}) => (
                 <CommentItem
                   id={item.id}
                   username={item.username}
@@ -271,35 +377,44 @@ export default ({ kind, scrollY }: any) => {
                 />
               )}
             />
-            <View style={[styles.inputContainer, { backgroundColor: theme === "dark" ? "#1C1C1E" : "white" }]}>
+            <View
+              style={[
+                styles.inputContainer,
+                {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
+              ]}>
               <TextInput
-                style={[styles.input, { color: theme === "dark" ? "white" : "black" }]}
+                style={[
+                  styles.input,
+                  {color: theme === 'dark' ? 'white' : 'black'},
+                ]}
                 value={comment}
                 onChangeText={setComment}
                 placeholder="寫下你的評論..."
-                placeholderTextColor={theme === "dark" ? "#999" : "#666"}
+                placeholderTextColor={theme === 'dark' ? '#999' : '#666'}
               />
-              <TouchableOpacity onPress={() => { sendComment(0,  comment) }} style={styles.submitButton}>
+              <TouchableOpacity
+                onPress={() => {
+                  sendComment(0, comment);
+                }}
+                style={styles.submitButton}>
                 <Text style={styles.submitButtonText}>發送</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
         </BottomSheet>
-
       </>
-    )
+    );
   }
-}
+};
 
 const styles = StyleSheet.create({
   item: {
     marginVertical: 10,
     padding: 10,
     flex: 1,
-
   },
   commentContainer: {
-    backgroundColor: 'gray'
+    backgroundColor: 'gray',
   },
   textContainer: {
     flex: 1,
@@ -320,9 +435,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   content: {
-    width: "100%",
-    height: 350
-
+    width: '100%',
+    height: 350,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -330,7 +444,7 @@ const styles = StyleSheet.create({
 
     borderTopColor: '#ccc',
     position: 'absolute',
-    top: 0
+    top: 0,
   },
   input: {
     flex: 1,

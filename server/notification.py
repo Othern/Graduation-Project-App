@@ -1,28 +1,36 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import messaging
-import datetime
 
+# 初始化 Firebase Admin SDK
 cred = credentials.Certificate("./serviceAccountKey.json")
-default_app = firebase_admin.initialize_app(credential=cred)
-registration_token = "fofD1N3ISXC3Q2cElLAFTJ:APA91bHzwuP9R2hRxz6Sly3G97PFh1vlO37UMTx2ojeFv7CgCnjJHumxG8Wa6TJkJVNU6gF-58lO38khlGIc2Iun9xr2MfiIPZ9bJxm4sY8tKWuZYJhI95g46APptQqg2fV4usB_0N3o"
-messages = [
-    messaging.Message(
+firebase_admin.initialize_app(cred)
+
+# 定義主題名稱
+topic = "MonkeyAlert"  # 確保這與客戶端訂閱的主題相同
+
+
+def send_test():
+    # 構建消息
+    message = messaging.Message(
         notification=messaging.Notification(
             title="武嶺宿舍獼猴入侵",
-            body="‼️⚠️請關緊門窗⚠️‼️",
-            image="https://cdn-icons-png.flaticon.com/512/7246/7246727.png",
+            body="‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️",
         ),
         data={
             "screen_name": "RRRR",
             "title": "great match!",
         },
-        token=registration_token,
-    ),
-]
-def send_test():
-    response = messaging.send_all(messages)
-    print("{0} messages were sent successfully".format(response.success_count))
+        topic=topic,
+    )
+
+    try:
+        # 發送消息
+        response = messaging.send(message)
+        print(f"Successfully sent message to topic {topic}:", response)
+    except Exception as e:
+        print(f"Failed to send message to topic {topic}:", e)
+
 
 if __name__ == "__main__":
     send_test()
