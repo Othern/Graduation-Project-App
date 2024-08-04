@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Switch, PermissionsAndroid, StyleSheet, Alert, Text, Pressable, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsPage = (props: any) => {
     const [isEnabledLocation, setIsEnabledLocation] = useState(false);
     const [isEnabledCamera, setIsEnabledCamera] = useState(false);
     const [isEnabledStorage, setIsEnabledStorage] = useState(false);
-
+    const [fast, setFast] = useState(false);
     useFocusEffect(
         React.useCallback(() => {
             if (Platform.OS === 'android') {
@@ -15,6 +15,52 @@ const SettingsPage = (props: any) => {
             }
         }, [])
     );
+
+
+    const checkFastLoginSelection = async () => { //should use saveData to set 'FastLogin' to 'true'
+        try {
+            const value = await AsyncStorage.getItem('FastLogin');
+            if (value) {
+                return (value);
+            }
+            else {
+                return ('false');
+            }
+        } catch (e) {
+            console.log("error", e);
+        }
+    };
+    const saveFast = (value: any) => {
+        try {
+            AsyncStorage.setItem('FastLogin', value);
+            return true
+        } catch (e) {
+            console.log("error", e);
+            return false
+        }
+    };
+    const getFastStat = async () => {
+        const FLSelect = await checkFastLoginSelection();
+        if (FLSelect === 'false') {
+
+            setFast(false);
+            return;
+        } else {
+            setFast(true);
+        }
+    }
+    const changeFastStat = async (fastState: any) => {
+        if (fastState) {
+            setFast(false);
+            saveFast('false')
+        }
+        else {
+            setFast(true);
+            saveFast('true')
+        }
+        getFastStat()
+    }
+    getFastStat();
 
     const checkPermission = async () => {
         try {
@@ -166,11 +212,24 @@ const SettingsPage = (props: any) => {
 
             </View>
 
+            <View style={styles.settingItem}>
+                <Text style={styles.switchText}>下次直接登入</Text>
+                <Switch
+                    style={styles.switch}
+                    value={fast} // Set your switch value here
+                    onValueChange={(value) => {
+                        // Handle switch value change
+                        changeFastStat(!value);
+                    }}
+                />
+
+            </View>
+
             <Pressable onPress={() => props.navigation.goBack()} style={({ pressed }) => [
                 styles.pressable,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText}>返回個人頁面</Text>
             </Pressable>
@@ -184,17 +243,17 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white',
+
     },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: 'black',
+
 
     },
     line: {
         height: 1,
-        backgroundColor: 'black',
+
         width: '80%',
         marginBottom: '2%',
         marginVertical: '5%',
@@ -204,14 +263,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 15,
-        backgroundColor: '#FFD1A4',
         width: '90%',
-        borderRadius: 15,
+        borderRadius: 20,
         height: '13%',
         paddingHorizontal: '5%',
-        justifyContent: 'space-between'
-
-
+        justifyContent: 'space-between',
+        borderColor: '#FFAF60',
+        borderBottomWidth: 1
     },
     switch: {
         transform: [{ scaleX: 2 }, { scaleY: 2 }],
@@ -219,7 +277,7 @@ const styles = StyleSheet.create({
     },
     switchText: {
         fontSize: 24,
-        color: 'black',
+
         fontWeight: 'bold',
         paddingHorizontal: '5%',
 
@@ -229,7 +287,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 20,
-        backgroundColor: 'orange',
+
         width: '60%',
         borderRadius: 15,
         height: '10%',
@@ -238,7 +296,7 @@ const styles = StyleSheet.create({
     },
     pressableText: {
         fontSize: 20,
-        color: 'white',
+
         fontWeight: 'bold',
         paddingHorizontal: '5%',
     },

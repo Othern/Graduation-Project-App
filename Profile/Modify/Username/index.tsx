@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { View, Modal, TextInput, Button, StyleSheet, Text, Pressable } from 'react-native';
-
+import Toast from 'react-native-toast-message';
+const showToast = (text1: string, text2: string, type = 'success') => {
+    Toast.show({
+        type: type,
+        text1: text1,
+        text2: text2,
+        topOffset: 65
+    });
+}
 
 const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
     const [newUsername, setNewUsername] = useState('');
@@ -8,14 +16,25 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
 
     const handleSave = async () => {
         try {
+            if (newUsername) {
+            }
+            else {
+                showToast('需要輸入才能修改.', '', 'error');
+                return;
+            }
 
-            if (true) {
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            if (true) { //此block 僅測試， 實際使用 需刪除或註解， 並解註解 下方 fetch 區塊
                 onSave(newUsername);
                 setNewUsername('');
+                showToast('修改成功.', '', 'error');
             } else {
                 setError(true);
                 setNewUsername('');
+                showToast('修改失敗.', '', 'error');
+                //不重要的備註， 此處不必return (不必終止此function,已經是最後了,會自然結束)
             }
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             // const response = await fetch('http://172.20.10.2:4000/ModifyUsername', {
             //     method: 'POST',
@@ -28,8 +47,11 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
             // if (responseData.state === "success") {
             //     onSave(newUsername);
             //     setNewUsername('');
+            //     showToast('修改成功.', '', 'error');
             // } else {
+            //     setError(true);
             //     setNewUsername('');
+            //     showToast('修改失敗.', '', 'error');
             // }
         } catch (error) {
             console.error('Error sending New Username data:', error);
@@ -54,6 +76,7 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
                     <TextInput
                         style={styles.input}
                         placeholder="輸入新帳號 最多20字"
+                        placeholderTextColor="gray"
                         value={newUsername}
                         onChangeText={setNewUsername}
                         maxLength={20}
@@ -99,7 +122,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalView: {
         backgroundColor: 'white',

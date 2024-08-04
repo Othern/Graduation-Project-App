@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { View, Modal, TextInput, Button, StyleSheet, Text, Pressable } from 'react-native';
-
+import Toast from 'react-native-toast-message';
+const showToast = (text1: string, text2: string, type = 'success') => {
+    Toast.show({
+        type: type,
+        text1: text1,
+        text2: text2,
+        topOffset: 65
+    });
+}
 
 const PasswordModal = ({ visible, onClose, onSave }: any) => {
     const [oldPassword, setOldPassword] = useState('');
@@ -9,15 +17,25 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
 
     const handleSave = async () => {
         try {
-            if (true) {
-                onSave(newPassword, oldPassword);
+            if (newPassword && oldPassword) {
+            }
+            else {
+                showToast('需要輸入才能修改.', '', 'error');
+                return;
+            }
+
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            if (true) { // 這個if block (含else, 用來測試失敗情況)是 用來測試而已 若要實際使用 是刪除此if, else, 並使用下方 註解掉的 fetch
+                onSave(newPassword);
                 setNewPassword('');
                 setOldPassword('');
             } else {
                 setError(true);
                 setNewPassword('');
                 setOldPassword('');
+                showToast('修改失敗.', '', 'error');
             }
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             // const response = await fetch('http://172.20.10.2:4000/ModifyPassword', {
             //     method: 'POST',
@@ -28,12 +46,14 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
             // });
             // const responseData = await response.json();
             // if (responseData.state === "success") {
-            //     onSave(newPassword, oldPassword);
+            //     onSave(newPassword);
             //     setNewPassword('');
             //     setOldPassword('');
             // } else {
             //     setNewPassword('');
             //     setOldPassword('');
+            //     showToast('修改失敗.', '', 'error');
+            //     setError(true);
             // }
         } catch (error) {
             console.error('Error sending New Username data:', error);
@@ -62,9 +82,9 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
                         placeholder="舊密碼 - Max Length 20"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
-                        value={newPassword}
+                        value={oldPassword}
                         maxLength={20}
-                        onChangeText={setNewPassword}
+                        onChangeText={setOldPassword}
                     />
                     <Text style={styles.intro}>輸入新密碼</Text>
                     <TextInput
@@ -72,9 +92,9 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
                         placeholder="新密碼 - Max Length 20"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
-                        value={oldPassword}
+                        value={newPassword}
                         maxLength={20}
-                        onChangeText={setOldPassword}
+                        onChangeText={setNewPassword}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -118,7 +138,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalView: {
         backgroundColor: 'white',
