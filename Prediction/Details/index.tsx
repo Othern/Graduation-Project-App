@@ -20,15 +20,15 @@ const locationImages = {
   翠亨: require('../../asset/backGround/翠亨.png'),
   電資大樓: require('../../asset/backGround/電資大樓.png'),
   體育場和海提: require('../../asset/backGround/體育場和海提.png'),
-  文學院和藝術學院: require('../../asset/backGround/體育場和海提.png'),// 文學院和藝術學院沒放先用體育場和海提隨便替代
+  文學院和藝術學院: require('../../asset/backGround/文學院和藝術學院.png'), 
 };
 export default (props: any) => {
   const title = props.route.params.title;
   const category = props.route.params.category;
   let image;
-  try{
+  try {
     image = locationImages[title as keyof typeof locationImages];
-  }catch{
+  } catch {
     image = require('../../asset/backGround/體育場和海提.png');
   }
   const chartData = detailData.map(item => ({
@@ -37,6 +37,9 @@ export default (props: any) => {
   }));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(chartData);
+  const today = new Date();
+  const graphTitle =
+    today.getHours() >= 18 ? '明日獼猴預測出現數量' : '今日獼猴預測出現數量';
   //測試時將此註解拿掉即可
   // useEffect(()=>{getDetailData(title,
   //     (data:any)=>{
@@ -55,7 +58,7 @@ export default (props: any) => {
         style={{
           height: '100%',
           width: '100%',
-          backgroundColor: 'rgba(56, 48, 48, 0.32)',
+          backgroundColor: 'rgba(56, 48, 48, 0.2)',
           paddingBottom: 5,
           paddingRight: 8,
         }}>
@@ -67,9 +70,13 @@ export default (props: any) => {
           <View style={styles.content}>
             <View style={styles.chart}>
               <Text
-                style={{color: 'white', fontWeight: 'bold', marginBottom: 10,marginLeft:10}}>
-                
-                明日獼猴預測出現數量
+                style={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                  marginBottom: 10,
+                  marginLeft: 10,
+                }}>
+                {graphTitle}
               </Text>
               <LineChart
                 noOfSections={4}
@@ -87,7 +94,7 @@ export default (props: any) => {
                 yAxisTextStyle={{color: 'lightgray', fontWeight: 'bold'}}
                 xAxisLabelTextStyle={{color: 'lightgray', fontWeight: 'bold'}}
                 spacing={30} // 調整這個值來縮小 x 軸標籤之間的距離
-                width={330}
+                width={320}
               />
             </View>
           </View>
@@ -128,9 +135,9 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   chart: {
-    backgroundColor: 'rgba(150, 150, 150, 0.9)',
+    backgroundColor: 'rgba(150, 150, 150, 0.75)',
     borderRadius: 20,
-    margin: 5,
-    paddingVertical: 15,
+    
+    
   },
 });

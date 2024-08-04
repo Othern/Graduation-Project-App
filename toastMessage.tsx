@@ -38,8 +38,8 @@ export default ({theme}: any) => {
       const newLineCount = props.text2
         ? (props.text2.match(/\n/g) || []).length
         : 0;
-      const temp = (newLineCount + 1) * 18 + 40;
-      
+      const temp = (newLineCount + 1) * 18 + 50;
+
       // 根據文字數量調整大小
       const dynamicHeight = temp > 130 ? 130 : temp;
       return (
@@ -50,19 +50,19 @@ export default ({theme}: any) => {
             position: 'relative',
             height: dynamicHeight,
             borderTopRightRadius: 10,
-          borderBottomRightRadius: 10,
+            borderBottomRightRadius: 10,
           }}
           contentContainerStyle={{
             backgroundColor: theme === 'dark' ? '#4A4A4A' : 'white',
             padding: 10,
             borderTopRightRadius: 10,
-          borderBottomRightRadius: 10,
+            borderBottomRightRadius: 10,
           }}
           text1Style={{
-            fontSize: 16,
+            fontSize: 15,
             color: theme === 'dark' ? 'white' : 'black',
-            fontWeight: '800',
-            marginBottom: 10,
+            fontWeight: '500',
+            marginVertical: 10,
           }}
           text2Style={{
             fontSize: 13,

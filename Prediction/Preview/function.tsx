@@ -14,6 +14,7 @@ export const previewData = [
     { Location: "國研大樓和體育館", Category: '少量' },
     { Location: "教學區", Category: '大量' },
     { Location: "教學區西側", Category: '中量' },
+    { Location: "文學院和藝術學院", Category: '大量'},
     { Location: "武嶺", Category: '大量' },
     { Location: "活動中心", Category: '大量' },
     { Location: "海院", Category: '中量' },
