@@ -100,6 +100,7 @@ const LoginAssociate = (props: any) => {
         }
         else {
             setHint('有欄位未輸入');
+            showToast('登入失敗.', '', 'error');
             return;
         }
 
@@ -132,9 +133,11 @@ const LoginAssociate = (props: any) => {
                 // fail = show the reason (setHint)
                 if (data == 'wrongEmail') {
                     setHint('該電子郵件未註冊');
+                    showToast('登入失敗.', '', 'error');
                 }
                 else {
                     setHint('密碼錯誤');
+                    showToast('登入失敗.', '', 'error');
                 }
             });
         }
@@ -148,6 +151,7 @@ const LoginAssociate = (props: any) => {
         }
         else {
             setHint('兩次輸入的密碼不相符');
+            showToast('註冊失敗.', '', 'error');
             return;
         }
 
@@ -155,6 +159,7 @@ const LoginAssociate = (props: any) => {
         }
         else {
             setHint('有欄位未輸入');
+            showToast('註冊失敗.', '', 'error');
             return;
         }
 
@@ -168,6 +173,7 @@ const LoginAssociate = (props: any) => {
             setPasswordCheck('');
             setUsername('');
             setHint('');
+            showToast('註冊成功.', '');
             props.navigation.push('tab', { From: 'login' });//做為測試(由於伺服器未完成，待完成後取消)
         }
         else {
@@ -184,15 +190,18 @@ const LoginAssociate = (props: any) => {
                 showToast('註冊成功.', '');
                 props.navigation.push('tab', { From: 'login' });
             }, (data: any) => {
-                // fail = show the reason (setHint)
+                // error = show the reason (setHint)
                 if (data == 'wrongEmail') {
                     setHint('該電子郵件已註冊或格式錯誤');
+                    showToast('註冊失敗.', '', 'error');
                 }
                 else if (data == 'wrongUsername') {
                     setHint('該用戶名已註冊或格式錯誤');
+                    showToast('註冊失敗.', '', 'error');
                 }
                 else {
                     setHint('密碼錯誤(非法格式)');
+                    showToast('註冊失敗.', '', 'error');
                 }
             });
         }

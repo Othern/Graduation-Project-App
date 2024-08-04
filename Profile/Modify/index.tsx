@@ -51,7 +51,7 @@ const Modify = (props: any) => {
     const handleClosePassword = () => {
         setPasswordVisible(false);
     };
-    const handleSavePassword = async (oldPassword: any, newPassword: any) => {
+    const handleSavePassword = async (newPassword: any) => {
         try {
             // 儲存Email和密碼
             await Keychain.setGenericPassword(Email, newPassword);
@@ -77,8 +77,8 @@ const Modify = (props: any) => {
             <Pressable onPress={() => props.navigation.push('head', { From: 'modify', HeadImg: headImg, Email: Email, Username: username })} style={({ pressed }) => [
                 styles.pressable,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText}>修改頭像圖片</Text>
             </Pressable>
@@ -86,8 +86,8 @@ const Modify = (props: any) => {
             <Pressable onPress={handleOpenUsername} style={({ pressed }) => [
                 styles.pressable,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText}>修改帳號名稱</Text>
             </Pressable>
@@ -102,8 +102,8 @@ const Modify = (props: any) => {
             <Pressable onPress={handleOpenPassword} style={({ pressed }) => [
                 styles.pressable,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText}>變更為新密碼</Text>
             </Pressable>
@@ -117,8 +117,8 @@ const Modify = (props: any) => {
             <Pressable onPress={() => props.navigation.goBack()} style={({ pressed }) => [
                 styles.pressable,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText}>返回個人頁面</Text>
             </Pressable>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
         flex: 1,
 
         alignItems: 'center',
-        backgroundColor: 'white',
+
     },
     titleContainer: {
         justifyContent: 'center',
@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     },
     title: {
         textAlign: 'center',
-        color: 'black',
+
         fontSize: 32,
         fontWeight: 'bold',
     },
     line: {
         height: 1,
-        backgroundColor: 'black',
+
         width: '80%',
         marginBottom: '2%',
     },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     },
     pressableText: {
         textAlign: 'center',
-        color: 'white',
+
         fontSize: 24,
     },
 });

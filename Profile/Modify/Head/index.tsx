@@ -57,8 +57,9 @@ export default function (props: any) {
     }
 
     const confirm = async () => {
-        if (photo === image) {
-            props.navigation.goBack()
+        if (photo === image) { //未選擇的情況
+            showToast('未選擇圖片.', '', 'error');
+            return;
         }
         else {
             const formData = new FormData();
@@ -78,24 +79,24 @@ export default function (props: any) {
                 props.navigation.goBack();
                 props.navigation.goBack();//for reset the parameters
 
-                    // const response = await fetch('http://192.168.0.13:5000/ModifyHeadImg', {
-                    //     method: 'POST',
-                    //     body: formData,
-                    //     headers: {
-                    //         'Content-Type': 'multipart/form-data',
-                    //     },
-                    // }).then(response => response.json());
-                    // if (response.success == 1) {
-                    //     //需要回傳 新headImg位置
-                    //     const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
-                    //     AsyncStorage.setItem('UserData', value);
-                    //     showToast('頭像修改成功', '');
-                    //     props.navigation.goBack();
-                    //     props.navigation.goBack();
-                    // }
-                    // else {
-                    //     setError(true);
-                    // }
+                // const response = await fetch('http://192.168.0.13:5000/ModifyHeadImg', {
+                //     method: 'POST',
+                //     body: formData,
+                //     headers: {
+                //         'Content-Type': 'multipart/form-data',
+                //     },
+                // }).then(response => response.json());
+                // if (response.success == 1) {
+                //     //需要回傳 新headImg位置
+                //     const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
+                //     AsyncStorage.setItem('UserData', value);
+                //     showToast('頭像修改成功', '');
+                //     props.navigation.goBack();
+                //     props.navigation.goBack();
+                // }
+                // else {
+                //     setError(true);
+                // }
 
             } catch (error) {
                 console.error('Upload error:', error);
@@ -115,8 +116,8 @@ export default function (props: any) {
             <Pressable onPress={gallery} style={({ pressed }) => [
                 styles.pressable2,
                 {
-                    backgroundColor: pressed ? '#FFAF60' : 'orange',
-                    borderColor: pressed ? 'orange' : '#FFAF60',
+                    opacity: pressed ? 0.8 : 1,
+                    borderColor: '#FFBB77'
                 }
             ]}><Text style={styles.pressableText2}>選擇圖片</Text>
             </Pressable>
@@ -124,16 +125,16 @@ export default function (props: any) {
                 <Pressable onPress={cancel} style={({ pressed }) => [
                     styles.pressable,
                     {
-                        backgroundColor: pressed ? '#E0E0E0' : '#8E8E8E',
-                        borderColor: pressed ? '#8E8E8E' : '#E0E0E0',
+                        opacity: pressed ? 0.8 : 1,
+                        borderColor: '#FFBB77'
                     }
                 ]}><Text style={styles.pressableText}>取消</Text>
                 </Pressable>
                 <Pressable onPress={confirm} style={({ pressed }) => [
                     styles.pressable,
                     {
-                        backgroundColor: pressed ? '#FFAF60' : 'orange',
-                        borderColor: pressed ? 'orange' : '#FFAF60',
+                        opacity: pressed ? 0.8 : 1,
+                        borderColor: '#FFBB77'
                     }
                 ]}><Text style={styles.pressableText}>確認</Text>
                 </Pressable>
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
+
     },
     UserInfo: {
         justifyContent: 'center',
@@ -192,12 +193,12 @@ const styles = StyleSheet.create({
     },
     pressableText: {
         textAlign: 'center',
-        color: 'white',
+
         fontSize: 24,
     },
     pressableText2: {
         textAlign: 'center',
-        color: 'white',
+
         fontSize: 24,
     },
     error: {
