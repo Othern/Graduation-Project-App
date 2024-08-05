@@ -11,55 +11,47 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  Modal
 } from 'react-native';
 import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {Card} from 'react-native-paper';
-import {reviceHeart} from '../../function';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import {
   getPostData,
   getCommentData,
-  sendHeart,
+  deletePost,
   sendComment,
   COMMENTDATA,
   POSTDATA,
 } from './function';
 import Video, {VideoRef} from 'react-native-video';
-import {useIsFocused} from '@react-navigation/native';
-
-const emptyBanana = '../../../asset/emptyBanana.png';
-const fullBanana = '../../../asset/fullBanana.png';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import AlertDelete from './AlertDelete'
 
 type ItemProps = {
-  name: string;
-  mockTitle: string;
-  avatarUrl: string;
   description: string;
   image: boolean;
   contentUri: string;
   hearts: number;
   like: boolean;
   viewable: boolean;
+  handleDelete: any;
   handleComment: any;
+  handleRevise: any;
 };
 
 const Item = ({
-  name,
-  mockTitle,
-  avatarUrl,
   description,
   image,
   contentUri,
-  hearts,
-  like,
   viewable,
+  handleDelete,
   handleComment,
+  handleRevise,
 }: ItemProps) => {
   const theme = useColorScheme();
   const color = theme === 'dark' ? 'white' : 'black';
-  const [heart, setHeart] = useState(like);
-  const [heartNum, setHeartNum] = useState(hearts);
   const [showMore, setShowMore] = useState(false);
   const desc = description.substring(0, 49);
   const moredesc = description.substring(49);
@@ -72,9 +64,21 @@ const Item = ({
   }, [viewable]);
   return (
     <View style={styles.item}>
-      <View style={{height: 50, flexDirection: 'row', alignItems: 'center'}}>
-        <Image source={{uri: avatarUrl}} style={styles.avatar} />
-        <Text style={[styles.name, {color: color}]}>{name}  {mockTitle}</Text>
+      <View style={{height: 45, alignItems: 'center'}}>
+        <Pressable
+          onPress={()=>{handleDelete()}}
+          style={{
+            height: 35,
+            width: 35,
+            position: 'absolute',
+            right: 5,
+            borderRadius: 5,
+            backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Icon name={'close'} color={'white'} size={30} />
+        </Pressable>
       </View>
       <View style={{marginBottom: 10}}>
         {image ? (
@@ -142,76 +146,59 @@ const Item = ({
         )}
       </View>
       <View style={{padding: 5}}>
-        <View
-          style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
-          <Pressable
-            onPress={() => {
-              handleComment();
-            }}
-            style={{marginRight: 10}}>
-            <Icon
-              name="chatbubble-outline"
-              color={color}
-              size={28}
-              style={{}}
-            />
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              // 修改愛心剩餘數量
-              reviceHeart(heart, () => {
-                setHeart(prev => !prev);
-                setHeartNum(prev => prev + 1);
-              });
-
-              // 回傳後端用戶喜歡某貼文
-              // sendHeart(pid)
-            }}>
-            <Image
-              source={!heart ? require(emptyBanana) : require(fullBanana)}
-              style={{height: 30, width: 30, marginRight: 10}}
-              tintColor={
-                theme == 'light' && !heart
-                  ? 'black'
-                  : !heart
-                  ? 'white'
-                  : undefined
-              }
-            />
-          </Pressable>
-          <Text style={[{color: color, fontSize: 15}]}>{heartNum}</Text>
-        </View>
-
-        {desc.length < 49 ? (
-          <View>
-            <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
-              {desc}
-            </Text>
-          </View>
-        ) : (
-          <View>
-            {!showMore ? (
-              <View>
-                <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
-                  {desc}
-                </Text>
-                <Pressable
-                  onPress={() => {
-                    setShowMore(prev => !prev);
-                  }}>
-                  <Text style={{fontWeight: '500', fontSize: 16}}>
-                    顯示更多...
-                  </Text>
-                </Pressable>
-              </View>
-            ) : (
+        <View style={{flexDirection: 'row', marginBottom: 5}}>
+          {desc.length < 49 ? (
+            <View>
               <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
                 {desc}
-                {moredesc}
               </Text>
-            )}
+            </View>
+          ) : (
+            <View>
+              {!showMore ? (
+                <View>
+                  <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+                    {desc}
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setShowMore(prev => !prev);
+                    }}>
+                    <Text style={{fontWeight: '500', fontSize: 16}}>
+                      顯示更多...
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+                  {desc}
+                  {moredesc}
+                </Text>
+              )}
+            </View>
+          )}
+          <View style={{position: 'absolute', right: 0, flexDirection: 'row'}}>
+            <Pressable
+              onPress={() => {
+                handleComment();
+              }}
+              style={{marginRight: 10}}>
+              <Icon
+                name="chatbubble-outline"
+                color={color}
+                size={28}
+                style={{}}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                handleRevise();
+              }}
+              style={{marginRight: 10}}>
+              <Icon name="hammer-outline" color={color} size={28} style={{}} />
+            </Pressable>
           </View>
-        )}
+        </View>
       </View>
     </View>
   );
@@ -256,22 +243,25 @@ const CommentItem = ({
   );
 };
 
-export default ({kind, scrollY}: any) => {
+export default (props: any, {kind}: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
   const [commentData, setCommentData] = useState(COMMENTDATA);
   const [comment, setComment] = useState('');
   const [page, setPage] = useState(1);
+
+  // 設定警告
+  const [showDeleteWarning,setShowDeleteWarning] = useState(false)
+  const [deletePostId, setDeletePostId] = useState("")
+  
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
-
   // useEffect(()=>{
   //   getPostData(setPostData,kind,page)
   //   setLoading(false)
   // }
   //   ,[])
-
   const focus = useIsFocused();
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -299,7 +289,6 @@ export default ({kind, scrollY}: any) => {
       setLoading(false);
     }
   }, [page, kind, loading]);
-
   // for comment area
   const handleSnapPress = useCallback((index: any) => {
     sheetRef.current?.snapToIndex(index);
@@ -307,11 +296,14 @@ export default ({kind, scrollY}: any) => {
   const handleClosePress = useCallback(() => {
     sheetRef.current?.close();
   }, []);
+
+  
   if (loading) {
     return <Text style={{alignSelf: 'center'}}>loading...</Text>;
   } else {
     return (
       <>
+        <AlertDelete showDeleteWarning={showDeleteWarning} setShowDeleteWarning={setShowDeleteWarning} onConfirmDelete={()=>{deletePost(deletePostId)}}/>
         <FlatList
           data={postData}
           renderItem={({item, index}) => {
@@ -322,9 +314,6 @@ export default ({kind, scrollY}: any) => {
 
             return (
               <Item
-                name={item.name}
-                mockTitle={item.mockTitle}
-                avatarUrl={item.avatarUrl}
                 description={item.description}
                 image={item.image}
                 contentUri={item.contentUri}
@@ -332,25 +321,28 @@ export default ({kind, scrollY}: any) => {
                 like={item.like}
                 key={index}
                 viewable={viewable}
+                handleDelete={()=>{
+                  setShowDeleteWarning((prev)=>(!prev))
+                  setDeletePostId(item.id)
+                }}
                 handleComment={() => {
                   handleSnapPress(0);
                   // getCommentData(item.id);
+                }}
+                handleRevise={() => {
+                  props.navigation.push('reviseArticle', {
+                    id: item.id,
+                    contentUri: item.contentUri,
+                    desc: item.description,
+                    image: item.image,
+                  });
                 }}
               />
             );
           }}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{height: 80}} />}
-          onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {useNativeDriver: false},
-          )}
-          scrollEventThrottle={16}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
-          // onEndReached={loadMoreData}
-          // onEndReachedThreshold={1}
-          // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
         />
 
         <BottomSheet
@@ -415,6 +407,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     padding: 10,
     flex: 1,
+    elevation: 2,
+    borderWidth: 0.001,
   },
   commentContainer: {
     backgroundColor: 'gray',

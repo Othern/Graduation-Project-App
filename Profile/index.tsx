@@ -14,6 +14,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Modify from "./Modify"
 import Setting from "./Setting"
 import Intro from "./Intro"
+import MyArticle from "./MyPost";
+import RevisePost from "./RevisePost"
 const UserStack = createStackNavigator();
 
 const getDataJSON = async (key: any, success = (data: any) => { }) => {
@@ -105,6 +107,12 @@ const Profile = (props: any) => {
 
             </Pressable>
 
+            <Pressable onPress={() => props.navigation.push('myArticle', { From: 'profile' })} style={styles.pressable}>
+                <Icon style={styles.icon} name={'newspaper'} size={30} />
+                <Text style={styles.pressableText}>我的文章</Text>
+                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+            </Pressable>
+
             <Pressable onPress={() => props.navigation.push('intro', { From: 'profile' })} style={styles.pressable}>
                 <Icon style={styles.icon} name={'information-circle'} size={30} />
                 <Text style={styles.pressableText}>系統使用說明</Text>
@@ -187,7 +195,9 @@ export default (props: any) => {
             <UserStack.Screen component={Profile} name="profile" options={{ header: ()=>(null) }} />
             <UserStack.Screen component={Modify} name="modifyPages" options={{ headerShown: false }} />
             <UserStack.Screen component={Setting} name="setting" options={{ headerShown: false }} />
+            <UserStack.Screen component={MyArticle} name="myArticle" options={{ headerShown: false }} />
             <UserStack.Screen component={Intro} name="intro" options={{ headerShown: false }} />
+            <UserStack.Screen component={RevisePost} name="reviseArticle" options={{ headerShown: false }} />
         </UserStack.Navigator>
     )
 }
