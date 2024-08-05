@@ -41,7 +41,7 @@ export default async () => {
     },
     {
       enableHighAccuracy: true,
-      distanceFilter: 0, // 當與原本距離差多少公尺時通報
+      distanceFilter: 10, // 當與原本距離差多少公尺時通報
       interval: 5000, // 時間間隔為5秒
       fastestInterval: 2000, // 至少要差兩秒才會通報
     },

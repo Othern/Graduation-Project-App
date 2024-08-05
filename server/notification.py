@@ -15,7 +15,7 @@ def send_test():
     message = messaging.Message(
         notification=messaging.Notification(
             title="武嶺宿舍獼猴入侵",
-            body="‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️\n‼️⚠️請關緊門窗⚠️‼️",
+            body="‼️⚠️請關緊門窗⚠️‼️",
         ),
         data={
             "screen_name": "RRRR",

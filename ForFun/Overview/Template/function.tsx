@@ -22,6 +22,7 @@ const getUserData = async(key: string)=>{
 // 取得貼文資料
 export const getPostData = async (setPostData: any, kind: string, page: number) => {
   const Url = "http://192.168.0.18:4000/api/data/getPostData";
+  const email = getUserData('email');
   try {
     const response = await fetch(Url, {
       method: 'POST',
@@ -31,7 +32,8 @@ export const getPostData = async (setPostData: any, kind: string, page: number) 
       body: JSON.stringify(
         {
           "kind": kind,
-          "page": page
+          "page": page,
+          "email": email
         })
     }).then(response => response.json())
 
@@ -153,6 +155,7 @@ export const POSTDATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba', // post id
     name: 'shelter_1022', // author's name
+    mockTitle: '大師', // 稱號
     description: '這種痛苦還要持續多久', // post's description
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC28lvhB3X_P4cDQ17N2RQvttJRUYagluoPw&s', // author's avatarUrl
     image: true, // whether image or video
@@ -164,6 +167,7 @@ export const POSTDATA = [
     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
     name: 'eromangasensei_1210',
     description: '歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!\n歐尼醬什麼的最討厭了!',
+    mockTitle: '可愛大師',
     avatarUrl: 'https://steamuserimages-a.akamaihd.net/ugc/1651094778160293860/28F0B5713A2F4D69F937C017E49E2CD0AE719CE5/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false',
     image: true,
     contentUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTreBuOexL-mU-nxKgDnvnXQfLFmar1NhcfJg&s',
@@ -174,6 +178,7 @@ export const POSTDATA = [
   {
     id: '58694a0f-3da1-471f-bd96-145571e29d75',
     name: 'Third Item',
+    mockTitle: '可愛大師',
     description: 'Hello Everyone.',
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC28lvhB3X_P4cDQ17N2RQvttJRUYagluoPw&s',
     image: false,
@@ -185,6 +190,7 @@ export const POSTDATA = [
   {
     id: '58694a0f-3da1-471f-bd96-145571e29d74',
     name: 'Aarya_0729',
+    mockTitle: '好笑王', 
     description: 'Ты симпатичная ',
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRESgscYBotXXua0fHnKMk-B9NJuLQ97d19sQ&s',
     image: false,
