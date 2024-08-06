@@ -22,15 +22,15 @@ export default ({ showDeleteWarning, setShowDeleteWarning,onConfirmDelete  }: De
     },
     text: {
       fontSize: 18,
-      marginBottom: 20,
       textAlign: 'center',
       color: isDarkMode ? 'white' : 'black',
     },
     PressableContainer: {
+      marginTop: 10,
       flexDirection: 'row',
-      justifyContent: 'space-around',
       alignItems: 'center',
-      height:40
+      height:50,
+      
     },
   });
 
@@ -47,18 +47,18 @@ export default ({ showDeleteWarning, setShowDeleteWarning,onConfirmDelete  }: De
             <Pressable
               
               onPress={() => setShowDeleteWarning(false)}
-              style={{ marginRight: 10 }}
+              style={{ flex:1 ,borderRightWidth:0.1}}
             >
-              <Text>取消</Text>
+              <Text style={styles.text}>取消</Text>
             </Pressable>
             <Pressable
-    
+              style={{ flex:1 ,}}
               onPress={() => {
                 onConfirmDelete()
                 setShowDeleteWarning(false);
               }}
             >
-              <Text>確定</Text>
+              <Text style={styles.text}>確定</Text>
             </Pressable>
           </View>
         </View>

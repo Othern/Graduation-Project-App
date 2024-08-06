@@ -200,6 +200,7 @@ const Item = ({
           </View>
         </View>
       </View>
+      
     </View>
   );
 };
@@ -330,7 +331,7 @@ export default (props: any, {kind}: any) => {
                   // getCommentData(item.id);
                 }}
                 handleRevise={() => {
-                  props.navigation.push('reviseArticle', {
+                  props.navigation.push('reviseMyPost', {
                     id: item.id,
                     contentUri: item.contentUri,
                     desc: item.description,
@@ -462,4 +463,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  
 });

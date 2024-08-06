@@ -16,6 +16,7 @@ import Setting from "./Setting"
 import Intro from "./Intro"
 import MyArticle from "./MyPost";
 import RevisePost from "./RevisePost"
+import Header from "./Header";
 const UserStack = createStackNavigator();
 
 const getDataJSON = async (key: any, success = (data: any) => { }) => {
@@ -49,6 +50,7 @@ const Profile = (props: any) => {
     const [username, setUsername] = useState('');
     const [headImg, setHeadImg] = useState('');
     const theme = useColorScheme();
+    const textColor =  theme === 'dark' ? 'white' : 'gray'
 
     getDataJSON('UserData', (data) => {
         if (data) {
@@ -86,7 +88,7 @@ const Profile = (props: any) => {
                     style={styles.headImg}
                     source={image}
                 />
-                <Text style={styles.username}>{username}</Text>
+                <Text style={[styles.username,{color:textColor}]}>{username}</Text>
             </View>
 
             <Pressable
@@ -94,35 +96,35 @@ const Profile = (props: any) => {
                     { From: 'profile', Email: email, Username: username, HeadImg: headImg })}
                 style={styles.pressable}
             >
-                <Icon style={styles.icon} name={'person-circle'} size={30} />
-                <Text style={styles.pressableText}>修改帳號資訊</Text>
-                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+                <Icon style={[styles.icon,{color:textColor}]} name={'person-circle'} size={30} />
+                <Text style={[styles.pressableText,{color:textColor}]}>修改帳號資訊</Text>
+                <Icon style={[styles.icon,styles.forward,{color:textColor}]} name={'chevron-forward'} size={30} />
 
             </Pressable>
 
             <Pressable onPress={() => props.navigation.push('setting', { From: 'profile' })} style={styles.pressable}>
-                <Icon style={styles.icon} name={'settings'} size={30} />
-                <Text style={styles.pressableText}>設定系統權限</Text>
-                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+                <Icon style={[styles.icon,{color:textColor}]} name={'settings'} size={30} />
+                <Text style={[styles.pressableText,{color:textColor}]}>設定系統權限</Text>
+                <Icon style={[styles.icon,styles.forward,{color:textColor}]} name={'chevron-forward'} size={30} />
 
             </Pressable>
 
-            <Pressable onPress={() => props.navigation.push('myArticle', { From: 'profile' })} style={styles.pressable}>
-                <Icon style={styles.icon} name={'newspaper'} size={30} />
-                <Text style={styles.pressableText}>我的文章</Text>
-                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+            <Pressable onPress={() => props.navigation.push('myPost', { From: 'profile' })} style={styles.pressable}>
+                <Icon style={[styles.icon,{color:textColor}]} name={'newspaper'} size={30} />
+                <Text style={[styles.pressableText,{color:textColor}]}>我的文章</Text>
+                <Icon style={[styles.icon,styles.forward,{color:textColor}]} name={'chevron-forward'} size={30} />
             </Pressable>
 
             <Pressable onPress={() => props.navigation.push('intro', { From: 'profile' })} style={styles.pressable}>
-                <Icon style={styles.icon} name={'information-circle'} size={30} />
-                <Text style={styles.pressableText}>系統使用說明</Text>
-                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+                <Icon style={[styles.icon,{color:textColor}]} name={'information-circle'} size={30} />
+                <Text style={[styles.pressableText,{color:textColor}]}>系統使用說明</Text>
+                <Icon style={[styles.icon,styles.forward,{color:textColor}]} name={'chevron-forward'} size={30} />
             </Pressable>
 
             <Pressable onPress={() => Logout(props)} style={styles.pressable}>
-                <Icon style={styles.icon} name={'log-out'} size={30} />
-                <Text style={styles.pressableText}>登出當前帳號</Text>
-                <Icon style={[styles.icon,styles.forward]} name={'chevron-forward'} size={30} />
+                <Icon style={[styles.icon,{color:textColor}]} name={'log-out'} size={30} />
+                <Text style={[styles.pressableText,{color:textColor}]}>登出當前帳號</Text>
+                <Icon style={[styles.icon,styles.forward,{color:textColor}]} name={'chevron-forward'} size={30} />
             </Pressable>
 
         </View>
@@ -195,9 +197,9 @@ export default (props: any) => {
             <UserStack.Screen component={Profile} name="profile" options={{ header: ()=>(null) }} />
             <UserStack.Screen component={Modify} name="modifyPages" options={{ headerShown: false }} />
             <UserStack.Screen component={Setting} name="setting" options={{ headerShown: false }} />
-            <UserStack.Screen component={MyArticle} name="myArticle" options={{ headerShown: false }} />
+            <UserStack.Screen component={MyArticle} name="myPost" options={{header: (props) => <Header {...props}  /> }} />
             <UserStack.Screen component={Intro} name="intro" options={{ headerShown: false }} />
-            <UserStack.Screen component={RevisePost} name="reviseArticle" options={{ headerShown: false }} />
+            <UserStack.Screen component={RevisePost} name="reviseMyPost" options={{ header: (props) => <Header {...props}  /> }} />
         </UserStack.Navigator>
     )
 }

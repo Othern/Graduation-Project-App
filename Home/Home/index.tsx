@@ -48,27 +48,27 @@ export default () => {
   const [RTData, setRTData] = useState(data);
   const [PDData, setPDData] = useState(data);
   // 要使用Networking 取消quote，並要改成你的url
-  const getData = async () => {
-    const PDUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData'; //請更改為預測的API
-    try {
-      const response = await fetch(PDUrl).then(response => response.json());
-      setPDData(response);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-    const RTUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData';
-    try {
-      const response = await fetch(RTUrl).then(response => response.json());
-      setRTData(response);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  useEffect(() => {
-    getData();
-  }, []);
+  // const getData = async () => {
+  //   const PDUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData'; //請更改為預測的API
+  //   try {
+  //     const response = await fetch(PDUrl).then(response => response.json());
+  //     setPDData(response);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   const RTUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData';
+  //   try {
+  //     const response = await fetch(RTUrl).then(response => response.json());
+  //     setRTData(response);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getData();
+  // }, []);
   //NetWorking to get detail data
   requestGeolocationPermission();
   const renderItem = (item: any) => {

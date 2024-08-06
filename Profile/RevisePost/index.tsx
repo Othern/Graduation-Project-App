@@ -59,7 +59,6 @@ export default function MediaUploader(props:any,{ theme}: any) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}> 發布貼文 </Text>
             <View style={styles.media}>
                 <View>
                     {media && mediaURI ? (
@@ -222,6 +221,7 @@ const styles = StyleSheet.create({
         borderColor: '#FFBB77',
         borderRadius: 5,
         fontSize: 16,
+        height:250,
         textAlignVertical: 'top',
         marginHorizontal: 10,
         backgroundColor: 'white',
