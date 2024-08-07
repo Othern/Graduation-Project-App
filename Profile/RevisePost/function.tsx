@@ -52,7 +52,7 @@ export const ShowMediaLibrary = async (
     });
 }
 
-export const formUploadData = (media: any, text: string, email: string) => {
+export const formReviseData = (media: any, postID: string,text: string, email: string) => {
     const formData = new FormData();
     if (media && media.uri) {
         formData.append('reviseMedia',true); // 表示需要更改
@@ -65,6 +65,7 @@ export const formUploadData = (media: any, text: string, email: string) => {
     else{
         formData.append('reviseMedia',false); // 表示不用更改
     }
+    formData.append('PostId', postID)
     formData.append('text', text);
     formData.append('email', email);
     console.log(formData)

@@ -31,7 +31,7 @@ export const deletePost = async(id:string)=>{
       body: JSON.stringify(
         {
           "email": email,
-          "id": id
+          "postID": id
         })
     }).then(response => response.json())
 

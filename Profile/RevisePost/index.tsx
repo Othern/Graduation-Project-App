@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { View, StyleSheet, Pressable, TextInput, Image } from "react-native";
 import { Text } from "react-native-paper";
-import { ShowMediaLibrary, showToast, formUploadData, uploadToServer, getDataJSON } from './function';
+import { ShowMediaLibrary, showToast, formReviseData, uploadToServer, getDataJSON } from './function';
 import Video from "react-native-video"
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -44,15 +44,15 @@ export default function MediaUploader(props:any,{ theme}: any) {
 
     //確認 (上傳並離開), 使用useCallback 的相依性，決定重新建構，確保變動時使用最新
     const handleConfirm = useCallback(async () => {
-        const formData = formUploadData(media, desc, email);
+        const formData = formReviseData(media,id,desc, email);
         try {
             console.log(formData);
             //待後端完成連接@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             // await uploadToServer(formData); 
-            showToast("上傳成功", "");
+            showToast("修改成功", "");
             props.navigation.goBack();
         } catch (error) {
-            showToast("上傳失敗", error instanceof Error ? error.message : "未知錯誤", "error");
+            showToast("修改失敗", error instanceof Error ? error.message : "未知錯誤", "error");
         }
     }, [media, mediaURI, desc, props.navigation]);
     
