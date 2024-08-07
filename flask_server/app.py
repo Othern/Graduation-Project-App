@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint
+from flask import Flask
 from flask_cors import CORS
 from login import login
 from modify import modify
@@ -6,6 +6,7 @@ from report_history import history
 from predict import predict
 from fetchdata import fetchdata
 from forfun import forfun
+from notify import notify
 import secrets
 
 app = Flask(__name__)
@@ -14,12 +15,15 @@ CORS(app)  # 跨平台使用
 app.secret_key = secrets.token_hex(16)  # 保護session
 
 # 註冊附屬檔案在APP上
-app.register_blueprint(login)
-app.register_blueprint(modify)
-app.register_blueprint(fetchdata)
-app.register_blueprint(forfun)
-app.register_blueprint(history)
-app.register_blueprint(predict)
+app.register_blueprint(login) # 登入、註冊
+app.register_blueprint(modify) # 調整使用者頭像、名稱、密碼
+app.register_blueprint(history) # 將使用者通報內容匯入資料庫，並進行通知
+app.register_blueprint(notify) # 通知使用者(包含內容、通知條件、取得所有使用者token)
+app.register_blueprint(predict) # 調整歷史紀錄、將歷史資料放進預測模型、回傳預測結果
+app.register_blueprint(fetchdata) # 顯示獼猴出沒座標
+app.register_blueprint(forfun) # 獼猴人氣投票
+
+
 
 # 執行程式
 if __name__ == '__main__':

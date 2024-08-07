@@ -21,9 +21,11 @@ const getUserData = async (key: string) => {
 };
 export default async () => {
   const email = await getUserData('email');
-  Geolocation.watchPosition(
+  // 建立watchID以讓傳送地理資訊能在登出(清除使用者資料/Email)時被停止(clearWatch)
+  const watchID = Geolocation.watchPosition(
     async position => {
       console.log(position);
+      // if (email) {
       //   try {
       //     const response = await fetch('http://192.168.0.13:5000/locationSubmit', {
       //       method: 'POST',
@@ -35,6 +37,12 @@ export default async () => {
       //   } catch (error) {
       //     console.error('Error sending data:', error);
       //   }
+      // }
+      // else {
+      //   console.log('Email not found, not sending location.');
+      //   Geolocation.clearWatch(watchID);
+      //   return;
+      // }
     },
     error => {
       console.log(error);

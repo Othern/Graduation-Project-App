@@ -19,7 +19,7 @@ import requests
 predict = Blueprint(
     "predict",
     __name__,
-    template_folder="C:\\Users\\work\\AwesomeProject\\Graduation-Project-App",
+    template_folder="..\\Prediction",
 )
 CORS(predict)  # 跨平台使用
 

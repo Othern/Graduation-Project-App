@@ -4,6 +4,8 @@ import { NavigationContainer, getFocusedRouteNameFromRoute, DefaultTheme, DarkTh
 import { createStackNavigator } from "@react-navigation/stack";
 import { submitLogin, submitRegister, showToast, saveCredentials, getCredentialsFromKeychain, saveData, getDataJSON, checkFastLoginSelection } from "./function";
 import Icon from 'react-native-vector-icons/Ionicons';
+import {Notify} from '../Function/Notify';
+import BackgroundLocation from '../Function/BackgroundLocation';
 // //2. 處理後端溝通 測試範例:貼function response data中
 // const loginReturndata = {
 //     state: "success",
@@ -66,6 +68,8 @@ const LoginAssociate = (props: any) => {
                         const UserData = JSON.stringify({ email: logdata.email, username: usernameLS, headImg: headImgLS });
                         saveData('UserData', UserData);
                         showToast('登入成功.', '');
+                        Notify();
+                        BackgroundLocation();
                         props.navigation.push('tab', { From: 'login' });
                     }, (data: any) => {
                         // fail = show the reason (setHint)
@@ -114,6 +118,8 @@ const LoginAssociate = (props: any) => {
             setPasswordL('');
             setHint('');
             showToast('登入成功.', '');
+            Notify();
+            BackgroundLocation();
             props.navigation.push('tab', { From: 'login' });//做為測試(由於伺服器未完成，待完成後取消)
         }
         else {
@@ -174,6 +180,8 @@ const LoginAssociate = (props: any) => {
             setUsername('');
             setHint('');
             showToast('註冊成功.', '');
+            Notify();
+            BackgroundLocation();
             props.navigation.push('tab', { From: 'login' });//做為測試(由於伺服器未完成，待完成後取消)
         }
         else {

@@ -23,10 +23,10 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 const LoginStack = createStackNavigator();
 export default function () {
   const theme = useColorScheme();
-  useEffect(() => {
-    Notify();
-    BackgroundLocation();
-  }, []);
+  // useEffect(() => {
+    // Notify();
+    // BackgroundLocation();
+  // }, []);
   return (
     <PaperProvider>
       <NavigationContainer theme={theme === 'dark' ? DarkTheme : DefaultTheme}>

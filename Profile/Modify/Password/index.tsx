@@ -10,7 +10,7 @@ const showToast = (text1: string, text2: string, type = 'success') => {
     });
 }
 
-const PasswordModal = ({ visible, onClose, onSave }: any) => {
+const PasswordModal = ({ visible, onClose, onSave, currentEmail }: any) => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [error, setError] = useState(false);
@@ -42,7 +42,7 @@ const PasswordModal = ({ visible, onClose, onSave }: any) => {
             //     headers: {
             //         'Content-Type': 'application/json'
             //     },
-            //     body: JSON.stringify({ newPassword, oldPassword })
+            //     body: JSON.stringify({ newPassword, oldPassword, currentEmail })
             // });
             // const responseData = await response.json();
             // if (responseData.state === "success") {
