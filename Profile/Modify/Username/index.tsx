@@ -10,7 +10,7 @@ const showToast = (text1: string, text2: string, type = 'success') => {
     });
 }
 
-const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
+const UsernameModal = ({ visible, onClose, onSave, currentUsername, currentEmail }: any) => {
     const [newUsername, setNewUsername] = useState('');
     const [error, setError] = useState(false);
 
@@ -41,7 +41,7 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername }: any) => {
             //     headers: {
             //         'Content-Type': 'application/json'
             //     },
-            //     body: JSON.stringify({ newUsername })
+            //     body: JSON.stringify({ newUsername, currentEmail })
             // });
             // const responseData = await response.json();
             // if (responseData.state === "success") {

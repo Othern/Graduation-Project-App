@@ -76,7 +76,7 @@ export const getDataJSON = async (key: any, success = (data: any) => { }) => {
 
 export async function submitLogin(email: string, password: string, success = (data: any) => { }, fail = (data: any) => { }) {
     try {
-        const response = await fetch('http://192.168.0.16:5000/loginSubmit', {
+        const response = await fetch('http://192.168.0.13:5000/loginSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -100,7 +100,7 @@ export async function submitLogin(email: string, password: string, success = (da
 
 export async function submitRegister(email: string, password: string, username: string, success = (data: any) => { }, fail = (data: any) => { }) {
     try {
-        const response = await fetch('http://192.168.0.16:5000/registerSubmit', {
+        const response = await fetch('http://192.168.0.13:5000/registerSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
