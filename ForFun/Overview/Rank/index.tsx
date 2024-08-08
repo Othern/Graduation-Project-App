@@ -10,7 +10,7 @@ const fullBanana = '../../../asset/fullBanana.png';
 type ItemProps = {
     id: string;
     name: string;
-    title: string;
+    mockTitle: string;
     avatarUrl: string;
     description: string;
     image: boolean;
@@ -29,7 +29,7 @@ const RankingItem = ({ item, handleComment }: { item: ItemProps; handleComment: 
         <View style={[styles.itemContainer, { backgroundColor: item.rank == 1 ? '#FFFFDF' : (item.rank == 2 ? '#FCFCFC' : '#FFEEDD') }]}>
             <View style={styles.rowContainer}>
                 <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
-                <Text style={[styles.username]}> {item.title} {item.name}</Text>
+                <Text style={[styles.username]}> {item.mockTitle} {item.name}</Text>
             </View>
             <View style={styles.contentContainer}>
                 {item.image ? (
@@ -119,7 +119,7 @@ export default ({ visible, onClose }: { visible: boolean; onClose: () => void })
         >
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>歷屆排行榜</Text>
+                    <Text style={styles.mockTitle}>歷屆排行榜</Text>
                     <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                         <Icon name="close" size={24} color="black" />
                     </TouchableOpacity>
@@ -188,7 +188,7 @@ export default ({ visible, onClose }: { visible: boolean; onClose: () => void })
                                 <View style={styles.commentItem}>
                                     <Image source={{ uri: item.avatarUrl }} style={styles.commentAvatar} />
                                     <View>
-                                        <Text style={styles.commentUsername}>{item.username} {item.title}</Text>
+                                        <Text style={styles.commentUsername}>{item.username} {item.mockTitle}</Text>
                                         <Text style={styles.commentContent}>{item.content}</Text>
                                     </View>
                                 </View>
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
     },
-    title: {
+    mockTitle: {
         fontSize: 24,
         fontWeight: 'bold',
         color: 'black',
