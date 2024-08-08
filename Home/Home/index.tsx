@@ -6,7 +6,6 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useState, useEffect} from 'react';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {requestGeolocationPermission} from './function';
-
 const data = [
   {
     name: '威爾希斯咖啡',
@@ -47,28 +46,34 @@ export default () => {
   const [loading, setLoading] = useState(true);
   const [RTData, setRTData] = useState(data);
   const [PDData, setPDData] = useState(data);
+  const [refreshInterval, setRefreshInterval] = useState(60000); // 每分鐘更新一次地圖資訊
+  
   // 要使用Networking 取消quote，並要改成你的url
-  // const getData = async () => {
-  //   const PDUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData'; //請更改為預測的API
-  //   try {
-  //     const response = await fetch(PDUrl).then(response => response.json());
-  //     setPDData(response);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  //   const RTUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData';
-  //   try {
-  //     const response = await fetch(RTUrl).then(response => response.json());
-  //     setRTData(response);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const getData = async () => {
+    const PDUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData'; //請更改為預測的API
+    try {
+      const response = await fetch(PDUrl).then(response => response.json());
+      setPDData(response);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+    const RTUrl = 'http://192.168.50.213:5000//api/data/getRealTimeData';
+    try {
+      const response = await fetch(RTUrl).then(response => response.json());
+      setRTData(response);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   // useEffect(() => {
-  //   getData();
-  // }, []);
+  //   const interval = setInterval(async () => {
+  //     await getData();
+  //   }, refreshInterval);
+  
+  //   return () => clearInterval(interval);
+  // }, [refreshInterval]);
   //NetWorking to get detail data
   requestGeolocationPermission();
   const renderItem = (item: any) => {

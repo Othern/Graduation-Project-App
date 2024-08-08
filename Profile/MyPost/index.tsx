@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
-  Modal
+  RefreshControl
 } from 'react-native';
 import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {Card} from 'react-native-paper';
@@ -264,7 +264,7 @@ export default (props: any, {kind}: any) => {
   // }
   //   ,[])
   const focus = useIsFocused();
-
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
   // 設定當前觀看的item是哪一個
@@ -297,6 +297,17 @@ export default (props: any, {kind}: any) => {
   const handleClosePress = useCallback(() => {
     sheetRef.current?.close();
   }, []);
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Fetch new data
+      // getPostData(setPostData,kind,page)
+    } catch (error) {
+      console.error('Error fetching new data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   
   if (loading) {
@@ -344,6 +355,23 @@ export default (props: any, {kind}: any) => {
           keyExtractor={(item, index) => index.toString()}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
+          // onEndReached={loadMoreData}
+          // onEndReachedThreshold={1}
+          // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
+          ListEmptyComponent={
+            <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              <Text style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>
+                目前沒有文章,快來新增一篇吧!
+              </Text>
+            </View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={theme === 'dark' ? 'white' : 'black'}
+            />
+          }
         />
 
         <BottomSheet
