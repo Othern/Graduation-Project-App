@@ -222,6 +222,7 @@ type CommentItemProps = {
   username: string;
   content: string;
   avatarUrl: string;
+  mockTitle: string;
   timestamp: string;
 };
 
@@ -230,6 +231,7 @@ const CommentItem = ({
   username,
   content,
   avatarUrl,
+  mockTitle,
   timestamp,
 }: CommentItemProps) => {
   const theme = useColorScheme();
@@ -246,7 +248,7 @@ const CommentItem = ({
             fontSize: 18,
             width: 320,
           }}>
-          {username}
+          {username}  {mockTitle}
         </Text>
         <Text style={{color: color, fontWeight: '500', width: 320}}>
           {content}
@@ -336,6 +338,7 @@ export default ({kind, scrollY}: any) => {
                   handleSnapPress(0);
                   // getCommentData(item.id);
                 }}
+                
               />
             );
           }}
@@ -376,6 +379,7 @@ export default ({kind, scrollY}: any) => {
                   content={item.content}
                   timestamp={item.timestamp}
                   avatarUrl={item.avatarUrl}
+                  mockTitle={item.mockTitle}
                   key={index} // key is not necessary here, as FlatList handles keys internally
                 />
               )}
