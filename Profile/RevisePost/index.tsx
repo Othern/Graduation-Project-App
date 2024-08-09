@@ -48,7 +48,7 @@ export default function MediaUploader(props: any, { theme }: any) {
         try {
             console.log(formData);
             //待後端完成連接@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            // await uploadToServer(formData); 
+            await uploadToServer(formData); 
             showToast("修改成功", "");
             props.navigation.goBack();
         } catch (error) {

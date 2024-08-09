@@ -15,6 +15,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Notify } from './Function/Notify';
 import BackgroundLocation from './Function/BackgroundLocation';
 
+
 import { useEffect } from 'react';
 
 (Text as any).defaultProps = { maxFontSizeMultiplier: 1.05 };
@@ -30,6 +31,7 @@ export default function () {
   // Notify();
   // BackgroundLocation();
   // }, []);
+  
   return (
     <PaperProvider>
       <NavigationContainer theme={theme === 'dark' ? DarkTheme : DefaultTheme}>

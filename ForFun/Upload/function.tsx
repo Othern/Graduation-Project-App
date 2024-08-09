@@ -1,13 +1,13 @@
 import { launchImageLibrary, MediaType } from "react-native-image-picker";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import data from '../../config.json'
 interface Media {
     uri: string;
     type?: string;
     fileName?: string;
 }
-
+const URL = data['URl']
 export const getDataJSON = async (key: any, success = (data: any) => { }) => {
     try {
         const value = await AsyncStorage.getItem(key);
@@ -70,7 +70,7 @@ export const formUploadData = (media: any, text: string, category: string, email
 export const uploadToServer = async (formData: FormData) => {
     try {
         console.log('Uploading');
-        const response = await fetch('http://192.168.0.16:5000/forFunSubmit', {
+        const response = await fetch(URL+'forFunSubmit', {
             method: 'POST',
             body: formData,
             headers: {

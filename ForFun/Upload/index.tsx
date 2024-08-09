@@ -26,7 +26,7 @@ export default function MediaUploader({ theme, props }: any) {
 
     const [media, setMedia] = useState<Media | null>(null);
     const [mediaURI, setMediaURI] = useState<string | null>(null);
-    const [category, setCategory] = useState('CUTE');
+    const [category, setCategory] = useState('cute');
     const [text, setText] = useState('');
 
     //選擇media 檔案
@@ -42,7 +42,7 @@ export default function MediaUploader({ theme, props }: any) {
 
     //選擇總類 prev> 這次set之前的值
     const handleCate = useCallback(() => {
-        setCategory(prev => prev === 'CUTE' ? 'FUN' : 'CUTE');
+        setCategory(prev => prev === 'cute' ? 'funny' : 'cute');
     }, []);
 
     //確認 (上傳並離開), 使用useCallback 的相依性，決定重新建構，確保變動時使用最新
@@ -55,7 +55,7 @@ export default function MediaUploader({ theme, props }: any) {
         try {
             console.log(formData);
             //待後端完成連接@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            // await uploadToServer(formData); 
+            await uploadToServer(formData); 
             showToast("上傳成功", "");
             props.navigation.goBack();
         } catch (error) {
@@ -104,8 +104,8 @@ export default function MediaUploader({ theme, props }: any) {
                         style={({ pressed }) => [
                             styles.pressableCate,
                             {
-                                opacity: category === 'CUTE' ? (pressed ? 0.8 : 1) : 0.3,
-                                borderColor: category === 'CUTE' ? '#FFBB77' : '#D0D0D0',
+                                opacity: category === 'cute' ? (pressed ? 0.8 : 1) : 0.3,
+                                borderColor: category === 'cute' ? '#FFBB77' : '#D0D0D0',
                             }
                         ]}>
                         <Text style={styles.pressableTextCate}>可愛</Text>
@@ -115,8 +115,8 @@ export default function MediaUploader({ theme, props }: any) {
                         style={({ pressed }) => [
                             styles.pressableCate,
                             {
-                                opacity: category === 'FUN' ? (pressed ? 0.8 : 1) : 0.3,
-                                borderColor: category === 'FUN' ? '#FFBB77' : '#D0D0D0',
+                                opacity: category === 'funny' ? (pressed ? 0.8 : 1) : 0.3,
+                                borderColor: category === 'funny' ? '#FFBB77' : '#D0D0D0',
                             }
                         ]}>
                         <Text style={styles.pressableTextCate}>好笑</Text>

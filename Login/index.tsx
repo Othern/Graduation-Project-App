@@ -55,7 +55,7 @@ const LoginAssociate = (props: any) => {
 
             const logdata = await logindata;
             if (logdata) {
-                if (1 === 1) { // change the state to false if we have server on
+                if (false) { // change the state to false if we have server on
                     showToast('登入成功.', '');
                     props.navigation.push('tab', { From: 'login' });
                     //The problem that 徐 got about login fail and stuck in the page after login might because line 44 isn't be commented, or might be some other problems.
@@ -108,7 +108,7 @@ const LoginAssociate = (props: any) => {
             return;
         }
 
-        if (true) { //turn to false if server had been started
+        if (false) { //turn to false if server had been started
             saveCredentials(emailL, passwordL);
             const usernameLS = 'James';
             const headImgLS = '';
@@ -169,7 +169,7 @@ const LoginAssociate = (props: any) => {
             return;
         }
 
-        if (true) { //turn to false if server had been started
+        if (false) { //turn to false if server had been started
             saveCredentials(email, password);
             const headImgRS = '';
             const UserData = JSON.stringify({ email, username, headImg: headImgRS });

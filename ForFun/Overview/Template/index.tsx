@@ -34,6 +34,7 @@ const emptyBanana = '../../../asset/emptyBanana.png';
 const fullBanana = '../../../asset/fullBanana.png';
 
 type ItemProps = {
+  id:string
   name: string;
   mockTitle: string;
   avatarUrl: string;
@@ -47,6 +48,7 @@ type ItemProps = {
 };
 
 const Item = ({
+  id,
   name,
   mockTitle,
   avatarUrl,
@@ -167,7 +169,7 @@ const Item = ({
               });
 
               // 回傳後端用戶喜歡某貼文
-              // sendHeart(pid)
+              sendHeart(id)
             }}>
             <Image
               source={!heart ? require(emptyBanana) : require(fullBanana)}
@@ -265,16 +267,17 @@ export default ({ kind, scrollY }: any) => {
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
   const [commentData, setCommentData] = useState(COMMENTDATA);
+  const [focusPostId,setFocusPostId] = useState("")
   const [comment, setComment] = useState('');
   const [page, setPage] = useState(1);
   //先將loading設為false，若是後端完成後要設為true
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  // useEffect(()=>{
-  //   getPostData(setPostData,kind,page)
-  //   setLoading(false)
-  // }
-  //   ,[])
+  useEffect(()=>{
+    getPostData(setPostData,kind,page)
+    setLoading(false)
+  }
+    ,[])
 
   const focus = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -317,7 +320,7 @@ export default ({ kind, scrollY }: any) => {
     setIsRefreshing(true);
     try {
       // Fetch new data
-      // getPostData(setPostData,kind,page)
+      await getPostData(setPostData,kind,page)
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
@@ -340,6 +343,7 @@ export default ({ kind, scrollY }: any) => {
 
             return (
               <Item
+                id = {item.id}
                 name={item.name}
                 mockTitle={item.mockTitle}
                 avatarUrl={item.avatarUrl}
@@ -353,7 +357,8 @@ export default ({ kind, scrollY }: any) => {
                 handleComment={() => {
                   handleSnapPress(0);
                   setIsVisible(true)
-                  // getCommentData(item.id);
+                  setFocusPostId(item.id)
+                  getCommentData(setCommentData,item.id);
                 }}
 
               />
@@ -418,6 +423,13 @@ export default ({ kind, scrollY }: any) => {
                   key={index} // key is not necessary here, as FlatList handles keys internally
                 />
               )}
+              ListEmptyComponent={
+                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                    目前沒有留言!!!
+                  </Text>
+                </View>
+              }
             />
             <View
               style={[
@@ -436,7 +448,7 @@ export default ({ kind, scrollY }: any) => {
               />
               <TouchableOpacity
                 onPress={() => {
-                  // sendComment(0, comment);
+                  sendComment(focusPostId, comment);
                   handleCloseComment()
                   setComment('')
                 }}

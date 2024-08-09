@@ -3,8 +3,8 @@ import Toast from 'react-native-toast-message';
 import * as Keychain from 'react-native-keychain';
 //keychain 如果要在ios 用 要在 ios資料夾中運行 npx pod-install 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import data from '../config.json';
+const url = data['URl']
 export const checkFastLoginSelection = async () => { //should use saveData to set 'FastLogin' to 'true'
     try {
         const value = await AsyncStorage.getItem('FastLogin');
@@ -76,7 +76,7 @@ export const getDataJSON = async (key: any, success = (data: any) => { }) => {
 
 export async function submitLogin(email: string, password: string, success = (data: any) => { }, fail = (data: any) => { }) {
     try {
-        const response = await fetch('http://192.168.0.13:5000/loginSubmit', {
+        const response = await fetch(url+'loginSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -100,7 +100,7 @@ export async function submitLogin(email: string, password: string, success = (da
 
 export async function submitRegister(email: string, password: string, username: string, success = (data: any) => { }, fail = (data: any) => { }) {
     try {
-        const response = await fetch('http://192.168.0.13:5000/registerSubmit', {
+        const response = await fetch(url+'registerSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
