@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {Card} from 'react-native-paper';
@@ -27,7 +27,9 @@ import {
 } from './function';
 import Video, {VideoRef} from 'react-native-video';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
-import AlertDelete from './AlertDelete'
+import AlertDelete from './AlertDelete';
+
+const fullBanana = '../../asset/fullBanana.png';
 
 type ItemProps = {
   description: string;
@@ -45,6 +47,7 @@ const Item = ({
   description,
   image,
   contentUri,
+  hearts,
   viewable,
   handleDelete,
   handleComment,
@@ -52,6 +55,7 @@ const Item = ({
 }: ItemProps) => {
   const theme = useColorScheme();
   const color = theme === 'dark' ? 'white' : 'black';
+  const [heartNum, setHeartNum] = useState(hearts);
   const [showMore, setShowMore] = useState(false);
   const desc = description.substring(0, 49);
   const moredesc = description.substring(49);
@@ -66,7 +70,9 @@ const Item = ({
     <View style={styles.item}>
       <View style={{height: 45, alignItems: 'center'}}>
         <Pressable
-          onPress={()=>{handleDelete()}}
+          onPress={() => {
+            handleDelete();
+          }}
           style={{
             height: 35,
             width: 35,
@@ -177,7 +183,12 @@ const Item = ({
               )}
             </View>
           )}
-          <View style={{position: 'absolute', right: 0, flexDirection: 'row'}}>
+          <View style={{position: 'absolute', right: 0, flexDirection: 'row', alignItems:'center'}}>
+            <Image
+              source={require(fullBanana)}
+              style={{height: 30, width: 30, marginRight: 5}}
+            />
+            <Text style={[{ color: color, fontSize: 15,  marginRight: 10}]}>{heartNum}</Text>
             <Pressable
               onPress={() => {
                 handleComment();
@@ -200,7 +211,6 @@ const Item = ({
           </View>
         </View>
       </View>
-      
     </View>
   );
 };
@@ -253,9 +263,9 @@ export default (props: any, {kind}: any) => {
   const [page, setPage] = useState(1);
 
   // 設定警告
-  const [showDeleteWarning,setShowDeleteWarning] = useState(false)
-  const [deletePostId, setDeletePostId] = useState("")
-  
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+  const [deletePostId, setDeletePostId] = useState('');
+
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
   // useEffect(()=>{
@@ -309,13 +319,18 @@ export default (props: any, {kind}: any) => {
     }
   };
 
-  
   if (loading) {
     return <Text style={{alignSelf: 'center'}}>loading...</Text>;
   } else {
     return (
       <>
-        <AlertDelete showDeleteWarning={showDeleteWarning} setShowDeleteWarning={setShowDeleteWarning} onConfirmDelete={()=>{deletePost(deletePostId)}}/>
+        <AlertDelete
+          showDeleteWarning={showDeleteWarning}
+          setShowDeleteWarning={setShowDeleteWarning}
+          onConfirmDelete={() => {
+            deletePost(deletePostId);
+          }}
+        />
         <FlatList
           data={postData}
           renderItem={({item, index}) => {
@@ -333,9 +348,9 @@ export default (props: any, {kind}: any) => {
                 like={item.like}
                 key={index}
                 viewable={viewable}
-                handleDelete={()=>{
-                  setShowDeleteWarning((prev)=>(!prev))
-                  setDeletePostId(item.id)
+                handleDelete={() => {
+                  setShowDeleteWarning(prev => !prev);
+                  setDeletePostId(item.id);
                 }}
                 handleComment={() => {
                   handleSnapPress(0);
@@ -359,8 +374,10 @@ export default (props: any, {kind}: any) => {
           // onEndReachedThreshold={1}
           // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
           ListEmptyComponent={
-            <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>
+            <View
+              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              <Text
+                style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>
                 目前沒有文章,快來新增一篇吧!
               </Text>
             </View>
@@ -491,5 +508,4 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  
 });
