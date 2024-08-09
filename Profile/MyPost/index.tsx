@@ -218,6 +218,7 @@ const Item = ({
 type CommentItemProps = {
   id: number;
   username: string;
+  mockTitle: string;
   content: string;
   avatarUrl: string;
   timestamp: string;
@@ -226,6 +227,7 @@ type CommentItemProps = {
 const CommentItem = ({
   id,
   username,
+  mockTitle,
   content,
   avatarUrl,
   timestamp,
@@ -244,7 +246,7 @@ const CommentItem = ({
             fontSize: 18,
             width: 320,
           }}>
-          {username}
+          {username}  {mockTitle}
         </Text>
         <Text style={{color: color, fontWeight: '500', width: 320}}>
           {content}
@@ -411,6 +413,7 @@ export default (props: any, {kind}: any) => {
                 <CommentItem
                   id={item.id}
                   username={item.username}
+                  mockTitle={item.mockTitle}
                   content={item.content}
                   timestamp={item.timestamp}
                   avatarUrl={item.avatarUrl}
