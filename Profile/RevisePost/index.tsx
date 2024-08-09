@@ -5,10 +5,10 @@ import { ShowMediaLibrary, showToast, formReviseData, uploadToServer, getDataJSO
 import Video from "react-native-video"
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function MediaUploader(props:any,{ theme}: any) {
-    const id  = props.route.params.id
-    const image  = useState(props.route.params.image)
-    const [contentUri,setContentUri] = useState(props.route.params.contentUri)
+export default function MediaUploader(props: any, { theme }: any) {
+    const id = props.route.params.id
+    const image = useState(props.route.params.image)
+    const [contentUri, setContentUri] = useState(props.route.params.contentUri)
     const [desc, setDesc] = useState(props.route.params.desc)
     const [email, setEmail] = useState('');
     getDataJSON('UserData', (data) => {
@@ -29,7 +29,7 @@ export default function MediaUploader(props:any,{ theme}: any) {
 
     const [media, setMedia] = useState<Media | null>(null);
     const [mediaURI, setMediaURI] = useState<string | null>(null);
-    
+
 
     //選擇media 檔案
     const handleMedia = useCallback(() => {
@@ -44,7 +44,7 @@ export default function MediaUploader(props:any,{ theme}: any) {
 
     //確認 (上傳並離開), 使用useCallback 的相依性，決定重新建構，確保變動時使用最新
     const handleConfirm = useCallback(async () => {
-        const formData = formReviseData(media,id,desc, email);
+        const formData = formReviseData(media, id, desc, email);
         try {
             console.log(formData);
             //待後端完成連接@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -55,7 +55,7 @@ export default function MediaUploader(props:any,{ theme}: any) {
             showToast("修改失敗", error instanceof Error ? error.message : "未知錯誤", "error");
         }
     }, [media, mediaURI, desc, props.navigation]);
-    
+
 
     return (
         <View style={styles.container}>
@@ -104,7 +104,7 @@ export default function MediaUploader(props:any,{ theme}: any) {
 
             <View style={styles.ButtonContainerDone}>
                 <Pressable
-                    onPress={()=>{props.navigation.pop()}}
+                    onPress={() => { props.navigation.pop() }}
                     style={({ pressed }) => [
                         styles.pressable,
                         {
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignContent: 'center',
         justifyContent: 'space-between',
-        marginTop: '10%'
+        marginTop: '5%'
     },
     pressableMedia: {
         height: 50,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
         borderColor: '#FFBB77',
         borderRadius: 5,
         fontSize: 16,
-        height:250,
+        height: 230,
         textAlignVertical: 'top',
         marginHorizontal: 10,
         backgroundColor: 'white',

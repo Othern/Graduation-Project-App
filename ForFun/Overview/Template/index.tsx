@@ -13,11 +13,11 @@ import {
   TextInput,
   RefreshControl
 } from 'react-native';
-import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
-import {Card} from 'react-native-paper';
-import {reviceHeart} from '../../function';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { Card } from 'react-native-paper';
+import { reviceHeart } from '../../function';
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import {
   getPostData,
   getCommentData,
@@ -26,8 +26,8 @@ import {
   COMMENTDATA,
   POSTDATA,
 } from './function';
-import Video, {VideoRef} from 'react-native-video';
-import {useIsFocused} from '@react-navigation/native';
+import Video, { VideoRef } from 'react-native-video';
+import { useIsFocused } from '@react-navigation/native';
 
 const emptyBanana = '../../../asset/emptyBanana.png';
 const fullBanana = '../../../asset/fullBanana.png';
@@ -73,13 +73,13 @@ const Item = ({
   }, [viewable]);
   return (
     <View style={styles.item}>
-      <View style={{height: 50, flexDirection: 'row', alignItems: 'center'}}>
-        <Image source={{uri: avatarUrl}} style={styles.avatar} />
-        <Text style={[styles.name, {color: color}]}>{name}  {mockTitle}</Text>
+      <View style={{ height: 50, flexDirection: 'row', alignItems: 'center' }}>
+        <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+        <Text style={[styles.name, { color: color }]}>{name}  {mockTitle}</Text>
       </View>
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         {image ? (
-          <Image source={{uri: contentUri}} style={styles.content} />
+          <Image source={{ uri: contentUri }} style={styles.content} />
         ) : (
           <TouchableOpacity
             activeOpacity={1}
@@ -89,11 +89,11 @@ const Item = ({
             }}>
             <Video
               // Can be a URL or a local file.
-              source={{uri: contentUri}}
+              source={{ uri: contentUri }}
               ref={videoRef}
               muted={muted}
               paused={paused}
-              style={{height: 350, width: '100%'}}
+              style={{ height: 350, width: '100%' }}
               resizeMode="cover"
             />
             <Pressable
@@ -113,7 +113,7 @@ const Item = ({
               <Icon
                 name={muted ? 'volume-mute' : 'volume-high'}
                 size={20}
-                style={{alignSelf: 'center'}}
+                style={{ alignSelf: 'center' }}
                 color="white"
               />
             </Pressable>
@@ -135,21 +135,21 @@ const Item = ({
               <Icon
                 name={paused ? 'play' : 'pause'}
                 size={20}
-                style={{alignSelf: 'center'}}
+                style={{ alignSelf: 'center' }}
                 color="white"
               />
             </Pressable>
           </TouchableOpacity>
         )}
       </View>
-      <View style={{padding: 5}}>
+      <View style={{ padding: 5 }}>
         <View
-          style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
+          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
           <Pressable
             onPress={() => {
               handleComment();
             }}
-            style={{marginRight: 10}}>
+            style={{ marginRight: 10 }}>
             <Icon
               name="chatbubble-outline"
               color={color}
@@ -170,22 +170,22 @@ const Item = ({
             }}>
             <Image
               source={!heart ? require(emptyBanana) : require(fullBanana)}
-              style={{height: 30, width: 30, marginRight: 10}}
+              style={{ height: 30, width: 30, marginRight: 10 }}
               tintColor={
                 theme == 'light' && !heart
                   ? 'black'
                   : !heart
-                  ? 'white'
-                  : undefined
+                    ? 'white'
+                    : undefined
               }
             />
           </Pressable>
-          <Text style={[{color: color, fontSize: 15}]}>{heartNum}</Text>
+          <Text style={[{ color: color, fontSize: 15 }]}>{heartNum}</Text>
         </View>
 
         {desc.length < 49 ? (
           <View>
-            <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+            <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
               {desc}
             </Text>
           </View>
@@ -193,20 +193,20 @@ const Item = ({
           <View>
             {!showMore ? (
               <View>
-                <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+                <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
                   {desc}
                 </Text>
                 <Pressable
                   onPress={() => {
                     setShowMore(prev => !prev);
                   }}>
-                  <Text style={{fontWeight: '500', fontSize: 16}}>
+                  <Text style={{ fontWeight: '500', fontSize: 16 }}>
                     顯示更多...
                   </Text>
                 </Pressable>
               </View>
             ) : (
-              <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
+              <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
                 {desc}
                 {moredesc}
               </Text>
@@ -238,8 +238,8 @@ const CommentItem = ({
   const theme = useColorScheme();
   const color = theme === 'dark' ? 'white' : 'black';
   return (
-    <View style={{marginVertical: 10, padding: 10, flexDirection: 'row'}}>
-      <Image source={{uri: avatarUrl}} style={styles.avatar} />
+    <View style={{ marginVertical: 10, padding: 10, flexDirection: 'row' }}>
+      <Image source={{ uri: avatarUrl }} style={styles.avatar} />
       <View>
         <Text
           style={{
@@ -251,7 +251,7 @@ const CommentItem = ({
           }}>
           {username}  {mockTitle}
         </Text>
-        <Text style={{color: color, fontWeight: '500', width: 320}}>
+        <Text style={{ color: color, fontWeight: '500', width: 320 }}>
           {content}
         </Text>
       </View>
@@ -259,7 +259,7 @@ const CommentItem = ({
   );
 };
 
-export default ({kind, scrollY}: any) => {
+export default ({ kind, scrollY }: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
@@ -286,7 +286,7 @@ export default ({kind, scrollY}: any) => {
     itemVisiblePercentThreshold: 70, // Percentage of item that needs to be visible to consider it "in view"
   };
   // 當目前觀看的item改變時
-  const onViewableItemsChanged = useCallback(({viewableItems}: any) => {
+  const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
     viewableItems.forEach((item: any) => {
       setViewItem(item.index);
     });
@@ -323,13 +323,13 @@ export default ({kind, scrollY}: any) => {
   };
 
   if (loading) {
-    return <Text style={{alignSelf: 'center'}}>loading...</Text>;
+    return <Text style={{ alignSelf: 'center' }}>loading...</Text>;
   } else {
     return (
       <>
         <FlatList
           data={postData}
-          renderItem={({item, index}) => {
+          renderItem={({ item, index }) => {
             let viewable = false;
             if (viewItem == index && focus == true) {
               viewable = true;
@@ -351,15 +351,15 @@ export default ({kind, scrollY}: any) => {
                   handleSnapPress(0);
                   // getCommentData(item.id);
                 }}
-                
+
               />
             );
           }}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{height: 80}} />}
+          ListHeaderComponent={<View style={{ height: 80 }} />}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {useNativeDriver: false},
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false },
           )}
           scrollEventThrottle={16}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -368,8 +368,8 @@ export default ({kind, scrollY}: any) => {
           // onEndReachedThreshold={1}
           // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
           ListEmptyComponent={
-            <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
                 目前沒有文章,快來新增一篇吧!
               </Text>
             </View>
@@ -390,16 +390,16 @@ export default ({kind, scrollY}: any) => {
           snapPoints={snapPoints}
           backgroundStyle={[
             styles.commentContainer,
-            {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
+            { backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white' },
           ]}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{flex: 1}}>
+            style={{ flex: 1 }}>
             <BottomSheetFlatList
               data={commentData}
-              ListHeaderComponent={<View style={{height: 60}}></View>}
+              ListHeaderComponent={<View style={{ height: 60 }}></View>}
               keyExtractor={(item, index) => item.id.toString()} // Ensure each id is a string or use a different keyExtractor
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <CommentItem
                   id={item.id}
                   username={item.username}
@@ -414,12 +414,12 @@ export default ({kind, scrollY}: any) => {
             <View
               style={[
                 styles.inputContainer,
-                {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
+                { backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white' },
               ]}>
               <TextInput
                 style={[
                   styles.input,
-                  {color: theme === 'dark' ? 'white' : 'black'},
+                  { color: theme === 'dark' ? 'white' : 'black' },
                 ]}
                 value={comment}
                 onChangeText={setComment}
@@ -467,10 +467,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+    backgroundColor: 'white',
   },
   content: {
     width: '100%',
     height: 350,
+    backgroundColor: 'white',
   },
   inputContainer: {
     flexDirection: 'row',
