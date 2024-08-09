@@ -29,7 +29,7 @@ const RankingItem = ({ item, handleComment }: { item: ItemProps; handleComment: 
         <View style={[styles.itemContainer, { backgroundColor: item.rank == 1 ? '#FFFFDF' : (item.rank == 2 ? '#FCFCFC' : '#FFEEDD') }]}>
             <View style={styles.rowContainer}>
                 <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
-                <Text style={[styles.username]}> {item.mockTitle} {item.name}</Text>
+                <Text style={[styles.username]}>{item.name}  {item.mockTitle}</Text>
             </View>
             <View style={styles.contentContainer}>
                 {item.image ? (

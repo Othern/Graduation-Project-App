@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Modal, StyleSheet, Text, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from 'react-native-element-dropdown';
-
+import data from '../../../config.json'
+const URL = data['URl']
 const getDataJSON = async (key: any, success = (data: any) => { }) => {
     try {
         const value = await AsyncStorage.getItem(key);
@@ -16,14 +17,16 @@ const getDataJSON = async (key: any, success = (data: any) => { }) => {
 };
 
 // 測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料
-const mockTitleList = [
-    "無",
-    "大師",
-    "大大師",
-    "可愛大師",
-    "好笑王",
-];
-const mockCurrentTitle = "好笑王";
+const mockTitleList:any = ["無"];
+// const mockTitleList = [
+//     "無",
+//     "大師",
+//     "大大師",
+//     "可愛大師",
+//     "好笑王",
+// ];
+// const mockCurrentTitle = "好笑王";
+const mockCurrentTitle = "無";
 // 測試用假資料 測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料測試用假資料
 const TitleModal = ({ visible, onClose }: any) => {
     const [email, setEmail] = useState('');
@@ -35,7 +38,7 @@ const TitleModal = ({ visible, onClose }: any) => {
     useEffect(() => {
         if (visible) {
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@實際使用需修改
-            if (1 === 1) { //使用假資料(測試用)
+            if (false) { //使用假資料(測試用)
                 setTitleList(mockTitleList);
                 setCurrentTitle(mockCurrentTitle);
                 setSelectedTitle(mockCurrentTitle);
@@ -59,7 +62,7 @@ const TitleModal = ({ visible, onClose }: any) => {
 
     const fetchTitleList = async (userEmail: any) => {
         try {
-            const response = await fetch('http://172.20.10.2:4000/GetUserTitleList', {
+            const response = await fetch(URL+'GetUserTitleList', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -84,7 +87,7 @@ const TitleModal = ({ visible, onClose }: any) => {
     const handleSave = async () => {
         if (selectedTitle !== currentTitle) {
             try {
-                const response = await fetch('http://172.20.10.2:4000/ChangeUserTitle', {
+                const response = await fetch(URL+'ChangeUserTitle', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

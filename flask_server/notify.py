@@ -28,7 +28,7 @@ last_sent_time = {} # {user_id: last_time }
 # alert_centers = [] # # [(alert_id, latitude, longitude)]
 
 # 推送設置
-cred = credentials.Certificate("./graduation-project-app-b5764-firebase-adminsdk-gws2y-65e1d2adfd.json")
+cred = credentials.Certificate("./Graduation-Project-App/flask_server/google.json")
 default_app = firebase_admin.initialize_app(credential=cred)
 
 def send_messages(lat, lon, radius):
