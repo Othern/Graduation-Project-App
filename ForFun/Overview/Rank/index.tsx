@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         borderRadius: 10,
         marginVertical: 5,
+        backgroundColor: 'white',
     },
     contentVideo: {
         width: '100%',
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         marginRight: 10,
+        backgroundColor: 'white',
     },
     commentUsername: {
         fontWeight: "500",
