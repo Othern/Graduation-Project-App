@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  TouchableWithoutFeedback,
   RefreshControl,
 } from 'react-native';
 import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
@@ -183,12 +184,20 @@ const Item = ({
               )}
             </View>
           )}
-          <View style={{position: 'absolute', right: 0, flexDirection: 'row', alignItems:'center'}}>
+          <View
+            style={{
+              position: 'absolute',
+              right: 0,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Image
               source={require(fullBanana)}
               style={{height: 30, width: 30, marginRight: 5}}
             />
-            <Text style={[{ color: color, fontSize: 15,  marginRight: 10}]}>{heartNum}</Text>
+            <Text style={[{color: color, fontSize: 15, marginRight: 10}]}>
+              {heartNum}
+            </Text>
             <Pressable
               onPress={() => {
                 handleComment();
@@ -246,7 +255,7 @@ const CommentItem = ({
             fontSize: 18,
             width: 320,
           }}>
-          {username}  {mockTitle}
+          {username} {mockTitle}
         </Text>
         <Text style={{color: color, fontWeight: '500', width: 320}}>
           {content}
@@ -263,6 +272,7 @@ export default (props: any, {kind}: any) => {
   const [commentData, setCommentData] = useState(COMMENTDATA);
   const [comment, setComment] = useState('');
   const [page, setPage] = useState(1);
+  const [isVisible, setIsVisible] = useState(false);
 
   // 設定警告
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
@@ -306,9 +316,11 @@ export default (props: any, {kind}: any) => {
   const handleSnapPress = useCallback((index: any) => {
     sheetRef.current?.snapToIndex(index);
   }, []);
-  const handleClosePress = useCallback(() => {
+  const handleCloseComment = () => {
     sheetRef.current?.close();
-  }, []);
+    setIsVisible(false);
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -356,6 +368,7 @@ export default (props: any, {kind}: any) => {
                 }}
                 handleComment={() => {
                   handleSnapPress(0);
+                  setIsVisible(true);
                   // getCommentData(item.id);
                 }}
                 handleRevise={() => {
@@ -392,7 +405,11 @@ export default (props: any, {kind}: any) => {
             />
           }
         />
-
+        {isVisible && (
+          <TouchableWithoutFeedback onPress={handleCloseComment}>
+            <View style={styles.overlay} />
+          </TouchableWithoutFeedback>
+        )}
         <BottomSheet
           ref={sheetRef}
           index={-1}
@@ -438,7 +455,11 @@ export default (props: any, {kind}: any) => {
               />
               <TouchableOpacity
                 onPress={() => {
-                  sendComment(0, comment);
+                  // sendComment(0, comment);
+                  handleCloseComment()
+                  setComment('')
+                  
+                  
                 }}
                 style={styles.submitButton}>
                 <Text style={styles.submitButtonText}>發送</Text>
@@ -510,5 +531,14 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: '0%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // 半透明黑色背景
+    zIndex: 0, // 確保覆蓋在底部視圖上
   },
 });

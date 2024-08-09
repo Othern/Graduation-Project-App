@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  TouchableWithoutFeedback,
   RefreshControl
 } from 'react-native';
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
@@ -268,7 +269,7 @@ export default ({ kind, scrollY }: any) => {
   const [page, setPage] = useState(1);
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
-
+  const [isVisible, setIsVisible] = useState(false);
   // useEffect(()=>{
   //   getPostData(setPostData,kind,page)
   //   setLoading(false)
@@ -307,9 +308,11 @@ export default ({ kind, scrollY }: any) => {
   const handleSnapPress = useCallback((index: any) => {
     sheetRef.current?.snapToIndex(index);
   }, []);
-  const handleClosePress = useCallback(() => {
+  const handleCloseComment = () => {
     sheetRef.current?.close();
-  }, []);
+    setIsVisible(false);
+};
+  
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -349,6 +352,7 @@ export default ({ kind, scrollY }: any) => {
                 viewable={viewable}
                 handleComment={() => {
                   handleSnapPress(0);
+                  setIsVisible(true)
                   // getCommentData(item.id);
                 }}
 
@@ -382,7 +386,11 @@ export default ({ kind, scrollY }: any) => {
             />
           }
         />
-
+        {isVisible && (
+                    <TouchableWithoutFeedback onPress={handleCloseComment}>
+                        <View style={styles.overlay} />
+                    </TouchableWithoutFeedback>
+                )}
         <BottomSheet
           ref={sheetRef}
           index={-1}
@@ -428,7 +436,9 @@ export default ({ kind, scrollY }: any) => {
               />
               <TouchableOpacity
                 onPress={() => {
-                  sendComment(0, comment);
+                  // sendComment(0, comment);
+                  handleCloseComment()
+                  setComment('')
                 }}
                 style={styles.submitButton}>
                 <Text style={styles.submitButtonText}>發送</Text>
@@ -501,4 +511,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: '0%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // 半透明黑色背景
+    zIndex: 0, // 確保覆蓋在底部視圖上
+}
 });
