@@ -10,17 +10,17 @@ import {detailData, getDetailData} from './function';
 import {LineChart} from 'react-native-gifted-charts';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const locationImages = {
-  國研大樓和體育館: require('../../asset/backGround/國研大樓和體育館.png'),
-  教學區: require('../../asset/backGround/教學區.png'),
-  教學區西側: require('../../asset/backGround/教學區西側.png'),
-  武嶺: require('../../asset/backGround/武嶺.png'),
-  活動中心: require('../../asset/backGround/活動中心.png'),
-  海院: require('../../asset/backGround/海院.png'),
-  翠亨: require('../../asset/backGround/翠亨.png'),
-  電資大樓: require('../../asset/backGround/電資大樓.png'),
-  體育場和海提: require('../../asset/backGround/體育場和海提.png'),
-  文學院和藝術學院: require('../../asset/backGround/文學院和藝術學院.png'), 
+const locationImages: {[key: string]: any} = {
+  國研大樓和體育館: require('../../asset/backGround/researchBuildingAndGym.png'),
+  教學區: require('../../asset/backGround/teachingArea.png'),
+  教學區西側: require('../../asset/backGround/teachingAreaWestSide.png'),
+  武嶺: require('../../asset/backGround/Wuling.png'),
+  活動中心: require('../../asset/backGround/activityCenter.png'),
+  海院: require('../../asset/backGround/oceanCollege.png'),
+  翠亨: require('../../asset/backGround/Cuiheng.png'),
+  電資大樓: require('../../asset/backGround/electricalAndComputerEngineeringBuilding.png'),
+  體育場和海提: require('../../asset/backGround/stadiumAndSeawall.png'),
+  文學院和藝術學院: require('../../asset/backGround/collegeOfLiteratureAndArts.png'), 
 };
 export default (props: any) => {
   const title = props.route.params.title;
@@ -29,7 +29,7 @@ export default (props: any) => {
   try {
     image = locationImages[title as keyof typeof locationImages];
   } catch {
-    image = require('../../asset/backGround/體育場和海提.png');
+    image = require('../../asset/backGround/stadiumAndSeawall.png');
   }
   const chartData = detailData.map(item => ({
     value: item.Number,

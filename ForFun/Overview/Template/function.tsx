@@ -188,7 +188,7 @@ export const POSTDATA = [
     description: 'Hello Everyone.',
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC28lvhB3X_P4cDQ17N2RQvttJRUYagluoPw&s',
     image: false,
-    contentUri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    contentUri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     like: false,
     hearts: 10
 
@@ -200,7 +200,7 @@ export const POSTDATA = [
     description: 'Ты симпатичная ',
     avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRESgscYBotXXua0fHnKMk-B9NJuLQ97d19sQ&s',
     image: false,
-    contentUri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    contentUri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     like: false,
     hearts: 100
 
