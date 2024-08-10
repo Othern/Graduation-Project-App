@@ -3,6 +3,7 @@ import Toast from 'react-native-toast-message';
 import * as Keychain from 'react-native-keychain';
 //keychain 如果要在ios 用 要在 ios資料夾中運行 npx pod-install 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { request, PERMISSIONS } from 'react-native-permissions';
 import data from '../config.json';
 const url = data['URl']
 export const checkFastLoginSelection = async () => { //should use saveData to set 'FastLogin' to 'true'
@@ -120,3 +121,7 @@ export async function submitRegister(email: string, password: string, username: 
         console.error('Error sending Register data:', error);
     }
 }
+export const requestNotificationPermission = async () => {
+  const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+  // 处理结果
+};
