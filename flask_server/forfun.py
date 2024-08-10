@@ -243,6 +243,7 @@ def get_MyPostData():
 def get_PreviousPostData():
     data = request.get_json()
     kind = data.get('kind')
+    print(kind)
     period = data.get('period')
     try:
         conn = mariadb.connect(
@@ -264,16 +265,16 @@ def get_PreviousPostData():
     x = datetime.datetime(2024, 8, 2)  # baseline
     now = datetime.datetime.now()
     delta = now - x
-    period = int((delta.days) / 7)
-    if (kind != 'recent'):
+    periods = int((delta.days) / 7)
+    if period == 0:
         cur.execute(
-            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum LIMIT 3",
-            (kind, period)
+            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum DESC",
+            (kind, periods)
         )
     else:
         cur.execute(
-            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_phase = ? ORDER BY P.Post_time",
-            (period,)
+            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum",
+            (kind, period)
         )
     transformed_data = []
     for row in cur:

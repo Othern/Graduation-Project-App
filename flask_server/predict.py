@@ -767,11 +767,11 @@ def predict_model():
 # 建立排程器並設置時區
 scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 # 測試用，每分鐘呼叫function一次
-scheduler.add_job(preprocess_data, 'cron', minute='*')
-scheduler.add_job(predict_model, 'cron', minute='*')
+# scheduler.add_job(preprocess_data, 'cron', minute='*')
+# scheduler.add_job(predict_model, 'cron', minute='*')
 # # 實際用
-# scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
-# scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
+scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
+scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
 
 print("Scheduler started. Jobs are set up.")
 scheduler.start()
@@ -802,25 +802,36 @@ def predict_model_endpoint():
         columns = [desc[0] for desc in cur.description]
         total_count = pd.DataFrame(rows, columns=columns)
 
-        # 按照 Location 分組並彙總 Number
-        total_count = total_count.groupby(
-            "Location", as_index=False)["Number"].sum()
+        # 將 Date_time 轉換為 datetime 格式，並提取小時
+        total_count["Date_time"] = pd.to_datetime(total_count["Date_time"])
+        total_count["Hour"] = total_count["Date_time"].dt.hour
 
-        # 定義分級少量、中量、大量的函數
-        def categorize_amount(number):
-            if number <= 75:
-                return "少量"
-            elif number <= 90:
+        # 按 Location 和 12 小時內分組，計算每個 12 小時內的平均 Number
+        total_count.set_index("Date_time", inplace=True)
+        total_count = total_count.groupby([pd.Grouper(freq='12H'), 'Location'])[
+            "Number"].mean().reset_index()
+
+        # 定義分級函數
+        def categorize_amount(value):
+            if value > 15:
+                return "大量"
+            elif value > 10:
                 return "中量"
             else:
-                return "大量"
+                return "少量"
 
         # 新增分類欄位
         total_count["Category"] = total_count["Number"].apply(
             categorize_amount)
 
+        # 按照 Location 彙總總數和分類
+        final_counts = total_count.groupby("Location", as_index=False).agg({
+            "Number": "mean",  # 可以選擇使用平均數量作為代表值
+            "Category": "first"  # 只取第一個分類結果
+        })
+
         # 最後選擇需要的欄位
-        final_counts = total_count[["Location", "Number", "Category"]]
+        final_counts = final_counts[["Location", "Number", "Category"]]
 
         # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
         json_data = final_counts.to_dict(orient='records')

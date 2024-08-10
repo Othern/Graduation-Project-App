@@ -53,7 +53,7 @@ def forFun_submit():
         for row in cur:
             userid = row[0]
         media_name = str(
-            userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")) + '_' + media_name
+            userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + '_' + media_name
 
         media.save(f'static/forFun/{media_name}')
         media_path = "https://d174-180-218-40-127.ngrok-free.app/static/forFun/" + media_name
