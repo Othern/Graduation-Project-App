@@ -18,8 +18,8 @@ import BackgroundLocation from './Function/BackgroundLocation';
 
 import { useEffect } from 'react';
 
-(Text as any).defaultProps = { maxFontSizeMultiplier: 1.05 };
-(TextInput as any).defaultProps = { maxFontSizeMultiplier: 1.05 };
+(Text as any).defaultProps = { maxFontSizeMultiplier: 1 };
+(TextInput as any).defaultProps = { maxFontSizeMultiplier: 1 };
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Background message handled:', remoteMessage);

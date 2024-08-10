@@ -19,6 +19,7 @@ export const getPostData = async (setPostData: any, setMaxYear: any, period: num
                     "kind": kind,
                 })
         }).then(response => response.json())
+        console.log(response)
         setMaxYear(response.maxYear)
         setPostData(response.data)
     }
