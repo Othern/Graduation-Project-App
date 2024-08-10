@@ -6,6 +6,8 @@ import sys
 import datetime
 from werkzeug.utils import secure_filename
 from pypinyin import lazy_pinyin
+import os
+
 # 建立實體
 upload = Blueprint('upload', __name__,
                    template_folder='../ForFun/Upload')
@@ -42,8 +44,6 @@ def forFun_submit():
             print(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
 
-        media.save(f'static/forFun/{media_name}')
-        media_path = "https://6de2-180-218-40-127.ngrok-free.app/static/forFun/" + media_name
         # 取得資料庫的指標(類似pointer的意思，不須理解)
         cur = conn.cursor()
         cur.execute(
@@ -52,6 +52,11 @@ def forFun_submit():
         )
         for row in cur:
             userid = row[0]
+        media_name = str(
+            userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")) + '_' + media_name
+
+        media.save(f'static/forFun/{media_name}')
+        media_path = "https://d174-180-218-40-127.ngrok-free.app/static/forFun/" + media_name
         x = datetime.datetime(2024, 8, 2)  # baseline
         now = datetime.datetime.now()
         delta = now - x
@@ -94,10 +99,7 @@ def forFun_Revise():
         except mariadb.Error as e:
             print(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
-        if reviseMedia == 'true':
-            media.save(f'static/forFun/{media_name}')
-            media_path = "https://6de2-180-218-40-127.ngrok-free.app/static/forFun/" + media_name
-        # 取得資料庫的指標(類似pointer的意思，不須理解)
+
         cur = conn.cursor()
         cur.execute(
             "SELECT PID FROM user WHERE Email = ?",
@@ -105,6 +107,14 @@ def forFun_Revise():
         )
         for row in cur:
             userid = row[0]
+
+        if reviseMedia == 'true':
+            media_name = str(
+                userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")) + '_' + media_name
+            media.save(f'static/forFun/{media_name}')
+            media_path = "https://d174-180-218-40-127.ngrok-free.app/static/forFun/" + media_name
+        # 取得資料庫的指標(類似pointer的意思，不須理解)
+
         if reviseMedia == 'true':
             cur.execute(
                 "UPDATE post SET `Content` = ?, `Path` = ?, `Type` = ? WHERE PID = ? AND Post_ID = ?",

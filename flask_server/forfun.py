@@ -4,7 +4,7 @@ import secrets
 import mariadb
 import sys
 import datetime
-
+import os
 
 # 建立實體
 forfun = Blueprint('forfun', __name__,
@@ -265,7 +265,7 @@ def get_PreviousPostData():
     now = datetime.datetime.now()
     delta = now - x
     period = int((delta.days) / 7)
-    if (kind != 'RECENT'):
+    if (kind != 'recent'):
         cur.execute(
             "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum LIMIT 3",
             (kind, period)
@@ -314,9 +314,7 @@ def get_PreviousPostData():
 def delete_PostData():
     data = request.get_json()
     email = data.get('email')
-    print(email)
     pid = data.get('pid')
-    print(pid)
     try:
         conn = mariadb.connect(
             user="root",  # 輸入你的user名稱
@@ -338,10 +336,6 @@ def delete_PostData():
     )
     for row in cur:
         userid = row[0]
-
-    x = datetime.datetime(2024, 8, 2)  # baseline
-    now = datetime.datetime.now()
-    delta = now - x
     cur.execute(
         "DELETE FROM post WHERE Post_ID = ? AND PID = ?",
         (pid, userid)
