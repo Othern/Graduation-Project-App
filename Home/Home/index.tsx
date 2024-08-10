@@ -5,9 +5,9 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useState, useEffect} from 'react';
 import {MultiSelect} from 'react-native-element-dropdown';
-import {requestGeolocationPermission} from './function';
+import {requestGeolocationPermission,Data} from './function';
 import setting from '../../config.json'
-import { request, PERMISSIONS } from 'react-native-permissions';
+const data  =Data;
 const URL =setting['URl']
 // const data = [
 //   {
@@ -40,33 +40,18 @@ const URL =setting['URl']
 //   },
 // ];
 const list = [
-  {label: '預測數量', value: 'PD'},
   {label: '當前數量', value: 'RT'},
 ];
-const requestNotificationPermission = async () => {
-  
-  const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-  // 处理结果
-};
+
 
 export default () => {
   const [selected, setSelected] = useState(['RT', 'PD']);
   const [loading, setLoading] = useState(true);
-  const [RTData, setRTData] = useState([]);
-  const [PDData, setPDData] = useState([]);
+  const [RTData, setRTData] = useState(data);
+  const [PDData, setPDData] = useState(data);
   const [refreshInterval, setRefreshInterval] = useState(10000); // 每分鐘更新一次地圖資訊
-  
-  requestNotificationPermission()
   // 要使用Networking 取消quote，並要改成你的url
   const getData = async () => {
-    const PDUrl = URL+'api/data/getRealTimeData'; //請更改為預測的API
-    try {
-      const response = await fetch(PDUrl).then(response => response.json());
-      setPDData(response);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
     const RTUrl = URL+'api/data/getRealTimeData';
     try {
       const response = await fetch(RTUrl).then(response => response.json());
@@ -145,26 +130,7 @@ export default () => {
           </>
         )}
 
-        {selected.includes('PD') && (
-          // 未來使用將 - 0.001 拿掉即可
-          <>
-            {PDData.map((item, key) => (
-              <Marker
-                coordinate={{
-                  longitude: item.longitude - 0.001,
-                  latitude: item.latitude,
-                }}
-                key={key}
-                pinColor="green">
-                <Callout style={styles.callout}>
-                  <View style={styles.callout}>
-                    <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
-                  </View>
-                </Callout>
-              </Marker>
-            ))}
-          </>
-        )}
+        
       </MapView>
       <MultiSelect
         style={styles.dropdown}

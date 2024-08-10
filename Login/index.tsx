@@ -23,6 +23,7 @@ import {
   saveData,
   getDataJSON,
   checkFastLoginSelection,
+  requestNotificationPermission
 } from './function';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Notify} from '../Function/Notify';
@@ -60,6 +61,7 @@ const LoginAssociate = (props: any) => {
 
   const [fast, setFast] = useState(false);
   const [waiting, setWaiting] = useState(true); //等待模式 (等server 反應)
+  requestNotificationPermission()
   useEffect(() => {
     const logindata = getCredentialsFromKeychain();
     async function FastLogin() {

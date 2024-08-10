@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useCallback} from 'react';
 import {
   StyleSheet,
   ImageBackground,
@@ -7,7 +7,9 @@ import {
   View,
   Text,
   useColorScheme,
+  RefreshControl,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import {ProgressBar} from 'react-native-paper';
 import {getPreviewlData, previewData} from './function';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +22,7 @@ const locationImages: {[key: string]: any} = {
   海院: require('../../asset/backGround/oceanCollege.png'),
   翠亨: require('../../asset/backGround/Cuiheng.png'),
   電資大樓: require('../../asset/backGround/electricalAndComputerEngineeringBuilding.png'),
-  體育場和海提: require('../../asset/backGround/stadiumAndSeawall.png'),
+  體育場和海堤: require('../../asset/backGround/stadiumAndSeawall.png'),
   文學院和藝術學院: require('../../asset/backGround/collegeOfLiteratureAndArts.png'), 
 };
 
@@ -112,16 +114,32 @@ const PredictionCard = ({onPress, location, category}: any) => {
 };
 
 export default (props: any) => {
+  const theme = useColorScheme();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [data, setData] = useState(previewData);
+  const isFocused = useIsFocused();
   const handlePress = (screenName: string, params: any) => {
     props.navigation.push(screenName, params);
   };
-  const [data, setData] = useState(previewData);
   //測試時將此註解拿掉即可
-  // useEffect(() => {
-  //     getPreviewlData((pd: any) => { setData(pd) })
-
-  // }, [])
-
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      await getPreviewlData((pd: any) => { setData(pd) });
+    } catch (error) {
+      console.error('Error fetching new data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+  useEffect(() => {
+    if (isFocused) {
+      try {
+        getPreviewlData((pd: any) => { setData(pd) });
+      } catch (error) {
+        console.error('Error fetching preview data', error);}
+    }
+  }, [isFocused, handleRefresh]);
   return (
     <FlatList
       data={data}
@@ -141,6 +159,19 @@ export default (props: any) => {
           />
         );
       }}
+      refreshControl={<RefreshControl
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        tintColor={theme === 'dark' ? 'white' : 'black'}
+      />}
+      ListEmptyComponent={
+        <View
+          style={{alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 20}}>
+          <Text style={{fontSize: 18, fontWeight: 'bold'}}>
+            目前沒有預測資訊，請稍候試試
+          </Text>
+        </View>
+      }
     />
   );
 };

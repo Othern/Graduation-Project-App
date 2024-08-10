@@ -19,7 +19,7 @@ const locationImages: {[key: string]: any} = {
   海院: require('../../asset/backGround/oceanCollege.png'),
   翠亨: require('../../asset/backGround/Cuiheng.png'),
   電資大樓: require('../../asset/backGround/electricalAndComputerEngineeringBuilding.png'),
-  體育場和海提: require('../../asset/backGround/stadiumAndSeawall.png'),
+  體育場和海堤: require('../../asset/backGround/stadiumAndSeawall.png'),
   文學院和藝術學院: require('../../asset/backGround/collegeOfLiteratureAndArts.png'), 
 };
 export default (props: any) => {
@@ -41,14 +41,14 @@ export default (props: any) => {
   const graphTitle =
     today.getHours() >= 18 ? '明日獼猴預測出現數量' : '今日獼猴預測出現數量';
   //測試時將此註解拿掉即可
-  // useEffect(()=>{getDetailData(title,
-  //     (data:any)=>{
-  //     const temp = data.map((item:any) => ({
-  //             value: item.Number,
-  //             label: item.Date_time
-  //         }));
-  //     setData(temp)
-  //     })},[])
+  useEffect(()=>{getDetailData(title,
+      (data:any)=>{
+      const temp = data.map((item:any) => ({
+              value: item.Number,
+              label: item.Date_time
+          }));
+      setData(temp)
+      })},[])
 
   return loading ? (
     <Text>Loading</Text>
