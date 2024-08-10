@@ -58,6 +58,12 @@ const Item = ({
   const videoRef = useRef<VideoRef>(null);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
+  useEffect(()=>{
+    setHeart(like)
+  },[like])
+  useEffect(()=>{
+    setHeartNum(hearts)
+  },[hearts])
   useEffect(() => {
     setPaused(!viewable);
     setMuted(!viewable);
@@ -266,7 +272,7 @@ export default ({kind, scrollY}: any) => {
     setLoading(false);
   }, []);
 
-  const focus = useIsFocused();
+  const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
   // 設定當前觀看的item是哪一個
   const [viewItem, setViewItem] = useState(0);
@@ -292,18 +298,21 @@ export default ({kind, scrollY}: any) => {
     }
   }, [page, kind, loading]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      // Fetch new data
       await getPostData(setPostData, kind, page);
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
       setIsRefreshing(false);
     }
-  };
-
+  }, [kind, page]);
+  useEffect(() => {
+    if (isFocused) {
+      handleRefresh();
+    }
+  }, [isFocused, handleRefresh]);
   if (loading) {
     return <Text style={{alignSelf: 'center'}}>loading...</Text>;
   } else {
@@ -313,7 +322,7 @@ export default ({kind, scrollY}: any) => {
           data={postData}
           renderItem={({item, index}) => {
             let viewable = false;
-            if (viewItem == index && focus == true) {
+            if (viewItem == index && isFocused == true) {
               viewable = true;
             }
 

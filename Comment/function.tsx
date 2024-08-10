@@ -114,7 +114,6 @@ export const getCommentData = async (setCommentData: any, pid: string) => {
         body: JSON.stringify({ "pid": pid })
       }
       ).then(response => response.json());
-      console.log(response)
       setCommentData(response);
     } catch (error) {
       console.error(error)

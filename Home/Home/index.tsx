@@ -7,6 +7,7 @@ import {useState, useEffect} from 'react';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {requestGeolocationPermission} from './function';
 import setting from '../../config.json'
+import { request, PERMISSIONS } from 'react-native-permissions';
 const URL =setting['URl']
 // const data = [
 //   {
@@ -42,6 +43,11 @@ const list = [
   {label: '預測數量', value: 'PD'},
   {label: '當前數量', value: 'RT'},
 ];
+const requestNotificationPermission = async () => {
+  
+  const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+  // 处理结果
+};
 
 export default () => {
   const [selected, setSelected] = useState(['RT', 'PD']);
@@ -50,6 +56,7 @@ export default () => {
   const [PDData, setPDData] = useState([]);
   const [refreshInterval, setRefreshInterval] = useState(10000); // 每分鐘更新一次地圖資訊
   
+  requestNotificationPermission()
   // 要使用Networking 取消quote，並要改成你的url
   const getData = async () => {
     const PDUrl = URL+'api/data/getRealTimeData'; //請更改為預測的API

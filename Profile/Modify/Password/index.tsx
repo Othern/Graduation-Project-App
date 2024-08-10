@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Modal, TextInput, Button, StyleSheet, Text, Pressable } from 'react-native';
 import Toast from 'react-native-toast-message';
+import data from '../../../config.json'
+const URL = data['URl']
 const showToast = (text1: string, text2: string, type = 'success') => {
     Toast.show({
         type: type,
@@ -25,36 +27,36 @@ const PasswordModal = ({ visible, onClose, onSave, currentEmail }: any) => {
             }
 
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            if (true) { // 這個if block (含else, 用來測試失敗情況)是 用來測試而已 若要實際使用 是刪除此if, else, 並使用下方 註解掉的 fetch
-                onSave(newPassword);
-                setNewPassword('');
-                setOldPassword('');
-            } else {
-                setError(true);
-                setNewPassword('');
-                setOldPassword('');
-                showToast('修改失敗.', '', 'error');
-            }
-            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-            // const response = await fetch('http://172.20.10.2:4000/ModifyPassword', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ newPassword, oldPassword, currentEmail })
-            // });
-            // const responseData = await response.json();
-            // if (responseData.state === "success") {
+            // if (true) { // 這個if block (含else, 用來測試失敗情況)是 用來測試而已 若要實際使用 是刪除此if, else, 並使用下方 註解掉的 fetch
             //     onSave(newPassword);
             //     setNewPassword('');
             //     setOldPassword('');
             // } else {
+            //     setError(true);
             //     setNewPassword('');
             //     setOldPassword('');
             //     showToast('修改失敗.', '', 'error');
-            //     setError(true);
             // }
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+            const response = await fetch(URL+'ModifyPassword', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newPassword, oldPassword, currentEmail })
+            });
+            const responseData = await response.json();
+            if (responseData.state === "success") {
+                onSave(newPassword);
+                setNewPassword('');
+                setOldPassword('');
+            } else {
+                setNewPassword('');
+                setOldPassword('');
+                showToast('修改失敗.', '', 'error');
+                setError(true);
+            }
         } catch (error) {
             console.error('Error sending New Username data:', error);
         }

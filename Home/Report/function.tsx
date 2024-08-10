@@ -3,7 +3,8 @@ import Toast from 'react-native-toast-message';
 import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Geolocation,{GeoPosition} from 'react-native-geolocation-service';
-
+import data from '../../config.json'
+const URL = data['URl']
 const getUserData = async(key: string)=>{
     try {
       // 获取存储的UserData
@@ -26,7 +27,7 @@ const getUserData = async(key: string)=>{
 //Submit Report
 export async function submit(data: any, success = () => { }, fail = () => { }) {
     try {
-        const response = await fetch('http://192.168.0.13:5000/reportSubmit', {
+        const response = await fetch(URL+'reportSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'multipart/form-data'

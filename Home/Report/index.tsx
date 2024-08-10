@@ -44,7 +44,7 @@ export default (props: any,  ) => {
     , [props.route.params?.photo])
   const submitClicked = async() => {
     const formData = await createFormData(data);
-    submit(formData);
+    await submit(formData);
     setData(initialReport);
     props.navigation.pop();
     showToast('Submission Succeeded.', '')

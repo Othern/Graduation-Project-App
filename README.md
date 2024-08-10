@@ -36,6 +36,7 @@ This project is a React Native application utilizing various libraries to enhanc
    npm i react-native-reanimated react-native-gesture-handler
    npm i react-native-video
    npm install react-native-geolocation-service
+   npm install react-native-permissions
    ```
 
 2. **Add the following code snippet at the bottom of the file `android/app/build.gradle`:**

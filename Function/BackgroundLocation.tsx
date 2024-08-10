@@ -1,5 +1,7 @@
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import data from '../config.json'
+const URL = data['URl']
 const getUserData = async (key: string) => {
   try {
     // 获取存储的UserData
@@ -25,24 +27,24 @@ export default async () => {
   const watchID = Geolocation.watchPosition(
     async position => {
       console.log(position);
-      // if (email) {
-      //   try {
-      //     const response = await fetch('http://192.168.0.13:5000/locationSubmit', {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: JSON.stringify({'email':email,'latitude':position.coords.latitude,'longitude':position.coords.longitude}),
-      //     }).then(response => response.json());
-      //   } catch (error) {
-      //     console.error('Error sending data:', error);
-      //   }
-      // }
-      // else {
-      //   console.log('Email not found, not sending location.');
-      //   Geolocation.clearWatch(watchID);
-      //   return;
-      // }
+      if (email) {
+        try {
+          const response = await fetch(URL+'locationSubmit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'email':email,'latitude':position.coords.latitude,'longitude':position.coords.longitude}),
+          }).then(response => response.json());
+        } catch (error) {
+          console.error('Error sending data:', error);
+        }
+      }
+      else {
+        console.log('Email not found, not sending location.');
+        Geolocation.clearWatch(watchID);
+        return;
+      }
     },
     error => {
       console.log(error);

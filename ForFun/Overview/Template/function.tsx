@@ -38,7 +38,6 @@ export const getPostData = async (setPostData: any, kind: string, page: number) 
           "email": email
         })
     }).then(response => response.json())
-    console.log(response)
     setPostData(response)
   }
   catch (error) {

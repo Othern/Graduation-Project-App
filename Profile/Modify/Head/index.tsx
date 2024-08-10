@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import data from '../../../config.json'
+const URL = data['URl']
 const showToast = (text1: string, text2: string, type = 'success') => {
     Toast.show({
         type: type,
@@ -73,30 +75,30 @@ export default function (props: any) {
             try {
 
                 //需要回傳 新headImg位置
-                const value = JSON.stringify({ email: Email, username: Username, headImg: "" });
-                AsyncStorage.setItem('UserData', value);
-                showToast('頭像修改成功', '');
-                props.navigation.goBack();
-                props.navigation.goBack();//for reset the parameters
-
-                // const response = await fetch('http://192.168.0.13:5000/ModifyHeadImg', {
-                //     method: 'POST',
-                //     body: formData,
-                //     headers: {
-                //         'Content-Type': 'multipart/form-data',
-                //     },
-                // }).then(response => response.json());
-                // if (response.success == 1) {
-                //     //需要回傳 新headImg位置
-                //     const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
-                //     AsyncStorage.setItem('UserData', value);
-                //     showToast('頭像修改成功', '');
-                //     props.navigation.goBack();
-                //     props.navigation.goBack();
-                // }
-                // else {
-                //     setError(true);
-                // }
+                // const value = JSON.stringify({ email: Email, username: Username, headImg: "" });
+                // AsyncStorage.setItem('UserData', value);
+                // showToast('頭像修改成功', '');
+                // props.navigation.goBack();
+                // props.navigation.goBack();//for reset the parameters
+                console.log(URL+'ModifyHeadImg')
+                const response = await fetch(URL+'ModifyHeadImg', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then(response => response.json());
+                if (response.success == 1) {
+                    //需要回傳 新headImg位置
+                    const value = JSON.stringify({ email: Email, username: Username, headImg: response.headImg });
+                    AsyncStorage.setItem('UserData', value);
+                    showToast('頭像修改成功', '');
+                    props.navigation.goBack();
+                    props.navigation.goBack();
+                }
+                else {
+                    setError(true);
+                 }
 
             } catch (error) {
                 console.error('Upload error:', error);

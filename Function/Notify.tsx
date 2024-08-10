@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import data from '../config.json'
+const URL = data['URl']
 const getUserData = async (key: string) => {
     try {
       // 获取存储的UserData
@@ -81,7 +83,7 @@ const sendTokenToServer = async (token: any) => {
     const email = await getUserData('email');
     if (email) {
         try {
-            const response = await fetch('http://192.168.0.13:5000/tokenSubmit', {
+            const response = await fetch(URL+'tokenSubmit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Modal, TextInput, Button, StyleSheet, Text, Pressable } from 'react-native';
 import Toast from 'react-native-toast-message';
+import data from '../../../config.json'
+const URL = data['URl']
 const showToast = (text1: string, text2: string, type = 'success') => {
     Toast.show({
         type: type,
@@ -24,27 +26,7 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername, currentEmail
             }
 
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            if (true) { //此block 僅測試， 實際使用 需刪除或註解， 並解註解 下方 fetch 區塊
-                onSave(newUsername);
-                setNewUsername('');
-                showToast('修改成功.', '', 'error');
-            } else {
-                setError(true);
-                setNewUsername('');
-                showToast('修改失敗.', '', 'error');
-                //不重要的備註， 此處不必return (不必終止此function,已經是最後了,會自然結束)
-            }
-            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-            // const response = await fetch('http://172.20.10.2:4000/ModifyUsername', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ newUsername, currentEmail })
-            // });
-            // const responseData = await response.json();
-            // if (responseData.state === "success") {
+            // if (true) { //此block 僅測試， 實際使用 需刪除或註解， 並解註解 下方 fetch 區塊
             //     onSave(newUsername);
             //     setNewUsername('');
             //     showToast('修改成功.', '', 'error');
@@ -52,7 +34,27 @@ const UsernameModal = ({ visible, onClose, onSave, currentUsername, currentEmail
             //     setError(true);
             //     setNewUsername('');
             //     showToast('修改失敗.', '', 'error');
+            //     //不重要的備註， 此處不必return (不必終止此function,已經是最後了,會自然結束)
             // }
+            //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+            const response = await fetch(URL+'ModifyUsername', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newUsername, currentEmail })
+            });
+            const responseData = await response.json();
+            if (responseData.state === "success") {
+                onSave(newUsername);
+                setNewUsername('');
+                showToast('修改成功.', '');
+            } else {
+                setError(true);
+                setNewUsername('');
+                showToast('修改失敗.', '', 'error');
+            }
         } catch (error) {
             console.error('Error sending New Username data:', error);
         }
