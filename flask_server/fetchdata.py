@@ -48,7 +48,7 @@ def index():
 
 
 @fetchdata.route('/api/data/getRealTimeData', methods=['GET'])
-def get_PostData():
+def get_RealTimeData():
     try:
         conn = mariadb.connect(
             user="root",  # 輸入你的user名稱
@@ -78,6 +78,8 @@ def get_PostData():
         } for row in cur
     ]
     grouped_data = group_by_lat_lng(transformed_data)
+    conn.commit()
+    conn.close()
     return jsonify(grouped_data)
 
 
