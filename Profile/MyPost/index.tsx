@@ -17,23 +17,15 @@ import {
 import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {Card} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
-import {
-  getPostData,
-  getCommentData,
-  deletePost,
-  sendComment,
-  COMMENTDATA,
-  POSTDATA,
-} from './function';
+import {getPostData, deletePost, POSTDATA} from './function';
 import Video, {VideoRef} from 'react-native-video';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AlertDelete from './AlertDelete';
-
+import CommentSection from '../../Comment';
 const fullBanana = '../../asset/fullBanana.png';
 
 type ItemProps = {
-  id :string
+  id: string;
   description: string;
   image: boolean;
   contentUri: string;
@@ -226,54 +218,11 @@ const Item = ({
   );
 };
 
-type CommentItemProps = {
-  id: number;
-  username: string;
-  mockTitle: string;
-  content: string;
-  avatarUrl: string;
-  timestamp: string;
-};
-
-const CommentItem = ({
-  id,
-  username,
-  mockTitle,
-  content,
-  avatarUrl,
-  timestamp,
-}: CommentItemProps) => {
-  const theme = useColorScheme();
-  const color = theme === 'dark' ? 'white' : 'black';
-  return (
-    <View style={{marginVertical: 10, padding: 10, flexDirection: 'row'}}>
-      <Image source={{uri: avatarUrl}} style={styles.avatar} />
-      <View>
-        <Text
-          style={{
-            color: color,
-            fontWeight: '500',
-            marginBottom: 5,
-            fontSize: 18,
-            width: 320,
-          }}>
-          {username} {mockTitle}
-        </Text>
-        <Text style={{color: color, fontWeight: '500', width: 320}}>
-          {content}
-        </Text>
-      </View>
-    </View>
-  );
-};
-
 export default (props: any, {kind}: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
-  const [commentData, setCommentData] = useState(COMMENTDATA);
-  const [focusPostId,setFocusPostId] = useState("")
-  const [comment, setComment] = useState('');
+  const [focusPostId, setFocusPostId] = useState('');
   const [page, setPage] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -283,15 +232,12 @@ export default (props: any, {kind}: any) => {
 
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
-  useEffect(()=>{
-    getPostData(setPostData,kind,page)
-    setLoading(false)
-  }
-    ,[])
-  const focus = useIsFocused();
+  useEffect(() => {
+    getPostData(setPostData, kind, page);
+    setLoading(false);
+  }, []);
+  const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['60%'], []);
   // 設定當前觀看的item是哪一個
   const [viewItem, setViewItem] = useState(0);
   // for item focus
@@ -315,27 +261,22 @@ export default (props: any, {kind}: any) => {
       setLoading(false);
     }
   }, [page, kind, loading]);
-  // for comment area
-  const handleSnapPress = useCallback((index: any) => {
-    sheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleCloseComment = () => {
-    sheetRef.current?.close();
-    setIsVisible(false);
-  };
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      // Fetch new data
-      await getPostData(setPostData,kind,page)
+      await getPostData(setPostData, kind, page);
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
       setIsRefreshing(false);
     }
-  };
-
+  }, [kind, page]);
+  useEffect(() => {
+    if (isFocused) {
+      handleRefresh();
+    }
+  }, [isFocused, handleRefresh]);
   if (loading) {
     return <Text style={{alignSelf: 'center'}}>loading...</Text>;
   } else {
@@ -344,21 +285,22 @@ export default (props: any, {kind}: any) => {
         <AlertDelete
           showDeleteWarning={showDeleteWarning}
           setShowDeleteWarning={setShowDeleteWarning}
-          onConfirmDelete={async() => {
+          onConfirmDelete={async () => {
             await deletePost(deletePostId);
-            await getPostData(setPostData,kind,page);
+            await getPostData(setPostData, kind, page);
           }}
         />
         <FlatList
           data={postData}
           renderItem={({item, index}) => {
             let viewable = false;
-            if (viewItem == index && focus == true) {
+            if (viewItem == index && isFocused == true) {
               viewable = true;
             }
 
             return (
               <Item
+                id={item.id}
                 description={item.description}
                 image={item.image}
                 contentUri={item.contentUri}
@@ -371,10 +313,8 @@ export default (props: any, {kind}: any) => {
                   setDeletePostId(item.id);
                 }}
                 handleComment={() => {
-                  handleSnapPress(0);
                   setIsVisible(true);
-                  setFocusPostId(item.id)
-                  getCommentData(setCommentData,item.id);
+                  setFocusPostId(item.id);
                 }}
                 handleRevise={() => {
                   props.navigation.push('reviseMyPost', {
@@ -397,7 +337,7 @@ export default (props: any, {kind}: any) => {
             <View
               style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
               <Text
-                style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>
+                style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center',marginTop: 20}}>
                 目前沒有文章,快來新增一篇吧!
               </Text>
             </View>
@@ -410,68 +350,11 @@ export default (props: any, {kind}: any) => {
             />
           }
         />
-        {isVisible && (
-          <TouchableWithoutFeedback onPress={handleCloseComment}>
-            <View style={styles.overlay} />
-          </TouchableWithoutFeedback>
-        )}
-        <BottomSheet
-          ref={sheetRef}
-          index={-1}
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          backgroundStyle={[
-            styles.commentContainer,
-            {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
-          ]}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{flex: 1}}>
-            <BottomSheetFlatList
-              data={commentData}
-              ListHeaderComponent={<View style={{height: 60}}></View>}
-              keyExtractor={(item, index) => item.id.toString()} // Ensure each id is a string or use a different keyExtractor
-              renderItem={({item, index}) => (
-                <CommentItem
-                  id={item.id}
-                  username={item.username}
-                  mockTitle={item.mockTitle}
-                  content={item.content}
-                  timestamp={item.timestamp}
-                  avatarUrl={item.avatarUrl}
-                  key={index} // key is not necessary here, as FlatList handles keys internally
-                />
-              )}
-            />
-            <View
-              style={[
-                styles.inputContainer,
-                {backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white'},
-              ]}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {color: theme === 'dark' ? 'white' : 'black'},
-                ]}
-                value={comment}
-                onChangeText={setComment}
-                placeholder="寫下你的評論..."
-                placeholderTextColor={theme === 'dark' ? '#999' : '#666'}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  sendComment(focusPostId, comment);
-                  handleCloseComment()
-                  setComment('')
-                  
-                  
-                }}
-                style={styles.submitButton}>
-                <Text style={styles.submitButtonText}>發送</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </BottomSheet>
+        <CommentSection
+          isVisible={isVisible}
+          setIsVisible={setIsVisible}
+          focusPostId={focusPostId}
+        />
       </>
     );
   }
@@ -484,9 +367,6 @@ const styles = StyleSheet.create({
     flex: 1,
     elevation: 2,
     borderWidth: 0.001,
-  },
-  commentContainer: {
-    backgroundColor: 'gray',
   },
   textContainer: {
     flex: 1,
@@ -509,41 +389,5 @@ const styles = StyleSheet.create({
   content: {
     width: '100%',
     height: 350,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 10,
-
-    borderTopColor: '#ccc',
-    position: 'absolute',
-    top: 0,
-  },
-  input: {
-    flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  submitButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: '0%',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // 半透明黑色背景
-    zIndex: 0, // 確保覆蓋在底部視圖上
   },
 });

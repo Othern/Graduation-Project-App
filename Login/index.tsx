@@ -42,7 +42,7 @@ import BackgroundLocation from '../Function/BackgroundLocation';
 // }
 // // state = {"success","wrongEmail","wrongUsername","wrongPassword"} -> 先找email 是否在資料庫或是否合法， 再對帳號是否在資料庫或是否合法， 在對密碼(是否合法)
 // // headimage: "" -> 頭像圖片地址 default是空或若使用預設圖片，則為預設圖片地址
-
+const test = true
 const Stack = createStackNavigator();
 const LoginAssociate = (props: any) => {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -74,7 +74,7 @@ const LoginAssociate = (props: any) => {
 
       const logdata = await logindata;
       if (logdata) {
-        if (false) {
+        if (test) {
           // change the state to false if we have server on
           showToast('登入成功.', '');
           props.navigation.push('tab', {From: 'login'});
@@ -132,7 +132,7 @@ const LoginAssociate = (props: any) => {
       return;
     }
 
-    if (false) {
+    if (test) {
       //turn to false if server had been started
       saveCredentials(emailL, passwordL);
       const usernameLS = 'James';
@@ -204,7 +204,7 @@ const LoginAssociate = (props: any) => {
       return;
     }
 
-    if (false) {
+    if (test) {
       //turn to false if server had been started
       saveCredentials(email, password);
       const headImgRS = '';

@@ -8,33 +8,21 @@ import {
   useColorScheme,
   Pressable,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  TouchableWithoutFeedback,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
-import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Card } from 'react-native-paper';
-import { reviceHeart } from '../../function';
+import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
+import {Card} from 'react-native-paper';
+import {reviceHeart} from '../../function';
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import {
-  getPostData,
-  getCommentData,
-  sendHeart,
-  sendComment,
-  COMMENTDATA,
-  POSTDATA,
-} from './function';
-import Video, { VideoRef } from 'react-native-video';
-import { useIsFocused } from '@react-navigation/native';
-
+import {getPostData, sendHeart, POSTDATA} from './function';
+import Video, {VideoRef} from 'react-native-video';
+import {useIsFocused} from '@react-navigation/native';
+import CommentSection from '../../../Comment';
 const emptyBanana = '../../../asset/emptyBanana.png';
 const fullBanana = '../../../asset/fullBanana.png';
 
 type ItemProps = {
-  id:string
+  id: string;
   name: string;
   mockTitle: string;
   avatarUrl: string;
@@ -76,13 +64,15 @@ const Item = ({
   }, [viewable]);
   return (
     <View style={styles.item}>
-      <View style={{ height: 50, flexDirection: 'row', alignItems: 'center' }}>
-        <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-        <Text style={[styles.name, { color: color }]}>{name}  {mockTitle}</Text>
+      <View style={{height: 50, flexDirection: 'row', alignItems: 'center'}}>
+        <Image source={{uri: avatarUrl}} style={styles.avatar} />
+        <Text style={[styles.name, {color: color}]}>
+          {name} {mockTitle}
+        </Text>
       </View>
-      <View style={{ marginBottom: 10 }}>
+      <View style={{marginBottom: 10}}>
         {image ? (
-          <Image source={{ uri: contentUri }} style={styles.content} />
+          <Image source={{uri: contentUri}} style={styles.content} />
         ) : (
           <TouchableOpacity
             activeOpacity={1}
@@ -92,11 +82,11 @@ const Item = ({
             }}>
             <Video
               // Can be a URL or a local file.
-              source={{ uri: contentUri }}
+              source={{uri: contentUri}}
               ref={videoRef}
               muted={muted}
               paused={paused}
-              style={{ height: 350, width: '100%' }}
+              style={{height: 350, width: '100%'}}
               resizeMode="cover"
             />
             <Pressable
@@ -116,7 +106,7 @@ const Item = ({
               <Icon
                 name={muted ? 'volume-mute' : 'volume-high'}
                 size={20}
-                style={{ alignSelf: 'center' }}
+                style={{alignSelf: 'center'}}
                 color="white"
               />
             </Pressable>
@@ -138,21 +128,21 @@ const Item = ({
               <Icon
                 name={paused ? 'play' : 'pause'}
                 size={20}
-                style={{ alignSelf: 'center' }}
+                style={{alignSelf: 'center'}}
                 color="white"
               />
             </Pressable>
           </TouchableOpacity>
         )}
       </View>
-      <View style={{ padding: 5 }}>
+      <View style={{padding: 5}}>
         <View
-          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
           <Pressable
             onPress={() => {
               handleComment();
             }}
-            style={{ marginRight: 10 }}>
+            style={{marginRight: 10}}>
             <Icon
               name="chatbubble-outline"
               color={color}
@@ -169,26 +159,26 @@ const Item = ({
               });
 
               // 回傳後端用戶喜歡某貼文
-              sendHeart(id)
+              sendHeart(id);
             }}>
             <Image
               source={!heart ? require(emptyBanana) : require(fullBanana)}
-              style={{ height: 30, width: 30, marginRight: 10 }}
+              style={{height: 30, width: 30, marginRight: 10}}
               tintColor={
                 theme == 'light' && !heart
                   ? 'black'
                   : !heart
-                    ? 'white'
-                    : undefined
+                  ? 'white'
+                  : undefined
               }
             />
           </Pressable>
-          <Text style={[{ color: color, fontSize: 15 }]}>{heartNum}</Text>
+          <Text style={[{color: color, fontSize: 15}]}>{heartNum}</Text>
         </View>
 
         {desc.length < 49 ? (
           <View>
-            <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
+            <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
               {desc}
             </Text>
           </View>
@@ -196,20 +186,20 @@ const Item = ({
           <View>
             {!showMore ? (
               <View>
-                <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
+                <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
                   {desc}
                 </Text>
                 <Pressable
                   onPress={() => {
                     setShowMore(prev => !prev);
                   }}>
-                  <Text style={{ fontWeight: '500', fontSize: 16 }}>
+                  <Text style={{fontWeight: '500', fontSize: 16}}>
                     顯示更多...
                   </Text>
                 </Pressable>
               </View>
             ) : (
-              <Text style={{ fontWeight: '500', color: color, fontSize: 16 }}>
+              <Text style={{fontWeight: '500', color: color, fontSize: 16}}>
                 {desc}
                 {moredesc}
               </Text>
@@ -241,8 +231,8 @@ const CommentItem = ({
   const theme = useColorScheme();
   const color = theme === 'dark' ? 'white' : 'black';
   return (
-    <View style={{ marginVertical: 10, padding: 10, flexDirection: 'row' }}>
-      <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+    <View style={{marginVertical: 10, padding: 10, flexDirection: 'row'}}>
+      <Image source={{uri: avatarUrl}} style={styles.avatar} />
       <View>
         <Text
           style={{
@@ -252,9 +242,9 @@ const CommentItem = ({
             fontSize: 18,
             width: 320,
           }}>
-          {username}  {mockTitle}
+          {username} {mockTitle}
         </Text>
-        <Text style={{ color: color, fontWeight: '500', width: 320 }}>
+        <Text style={{color: color, fontWeight: '500', width: 320}}>
           {content}
         </Text>
       </View>
@@ -262,27 +252,22 @@ const CommentItem = ({
   );
 };
 
-export default ({ kind, scrollY }: any) => {
+export default ({kind, scrollY}: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
-  const [commentData, setCommentData] = useState(COMMENTDATA);
-  const [focusPostId,setFocusPostId] = useState("")
-  const [comment, setComment] = useState('');
+  const [focusPostId, setFocusPostId] = useState('');
   const [page, setPage] = useState(1);
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  useEffect(()=>{
-    getPostData(setPostData,kind,page)
-    setLoading(false)
-  }
-    ,[])
+  useEffect(() => {
+    getPostData(setPostData, kind, page);
+    setLoading(false);
+  }, []);
 
   const focus = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['60%'], []);
   // 設定當前觀看的item是哪一個
   const [viewItem, setViewItem] = useState(0);
   // for item focus
@@ -290,7 +275,7 @@ export default ({ kind, scrollY }: any) => {
     itemVisiblePercentThreshold: 70, // Percentage of item that needs to be visible to consider it "in view"
   };
   // 當目前觀看的item改變時
-  const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+  const onViewableItemsChanged = useCallback(({viewableItems}: any) => {
     viewableItems.forEach((item: any) => {
       setViewItem(item.index);
     });
@@ -307,20 +292,11 @@ export default ({ kind, scrollY }: any) => {
     }
   }, [page, kind, loading]);
 
-  // for comment area
-  const handleSnapPress = useCallback((index: any) => {
-    sheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleCloseComment = () => {
-    sheetRef.current?.close();
-    setIsVisible(false);
-};
-  
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       // Fetch new data
-      await getPostData(setPostData,kind,page)
+      await getPostData(setPostData, kind, page);
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
@@ -329,13 +305,13 @@ export default ({ kind, scrollY }: any) => {
   };
 
   if (loading) {
-    return <Text style={{ alignSelf: 'center' }}>loading...</Text>;
+    return <Text style={{alignSelf: 'center'}}>loading...</Text>;
   } else {
     return (
       <>
         <FlatList
           data={postData}
-          renderItem={({ item, index }) => {
+          renderItem={({item, index}) => {
             let viewable = false;
             if (viewItem == index && focus == true) {
               viewable = true;
@@ -343,7 +319,7 @@ export default ({ kind, scrollY }: any) => {
 
             return (
               <Item
-                id = {item.id}
+                id={item.id}
                 name={item.name}
                 mockTitle={item.mockTitle}
                 avatarUrl={item.avatarUrl}
@@ -355,20 +331,17 @@ export default ({ kind, scrollY }: any) => {
                 key={index}
                 viewable={viewable}
                 handleComment={() => {
-                  handleSnapPress(0);
-                  setIsVisible(true)
-                  setFocusPostId(item.id)
-                  getCommentData(setCommentData,item.id);
+                  setIsVisible(true);
+                  setFocusPostId(item.id);
                 }}
-
               />
             );
           }}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{ height: 80 }} />}
+          ListHeaderComponent={<View style={{height: 80}} />}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false },
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: false},
           )}
           scrollEventThrottle={16}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -377,8 +350,9 @@ export default ({ kind, scrollY }: any) => {
           // onEndReachedThreshold={1}
           // ListFooterComponent={loading ? <Text style={{ alignSelf: "center", padding: 10 }}>載入中...</Text> : null}
           ListEmptyComponent={
-            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+            <View
+              style={{alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 20}}>
+              <Text style={{fontSize: 18, fontWeight: 'bold'}}>
                 目前沒有文章,快來新增一篇吧!
               </Text>
             </View>
@@ -391,73 +365,11 @@ export default ({ kind, scrollY }: any) => {
             />
           }
         />
-        {isVisible && (
-                    <TouchableWithoutFeedback onPress={handleCloseComment}>
-                        <View style={styles.overlay} />
-                    </TouchableWithoutFeedback>
-                )}
-        <BottomSheet
-          ref={sheetRef}
-          index={-1}
-          enablePanDownToClose
-          snapPoints={snapPoints}
-          backgroundStyle={[
-            styles.commentContainer,
-            { backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white' },
-          ]}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}>
-            <BottomSheetFlatList
-              data={commentData}
-              ListHeaderComponent={<View style={{ height: 60 }}></View>}
-              keyExtractor={(item, index) => item.id.toString()} // Ensure each id is a string or use a different keyExtractor
-              renderItem={({ item, index }) => (
-                <CommentItem
-                  id={item.id}
-                  username={item.username}
-                  content={item.content}
-                  timestamp={item.timestamp}
-                  avatarUrl={item.avatarUrl}
-                  mockTitle={item.mockTitle}
-                  key={index} // key is not necessary here, as FlatList handles keys internally
-                />
-              )}
-              ListEmptyComponent={
-                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                    目前沒有留言!!!
-                  </Text>
-                </View>
-              }
-            />
-            <View
-              style={[
-                styles.inputContainer,
-                { backgroundColor: theme === 'dark' ? '#1C1C1E' : 'white' },
-              ]}>
-              <TextInput
-                style={[
-                  styles.input,
-                  { color: theme === 'dark' ? 'white' : 'black' },
-                ]}
-                value={comment}
-                onChangeText={setComment}
-                placeholder="寫下你的評論..."
-                placeholderTextColor={theme === 'dark' ? '#999' : '#666'}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  sendComment(focusPostId, comment);
-                  handleCloseComment()
-                  setComment('')
-                }}
-                style={styles.submitButton}>
-                <Text style={styles.submitButtonText}>發送</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </BottomSheet>
+        <CommentSection
+          isVisible={isVisible}
+          setIsVisible={setIsVisible}
+          focusPostId={focusPostId}
+        />
       </>
     );
   }
@@ -468,9 +380,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     padding: 10,
     flex: 1,
-  },
-  commentContainer: {
-    backgroundColor: 'gray',
   },
   textContainer: {
     flex: 1,
@@ -496,40 +405,4 @@ const styles = StyleSheet.create({
     height: 350,
     backgroundColor: 'white',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 10,
-
-    borderTopColor: '#ccc',
-    position: 'absolute',
-    top: 0,
-  },
-  input: {
-    flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  submitButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: '0%',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // 半透明黑色背景
-    zIndex: 0, // 確保覆蓋在底部視圖上
-}
 });
