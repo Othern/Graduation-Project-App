@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Switch, PermissionsAndroid, StyleSheet, Alert, Text, Pressable, Platform } from 'react-native';
+import { View, Switch, PermissionsAndroid, StyleSheet, Alert, Text, Pressable, Platform, Linking } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -16,6 +16,14 @@ const SettingsPage = (props: any) => {
         }, [])
     );
 
+
+    const openSettings = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('app-settings:');
+        } else {
+            Linking.openSettings();
+        }
+    };
 
     const checkFastLoginSelection = async () => { //should use saveData to set 'FastLogin' to 'true'
         try {
@@ -72,10 +80,10 @@ const SettingsPage = (props: any) => {
             );
             const grantedNotification = await PermissionsAndroid.check(
                 PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-                //實際上是 通知權限
             );
             setIsEnabledCamera(grantedCamera);
             setIsEnabledLocation(grantedLocation);
+            setIsEnabledNotification(grantedNotification);
             setIsEnabledNotification(grantedNotification);
         } catch (err) {
             console.warn(err);
@@ -98,8 +106,9 @@ const SettingsPage = (props: any) => {
                 Alert.alert("You can use the camera");
                 setIsEnabledCamera(true);
             } else {
-                Alert.alert("Camera permission denied");
+                Alert.alert("需要從設定開啟此權限");
                 setIsEnabledCamera(false);
+                openSettings()
             }
         } catch (err) {
             console.warn(err);
@@ -122,18 +131,19 @@ const SettingsPage = (props: any) => {
                 Alert.alert("You can use the location");
                 setIsEnabledLocation(true);
             } else {
-                Alert.alert("Location permission denied");
+                Alert.alert("需要從設定開啟此權限");
                 setIsEnabledLocation(false);
+                openSettings()
             }
         } catch (err) {
             console.warn(err);
         }
     };
 
-    const requestGalleryPermission = async () => {
+    const requestNotificationPermission = async () => {
         try {
             const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
                 {
                     title: "Gallery Permission",
                     message: "This app needs access to your gallery",
@@ -143,11 +153,12 @@ const SettingsPage = (props: any) => {
                 }
             );
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                Alert.alert("You can access the gallery");
+                Alert.alert("You can get notification");
                 setIsEnabledNotification(true);
             } else {
-                Alert.alert("Gallery permission denied");
+                Alert.alert("需要從設定開啟此權限");
                 setIsEnabledNotification(false);
+                openSettings()
             }
         } catch (err) {
             console.warn(err);
@@ -172,6 +183,7 @@ const SettingsPage = (props: any) => {
                             requestLocationPermission()
                         } else {
                             Alert.alert("需要從設定關閉此權限");
+                            openSettings()
                         }
 
                     }}
@@ -189,6 +201,7 @@ const SettingsPage = (props: any) => {
                             requestCameraPermission()
                         } else {
                             Alert.alert("需要從設定關閉此權限");
+                            openSettings()
 
                         }
                     }}
@@ -203,10 +216,11 @@ const SettingsPage = (props: any) => {
                     onValueChange={(value) => {
                         // Handle switch value change
                         if (value) {
-                            requestGalleryPermission()
+                            requestNotificationPermission()
                         } else {
 
                             Alert.alert("需要從設定關閉此權限");
+                            openSettings()
                         }
                     }}
                 />
