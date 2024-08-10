@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from shapely.geometry import Point, Polygon
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from sklearn.metrics import mean_squared_error as MSE
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -15,6 +16,10 @@ from pytz import timezone
 import json
 import requests
 
+with open('../config.json') as f:
+    config = json.load(f)
+template_folder = config[ "PREDICT_TEMPLATE_FOLDER"]
+weather_API = config["WEATHER_API"]
 
 predict = Blueprint(
     "predict",
@@ -160,6 +165,13 @@ regions = {
     },
 }
 
+# 定義位置類別數據
+location_categories = [
+    "Location_1", "Location_2", "Location_3", "Location_4", 
+    "Location_5", "Location_6", "Location_7", "Location_8", 
+    "Location_9"
+]
+
 location_mapping = {
     "國研大樓和體育館": 0,
     "教學區": 1,
@@ -220,13 +232,11 @@ region_centers = {
 
 # 模型超參數
 best_params = {
-    "max_depth": 8,
-    "subsample": 0.9032802481376583,
-    "n_estimators": 100,
-    "eta": 0.03739459164632489,
-    "min_child_weight": 8,
-    "grow_policy": "lossguide",
-    "colsample_bytree": 0.9873584134757056,
+    'subsample': 0.9087919226291457, 
+    'n_estimators': 2000, 
+    'eta': 0.06477528416088997, 
+    'min_child_weight': 2, 
+    'colsample_bytree': 0.8707440237807236
 }
 
 
@@ -261,7 +271,7 @@ def get_weather():
     time_to = f"{tomorrow}T18:00:01"
 
     parameters = {
-        'Authorization': 'Authorization code',
+        'Authorization': weather_API,
         'format': 'JSON',
         'locationName': ['鹽埕區'],  # 指定地點為鹽埕區
         'elementName': ['WS', 'WD', 'PoP12h', 'T', 'RH', 'Wx'],  # 指定所需的天氣因子
@@ -363,7 +373,7 @@ def preprocess_data():
 
     query = """
         SELECT 
-            Date_time, Longitude, Latitude, Altitude, Location, Number, Pressure, Temperature, 
+            Date_time, Longitude, Latitude, Altitude, Location, Number, Temperature, 
             Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Week, Weekday 
         FROM 
             monkey_history
@@ -379,7 +389,6 @@ def preprocess_data():
         "Altitude",
         "Location",
         "Number",
-        "Pressure",
         "Temperature",
         "Relative_humidity",
         "Wind_speed",
@@ -440,7 +449,7 @@ def preprocess_data():
         cur.executemany(
             """
             UPDATE monkey_history SET
-            Longitude = ?, Latitude = ?, Altitude = ?, Location = ?, Number = ?, Pressure = ?, 
+            Longitude = ?, Latitude = ?, Altitude = ?, Location = ?, Number = ?, 
             Temperature = ?, Relative_humidity = ?, Wind_speed = ?, Wind_direction = ?, Precipitation = ?, 
             Time_type = ?, Week = ?, Weekday = ?
             WHERE Date_time = ?
@@ -452,7 +461,6 @@ def preprocess_data():
                     "Altitude",
                     "Location",
                     "Number",
-                    "Pressure",
                     "Temperature",
                     "Relative_humidity",
                     "Wind_speed",
@@ -486,8 +494,8 @@ def predict_model():
     cur = conn.cursor()
     query = """
         SELECT 
-            Date_time, Longitude, Latitude, Altitude, Location, Number, Pressure, Temperature, 
-            Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Week, Weekday 
+            Date_time, Location, Number, Temperature, 
+            Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Weekday 
         FROM 
             monkey_history 
     """
@@ -495,19 +503,14 @@ def predict_model():
     rows = cur.fetchall()
     columns = [
         "Date_time",
-        "Longitude",
-        "Latitude",
-        "Altitude",
         "Location",
         "Number",
-        "Pressure",
         "Temperature",
         "Relative_humidity",
         "Wind_speed",
         "Wind_direction",
         "Precipitation",
         "Time_type",
-        "Week",
         "Weekday",
     ]
     data_df = pd.DataFrame(rows, columns=columns)
@@ -518,26 +521,60 @@ def predict_model():
     # 資料預處理
     data_df["Date_time"] = data_df["Date_time"].astype(str)
     data_df[["date", "hour"]] = data_df["Date_time"].str.split(" ", n=1, expand=True)
-    # 如果 'hour' 列不是字符串類型，則將其轉換為字符串
-    if data_df["hour"].dtype != object:
-        data_df["hour"] = data_df["hour"].astype(str)
-
-    # 提取小時數值
-    data_df["hour"] = data_df["hour"].str.split(":").str[0].astype(int)
-    # 將日期轉換為數值時間戳
-    data_df["date"] = pd.to_datetime(data_df["date"]).astype("int64") // 10**9
+    data_df['date'] = pd.to_datetime(data_df['date']).astype("int64") / 10**9
 
     # 將 Location 欄位進行編碼
     data_df["Location"] = data_df["Location"].map(location_mapping)
-    data_df["Location"] = data_df["Location"].astype(int)
-    data_df["hour"] = data_df["hour"].astype(int)
+    data_df["Location"] = data_df["Location"].astype("int64")
+  
 
-    X = data_df.drop(["Number", "Date_time"], axis=1)
+        # 選擇要標準化的數值特徵
+    numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed', 
+                        'Wind_direction']
+
+    # 初始化StandardScaler
+    scaler = StandardScaler()
+
+    # 對數值特徵進行標準化
+    scaled_features = scaler.fit_transform(data_df[numeric_features])
+
+    # 將標準化後的數據轉換為DataFrame
+    scaled_features_df = pd.DataFrame(scaled_features, columns=numeric_features)
+
+    # 將標準化後的數據替換回原data_df中
+    for feature in numeric_features:
+        data_df[feature] = scaled_features_df[feature]
+
+#    #標準化器
+#     scaler = StandardScaler()
+
+#     # 用原始數據擬合標準化器
+#     scaler.fit(data_df[['Number']])
+
+#     # 標準化目標特徵
+#     data_df['Number'] = scaler.transform(data_df[['Number']])
+    #對weekday和Time_type做one_hot_encoding
+
+    data_df = pd.get_dummies(data_df, columns=['Weekday'], drop_first=False)
+    data_df = pd.get_dummies(data_df, columns=['Time_type'], drop_first=False)
+
+    # 計算每個類別的頻率
+    frequency_encoding = data_df['Location'].value_counts()
+
+    # 創建映射字典
+    frequency_dict = frequency_encoding.to_dict()
+
+    # 用 Frequency Encoding 替換 Location 特徵
+    data_df['Location'] = data_df['Location'].map(frequency_dict)
+    
+
+    X = data_df.drop(["Number", "Date_time","hour"], axis=1)
 
     y = data_df["Number"].values
 
     model = xgb.XGBRegressor(**best_params)
     model.fit(X, y)
+    
 
     # # 設定今天的日期
     # today = (datetime.now()).strftime("%Y-%m-%d")
@@ -552,44 +589,51 @@ def predict_model():
     # 建立預測資料
     prediction_df = []
 
+    # 確保 weather_df 按照 ObservationTime 排序
+    weather_df = weather_df.sort_values('ObservationTime')
+
     if not weather_df.empty:
         for region, info in region_centers.items():
-            lon, lat = info["coordinates"]
-            avg_height = info["avg_height"]
             for hour in range(6, 19):
                 # 根據小時匹配天氣資料
                 weather_for_hour = weather_df[weather_df['ObservationTime'].dt.hour == hour]
-                if not weather_for_hour.empty:
-                    weather_for_hour = weather_for_hour.iloc[0].to_dict()
+                
+                if weather_for_hour.empty:
+                    # 如果該小時沒有資料，找到最接近的資料
+                    # 計算每個時間點與目標小時的時間差
+                    weather_df['time_diff'] = (weather_df['ObservationTime'].dt.hour - hour).abs()
+                    
+                    # 找到時間差最小的資料
+                    closest_hour = weather_df.loc[weather_df['time_diff'].idxmin()]
+                    weather_for_hour = closest_hour.to_dict()
                 else:
-                    # 如果該小時沒有資料，填入缺失值
-                    weather_for_hour = {
-                        'Temperature': None,
-                        'Relative_Humidity': None,
-                        'Wind_Speed': None,
-                        'Wind_Direction': None,
-                        'Precipitation': None,
-                    }
+                    weather_for_hour = weather_for_hour.iloc[0].to_dict()
+                
+                # 去掉多餘的 'time_diff' 列
+                if 'time_diff' in weather_df.columns:
+                    weather_df = weather_df.drop(columns=['time_diff'])
 
+                # 創建 one-hot 編碼的 Time_type 和 Weekday
+                time_type = 1 if (6 <= hour <= 12) else (2 if (13 <= hour <= 18) else 3)
+                weekday = 0 if pd.to_datetime(tomorrow).weekday() in [5, 6] else 1
+
+                # 創建 input_data，並添加 one-hot 編碼列
                 input_data = {
                     "date": tomorrow,
                     "hour": f"{hour:02d}:00:00",
-                    "Longitude": lon,
-                    "Latitude": lat,
-                    "Altitude": avg_height,
                     "Location": region,
-                    "Time_type": (
-                        1 if (6 <= hour <= 12) else (2 if (13 <= hour <= 18) else 3)
-                    ),
-                    "Week": pd.to_datetime(tomorrow).weekday() + 1,
-                    "Weekday": 0 if pd.to_datetime(tomorrow).weekday() in [5, 6] else 1,
-                    "Pressure": 1021.5,
+                    "Weekday_0": 1 if weekday == 0 else 0,
+                    "Weekday_1": 1 if weekday == 1 else 0,
+                    "Time_type_1": 1 if time_type == 1 else 0,
+                    "Time_type_2": 1 if time_type == 2 else 0,
+                    "Time_type_3": 1 if time_type == 3 else 0,
                     "Temperature": weather_for_hour['Temperature'],
                     "Relative_humidity": weather_for_hour['Relative_Humidity'],
                     "Wind_speed": weather_for_hour['Wind_Speed'],
                     "Wind_direction": weather_for_hour['Wind_Direction'],
                     "Precipitation": weather_for_hour['Precipitation'],
                 }
+
                 prediction_df.append(input_data)
 
     prediction_df = pd.DataFrame(prediction_df)
@@ -610,29 +654,61 @@ def predict_model():
     # 將 Location 欄位進行編碼
     prediction_df["Location"] = prediction_df["Location"].map(location_mapping)
 
+    # 用 Frequency Encoding 替換 Location 特徵
+    prediction_df['Location'] = prediction_df['Location'].map(frequency_dict)
+
+
+         # 選擇要標準化的數值特徵
+    numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed', 
+                        'Wind_direction']
+
+    # 初始化StandardScaler
+    scaler = StandardScaler()
+
+    # 對數值特徵進行標準化
+    scaled_features = scaler.fit_transform(prediction_df[numeric_features])
+
+    # 將標準化後的數據轉換為DataFrame
+    scaled_features_df = pd.DataFrame(scaled_features, columns=numeric_features)
+
+    # 將標準化後的數據替換回原dprediction_df中
+    for feature in numeric_features:
+        prediction_df[feature] = scaled_features_df[feature]
+
+
+    
+
+   
+
     # 重新編排 prediction_df 去對應 training data
     prediction_df = prediction_df[
         [
-            "Longitude",
-            "Latitude",
-            "Altitude",
             "Location",
-            "Pressure",
             "Temperature",
             "Relative_humidity",
             "Wind_speed",
             "Wind_direction",
             "Precipitation",
-            "Time_type",
-            "Week",
-            "Weekday",
             "date",
             "hour",
+            "Weekday_0",
+            "Weekday_1",
+            "Time_type_1",
+            "Time_type_2",
+            "Time_type_3",
+            
         ]
     ]
 
-    y_pred = model.predict(prediction_df)
-    y_pred = y_pred.round().astype(int)  # 預測結果轉換為整數
+    y_pred = model.predict(prediction_df.drop('hour',axis=1))
+
+    
+
+    #反轉Frequent_encoding
+    reverse_frequency_encoding = {v: k for k, v in frequency_encoding.items()}
+    prediction_df['Location'] = prediction_df['Location'].map(reverse_frequency_encoding)
+
+    
 
     # 計算各地區每小時的獼猴數量
     prediction_df["Number"] = y_pred
@@ -677,12 +753,12 @@ def predict_model():
 
 # 建立排程器並設置時區
 scheduler = BackgroundScheduler(timezone="Asia/Taipei")
-# 測試用，每分鐘呼叫function一次
-# scheduler.add_job(preprocess_data, 'cron', minute='*')
-# scheduler.add_job(predict_model, 'cron', minute='*')
+#測試用，每分鐘呼叫function一次
+scheduler.add_job(preprocess_data, 'cron', minute='*')
+scheduler.add_job(predict_model, 'cron', minute='*')
 # # 實際用
-scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
-scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
+# scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
+# scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
 
 print("Scheduler started. Jobs are set up.")
 scheduler.start()
@@ -692,133 +768,133 @@ scheduler.start()
 
 @predict.route("/predict_model", methods=["GET"])
 def predict_model_endpoint():
-    # try:
-    #     # 連接到 MariaDB 資料庫
-    #     conn = mariadb.connect(**DB_CONFIG)
-    # except mariadb.Error as e:
-    #     print(f"Error connecting to MariaDB Platform: {e}")
-    #     sys.exit(1)
+    try:
+        # 連接到 MariaDB 資料庫
+        conn = mariadb.connect(**DB_CONFIG)
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
 
-    # # 創建 Cursor
-    # cur = conn.cursor()
+    # 創建 Cursor
+    cur = conn.cursor()
 
-    # try:
-    #     # 計算明天的日期
-    #     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    try:
+        # 計算明天的日期
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
-    #     # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
-    #     query = "SELECT Date_time, Location, Number FROM monkey_predict WHERE DATE(Date_time) = %s"
-    #     cur.execute(query, (tomorrow,))
-    #     rows = cur.fetchall()
+        # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
+        query = "SELECT Date_time, Location, Number FROM monkey_predict WHERE DATE(Date_time) = %s"
+        cur.execute(query, (tomorrow,))
+        rows = cur.fetchall()
 
-    #     # 將結果轉換為 DataFrame
-    #     columns = [desc[0] for desc in cur.description]
-    #     total_count = pd.DataFrame(rows, columns=columns)
+        # 將結果轉換為 DataFrame
+        columns = [desc[0] for desc in cur.description]
+        total_count = pd.DataFrame(rows, columns=columns)
 
-    #     # 按照 Location 分組並彙總 Number
-    #     total_count = total_count.groupby("Location", as_index=False)["Number"].sum()
+        # 按照 Location 分組並彙總 Number
+        total_count = total_count.groupby("Location", as_index=False)["Number"].sum()
 
-    #     # 定義分級少量、中量、大量的函數
-    #     def categorize_amount(number):
-    #         if number <= 75:
-    #             return "少量"
-    #         elif number <= 90:
-    #             return "中量"
-    #         else:
-    #             return "大量"
+        # 定義分級少量、中量、大量的函數
+        def categorize_amount(number):
+            if number <= 75:
+                return "少量"
+            elif number <= 90:
+                return "中量"
+            else:
+                return "大量"
 
-    #     # 新增分類欄位
-    #     total_count["Category"] = total_count["Number"].apply(categorize_amount)
+        # 新增分類欄位
+        total_count["Category"] = total_count["Number"].apply(categorize_amount)
 
-    #     # 最後選擇需要的欄位
-    #     final_counts = total_count[["Location", "Number", "Category"]]
+        # 最後選擇需要的欄位
+        final_counts = total_count[["Location", "Number", "Category"]]
 
-    #     # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
-    #     json_data = final_counts.to_dict(orient='records')
+        # 將 DataFrame 轉換為字典列表並轉換為 JSON 格式
+        json_data = final_counts.to_dict(orient='records')
 
-    # finally:
-    #     # 確保在完成操作後關閉游標和連接
-    #     cur.close()
-    #     conn.close()
+    finally:
+        # 確保在完成操作後關閉游標和連接
+        cur.close()
+        conn.close()
 
 
-    json_data = [
-        {"Location": "國研大樓和體育館", "Category": "少量"},
-        {"Location": "教學區", "Category": "大量"},
-        {"Location": "教學區西側", "Category": "中量"},
-        {"Location": "武嶺", "Category": "大量"},
-        {"Location": "活動中心", "Category": "大量"},
-        {"Location": "海院", "Category": "中量"},
-        {"Location": "翠亨", "Category": "中量"},
-        {"Location": "電資大樓", "Category": "大量"},
-        {"Location": "體育場和海提", "Category": "少量"},
-    ]
+    # json_data = [
+    #     {"Location": "國研大樓和體育館", "Category": "少量"},
+    #     {"Location": "教學區", "Category": "大量"},
+    #     {"Location": "教學區西側", "Category": "中量"},
+    #     {"Location": "武嶺", "Category": "大量"},
+    #     {"Location": "活動中心", "Category": "大量"},
+    #     {"Location": "海院", "Category": "中量"},
+    #     {"Location": "翠亨", "Category": "中量"},
+    #     {"Location": "電資大樓", "Category": "大量"},
+    #     {"Location": "體育場和海提", "Category": "少量"},
+    # ]
     return jsonify(json_data)
 
 
 @predict.route("/details", methods=["POST"])
 def get_details():
-    # # 從資料庫中抓取資料，返回給前端
-    # # 'Date_time',  'Number'
-    # req_data = request.get_json()
-    # location = req_data["location"]
-    # try:
-    #     conn = mariadb.connect(**DB_CONFIG)
-    # except mariadb.Error as e:
-    #     print(f"Error connecting to MariaDB Platform: {e}")
-    #     return jsonify({"message": "Error connecting to database."}), 500
+    # 從資料庫中抓取資料，返回給前端
+    # 'Date_time',  'Number'
+    req_data = request.get_json()
+    location = req_data["location"]
+    try:
+        conn = mariadb.connect(**DB_CONFIG)
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        return jsonify({"message": "Error connecting to database."}), 500
 
-    # try:
-    #     cur = conn.cursor()
+    try:
+        cur = conn.cursor()
 
-    #     # 計算明天的日期
-    #     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        # 計算明天的日期
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
-    #     # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
-    #     query = """
-    #     SELECT Date_time, Location, Number
-    #     FROM monkey_predict
-    #     WHERE DATE(Date_time) = ? AND Location = ?
-    #     """
-    #     cur.execute(query, (tomorrow, location))
-    #     results = cur.fetchall()
+        # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
+        query = """
+        SELECT Date_time, Location, Number
+        FROM monkey_predict
+        WHERE DATE(Date_time) = ? AND Location = ?
+        """
+        cur.execute(query, (tomorrow, location))
+        results = cur.fetchall()
 
-    #     # 將結果轉換為字典列表
-    #     columns = [desc[0] for desc in cur.description]
-    #     data = [dict(zip(columns, row)) for row in results]
+        # 將結果轉換為字典列表
+        columns = [desc[0] for desc in cur.description]
+        data = [dict(zip(columns, row)) for row in results]
 
-    #     cur.close()
-    #     conn.close()
+        cur.close()
+        conn.close()
 
-        data = [
-            {"Number": 12, "Date_time": "0"},
-            {"Number": 3, "Date_time": "1"},
-            {"Number": 15, "Date_time": "2"},
-            {"Number": 8, "Date_time": "3"},
-            {"Number": 7, "Date_time": "4"},
-            {"Number": 10, "Date_time": "5"},
-            {"Number": 5, "Date_time": "6"},
-            {"Number": 13, "Date_time": "7"},
-            {"Number": 1, "Date_time": "8"},
-            {"Number": 14, "Date_time": "9"},
-            {"Number": 6, "Date_time": "10"},
-            {"Number": 2, "Date_time": "11"},
-            {"Number": 11, "Date_time": "12"},
-            {"Number": 4, "Date_time": "13"},
-            {"Number": 9, "Date_time": "14"},
-            {"Number": 0, "Date_time": "15"},
-            {"Number": 3, "Date_time": "16"},
-            {"Number": 8, "Date_time": "17"},
-            {"Number": 12, "Date_time": "18"},
-            {"Number": 7, "Date_time": "19"},
-            {"Number": 15, "Date_time": "20"},
-            {"Number": 1, "Date_time": "21"},
-            {"Number": 14, "Date_time": "22"},
-            {"Number": 9, "Date_time": "23"},
-            {"Number": 5, "Date_time": "24"},
-        ]
+        # data = [
+        #     {"Number": 12, "Date_time": "0"},
+        #     {"Number": 3, "Date_time": "1"},
+        #     {"Number": 15, "Date_time": "2"},
+        #     {"Number": 8, "Date_time": "3"},
+        #     {"Number": 7, "Date_time": "4"},
+        #     {"Number": 10, "Date_time": "5"},
+        #     {"Number": 5, "Date_time": "6"},
+        #     {"Number": 13, "Date_time": "7"},
+        #     {"Number": 1, "Date_time": "8"},
+        #     {"Number": 14, "Date_time": "9"},
+        #     {"Number": 6, "Date_time": "10"},
+        #     {"Number": 2, "Date_time": "11"},
+        #     {"Number": 11, "Date_time": "12"},
+        #     {"Number": 4, "Date_time": "13"},
+        #     {"Number": 9, "Date_time": "14"},
+        #     {"Number": 0, "Date_time": "15"},
+        #     {"Number": 3, "Date_time": "16"},
+        #     {"Number": 8, "Date_time": "17"},
+        #     {"Number": 12, "Date_time": "18"},
+        #     {"Number": 7, "Date_time": "19"},
+        #     {"Number": 15, "Date_time": "20"},
+        #     {"Number": 1, "Date_time": "21"},
+        #     {"Number": 14, "Date_time": "22"},
+        #     {"Number": 9, "Date_time": "23"},
+        #     {"Number": 5, "Date_time": "24"},
+        # ]
 
         return jsonify(data)
-        # except mariadb.Error as e:
-        #     print(f"Error fetching data from MariaDB Platform: {e}")
-        #     return jsonify({"message": "Error fetching data from database."}), 500
+    except mariadb.Error as e:
+        print(f"Error fetching data from MariaDB Platform: {e}")
+        return jsonify({"message": "Error fetching data from database."}), 500

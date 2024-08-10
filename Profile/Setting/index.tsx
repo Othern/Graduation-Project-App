@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SettingsPage = (props: any) => {
     const [isEnabledLocation, setIsEnabledLocation] = useState(false);
     const [isEnabledCamera, setIsEnabledCamera] = useState(false);
-    const [isEnabledStorage, setIsEnabledStorage] = useState(false);
+    const [isEnabledNotification, setIsEnabledNotification] = useState(false);
     const [fast, setFast] = useState(false);
     useFocusEffect(
         React.useCallback(() => {
@@ -70,12 +70,13 @@ const SettingsPage = (props: any) => {
             const grantedLocation = await PermissionsAndroid.check(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
             );
-            const grantedStorage = await PermissionsAndroid.check(
-                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+            const grantedNotification = await PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+                //實際上是 通知權限
             );
             setIsEnabledCamera(grantedCamera);
             setIsEnabledLocation(grantedLocation);
-            setIsEnabledStorage(grantedStorage);
+            setIsEnabledNotification(grantedNotification);
         } catch (err) {
             console.warn(err);
         }
@@ -143,10 +144,10 @@ const SettingsPage = (props: any) => {
             );
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 Alert.alert("You can access the gallery");
-                setIsEnabledStorage(true);
+                setIsEnabledNotification(true);
             } else {
                 Alert.alert("Gallery permission denied");
-                setIsEnabledStorage(false);
+                setIsEnabledNotification(false);
             }
         } catch (err) {
             console.warn(err);
@@ -195,10 +196,10 @@ const SettingsPage = (props: any) => {
 
             </View>
             <View style={styles.settingItem}>
-                <Text style={styles.switchText}>調整相簿權限</Text>
+                <Text style={styles.switchText}>調整通知權限</Text>
                 <Switch
                     style={styles.switch}
-                    value={isEnabledStorage} // Set your switch value here
+                    value={isEnabledNotification} // Set your switch value here
                     onValueChange={(value) => {
                         // Handle switch value change
                         if (value) {
