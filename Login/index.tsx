@@ -42,7 +42,7 @@ import BackgroundLocation from '../Function/BackgroundLocation';
 // }
 // // state = {"success","wrongEmail","wrongUsername","wrongPassword"} -> 先找email 是否在資料庫或是否合法， 再對帳號是否在資料庫或是否合法， 在對密碼(是否合法)
 // // headimage: "" -> 頭像圖片地址 default是空或若使用預設圖片，則為預設圖片地址
-const test = true
+const test = false
 const Stack = createStackNavigator();
 const LoginAssociate = (props: any) => {
   const [showRegistration, setShowRegistration] = useState(false);
