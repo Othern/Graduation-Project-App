@@ -6,7 +6,7 @@ const slides = [
     {
         key: 'sh1',
         title: '系統介紹: 首頁 - 地圖',
-        text: '這個地圖會顯示最近各個通報獼猴出沒的位置(紅)，以及顯示預測某些地點獼猴的出沒(綠)，可以透過1號紅框中的按鈕來控制這些位置是否在地圖上顯示。',
+        text: '這個地圖會顯示最近各個通報獼猴出沒的位置，可以透過1號紅框中的按鈕來控制被通報的獼猴位置是否在地圖上顯示。',
         image: require('../../asset/introduction/system/home.png'),
         backgroundColor: '#D6D6AD',
         noModal: 'false',
@@ -78,7 +78,7 @@ const slides = [
     {
         key: 'spre1',
         title: '系統介紹: 預測 - 主要',
-        text: '這個頁面可以看到剛才地圖中綠點位置的資訊，其中的單元也可以點開看一天之中的預測數量',
+        text: '這個頁面可以看到猴猴常見地點可能出現的猴猴數量，其中的單元也可以點開看一天之中各個時間的預測數量',
         image: require('../../asset/introduction/system/predict.png'),
         backgroundColor: '#6FB7B7',
         noModal: 'false',
@@ -86,7 +86,7 @@ const slides = [
     {
         key: 'spre2',
         title: '系統介紹: 預測 - 細部',
-        text: '點開剛才的單元後可以看到該地點一天之中各個時間的預測數量，其中的紅框是可以左右移動的',
+        text: '點開剛才的單元後可以看到該地點一天之中各個時間的預測數量，其中的紅框是可以左右移動，查看各時間可能的的變化',
         image: require('../../asset/introduction/system/predictDetail.png'),
         backgroundColor: '#6FB7B7',
         noModal: 'false',
