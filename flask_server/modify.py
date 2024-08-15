@@ -3,6 +3,7 @@ from flask_cors import CORS
 import secrets
 import mariadb
 import sys
+import json
 from werkzeug.utils import secure_filename
 from pypinyin import lazy_pinyin
 
@@ -14,6 +15,10 @@ CORS(modify)  # 跨平台使用
 
 modify.secret_key = secrets.token_hex(16)  # 保護session
 
+# 獲取所需API
+with open('../config.json') as f:
+    config = json.load(f)
+url = config["URl"]
 
 @modify.route('/')
 def index():
@@ -143,7 +148,7 @@ def change_headimg():
             sys.exit(1)
 
         image.save(f'static/headImg/{image_name}')
-        img_path = "https://d174-180-218-40-127.ngrok-free.app/static/headImg/" + image_name
+        img_path = url + "static/headImg/" + image_name
 
         # 讀取資料庫資料
         cur = conn.cursor()

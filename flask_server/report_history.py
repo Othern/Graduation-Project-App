@@ -23,6 +23,7 @@ with open('../config.json') as f:
     config = json.load(f)
 registration_token = config["GOOGLE_MAP_API"]
 weather_API = config["WEATHER_API"]
+url = config["URl"]
 
 # 獲取天氣資訊
 weather_dict = {}
@@ -80,7 +81,7 @@ def submit_report():
 
             # 將圖片存入專案照片資料夾底下的"reportImg"資料夾
             image.save(f'static/reportImg/{image_name}')
-            img_url = "https://d174-180-218-40-127.ngrok-free.app/static/reportImg/" + image_name
+            img_url = url + "static/reportImg/" + image_name
         else:
             img_url = ""
         email = request.form['email']
@@ -99,7 +100,7 @@ def submit_report():
         # time_time = time.hour
         # wday = today.isoweekday()
         get_weather()
-        pa = weather_dict.get('Pressure', None)  # 氣壓
+        # pa = weather_dict.get('Pressure', None)  # 氣壓
         temp = weather_dict.get('Temperature', None)  # 氣溫
         hum = weather_dict.get('Relative Humidity', None)  # 相對溼度
         wspd = weather_dict.get('Wind Speed', None)  # 風速

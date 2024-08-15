@@ -10,7 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackActions, useFocusEffect } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import data from '../config.json'
+const URL = data['URl']
 import Modify from "./Modify"
 import Setting from "./Setting"
 import Intro from "./Intro"
@@ -31,8 +32,21 @@ const getDataJSON = async (key: any, success = (data: any) => { }) => {
     }
 };
 
-const Logout = async (props: any) => {
+const Logout = async (props: any, email: any) => {
     try {
+        const response = await fetch(URL+'DataClean', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+        const responseData = await response.json();
+        if (responseData.state === "success") {
+            console.log('Clean data Successfully!');
+        } else {
+            console.log('Clean data not found!');
+        }
         await Keychain.resetGenericPassword();
         console.log('Credentials successfully removed from keychain');
         await AsyncStorage.clear();
@@ -121,7 +135,7 @@ const Profile = (props: any) => {
                 <Icon style={[styles.icon, styles.forward, { color: textColor }]} name={'chevron-forward'} size={30} />
             </Pressable>
 
-            <Pressable onPress={() => Logout(props)} style={styles.pressable}>
+            <Pressable onPress={() => Logout(props, email)} style={styles.pressable}>
                 <Icon style={[styles.icon, { color: textColor }]} name={'log-out'} size={30} />
                 <Text style={[styles.pressableText, { color: textColor }]}>登出當前帳號</Text>
                 <Icon style={[styles.icon, styles.forward, { color: textColor }]} name={'chevron-forward'} size={30} />
