@@ -37,9 +37,7 @@ export default (props: any) => {
   }));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(chartData);
-  const today = new Date();
-  const graphTitle =
-    today.getHours() >= 18 ? '明日獼猴預測出現數量' : '今日獼猴預測出現數量';
+  const graphTitle = '今日獼猴預測出現數量'
   //測試時將此註解拿掉即可
   useEffect(()=>{getDetailData(title,
       (data:any)=>{
