@@ -16,11 +16,15 @@ from datetime import datetime, timedelta
 # import random
 from tensorflow.lite.python.interpreter import Interpreter
 from notify import send_messages
+from map import get_elevation
+
 
 # 取得中央氣象局的API
 with open('../config.json') as f:
     config = json.load(f)
+registration_token = config["GOOGLE_MAP_API"]
 weather_API = config["WEATHER_API"]
+rtsp_path = config["RTSP_PATH"]
 
 try:
     conn = mariadb.connect(
@@ -38,21 +42,32 @@ except mariadb.Error as e:
 cur = conn.cursor()
 
 # PATH_TO_MODEL='./custom_model_lite_v1/detect_ssdmobilenetv2_60000.tflite'
-PATH_TO_MODEL='C:/Users/mybea/Downloads/2nd_phase/2nd_phase_weights/non4_detect.tflite'
+# PATH_TO_MODEL='C:/Users/mybea/Downloads/2nd_phase/2nd_phase_weights/non4_detect.tflite'
+PATH_TO_MODEL='./detect.tflite'
 PATH_TO_LABELS='./labelmap.txt'
 
 # 從input details 去改 width 和 height
-width = 320
-height = 320
+width = 640
+height = 640
 
-camera_dict = {
-    1: ['國研大樓', 'rtsp1'],
-    2: ['管院', 'rtsp2'],
-    3: ['武嶺', 'rtsp3']
-}
-
+# 取得攝影機資料
 camera = 1
-location, rtsp_link = camera_dict.get(camera)
+cur.execute("SELECT Location, Longitude, Latitude FROM user WHERE PID=? AND isCamera=? LIMIT 1", (camera,"Y"))
+rows = cur.fetchall()
+if rows:
+    for row in rows:
+        location = row[0]
+else:
+    print("Camera fetch error!")
+
+# camera_dict = {
+#     1: [location, rtsp_path],
+#     2: ['管院', 'rtsp2'],
+#     3: ['武嶺', 'rtsp3']
+# }
+
+
+# location, rtsp_link = camera_dict.get(camera)
 #print(location, rtsp_link)
 
 ########################### ADD和修改 ####################################
@@ -88,9 +103,9 @@ def get_weather():
 
             if precipitation is not None:
                 if precipitation > 0:
-                    weather_dict['Precipitation'] = 'Y'
+                    weather_dict['Precipitation'] = 1
                 elif precipitation == 0:
-                    weather_dict['Precipitation'] = 'N'
+                    weather_dict['Precipitation'] = 0
 #########################################################################                    
 def post_backend(camera, location, time, label_count):
     # print 連後端要傳的 - time
@@ -111,7 +126,7 @@ def post_backend(camera, location, time, label_count):
 ########################### ADD和修改 ####################################    
     # 抓取天氣資料
     get_weather()
-    pa = weather_dict.get('Pressure', None)  # 氣壓
+    # pa = weather_dict.get('Pressure', None)  # 氣壓
     temp = weather_dict.get('Temperature', None) # 氣溫
     hum =  weather_dict.get('Relative Humidity', None)  # 相對溼度
     wspd =  weather_dict.get('Wind Speed', None)  # 風速
@@ -134,9 +149,10 @@ def post_backend(camera, location, time, label_count):
     # check if the data is fetched
     if camera_data:
         lon, lat = camera_data
-        cur.execute( "INSERT INTO monkey_history (Date_time, Longitude, Latitude, Altitude, Location, Number, Pressure, Temperature, Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Week, Weekday, Notifier, Picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (time, lon, lat, alt, location, count, pa, temp, hum, wspd, wdir, precip, tptype, wday, iswday, camera, img_url) )
-
+        alt = get_elevation(lat, lon, registration_token)
+        send_messages(lat, lon, 0.1)
+        cur.execute( "INSERT INTO monkey_history (Date_time, Longitude, Latitude, Altitude, Location, Number, Temperature, Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Week, Weekday, Notifier, Picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (time, lon, lat, alt, location, count, temp, hum, wspd, wdir, precip, tptype, wday, iswday, camera, img_url) )
         conn.commit()
     else: # if data is not found
         print('No valid camera!')
@@ -205,8 +221,6 @@ def tflite_detect_video(interpreter, image, labels, min_conf=0.5):
             # if the current detected monkey time is later than last recorded Date_time for over 0.5 second
             if (current_time - last_recorded_date_time) > timedelta(seconds=0.5):
                 post_backend(camera, location, current_time, label_count) # insert the data to database
-            
-            send_messages()
 
     return image, detections
 
@@ -214,10 +228,10 @@ def tflite_detect_video(interpreter, image, labels, min_conf=0.5):
 def main():
 
     # for mp4 video testing
-    video_path = './test_monkey2.mp4'
+    video_path = './VID_20240313_134833.mp4'
 
     # for rtsp testing
-    # video_path = 'rtsp://mis114themonkey:1u4u,45j0_04cl31;41;4@172.20.10.10:554/stream1'
+    # video_path = rtsp_path
     cap = cv2.VideoCapture(video_path)
 
     interpreter = Interpreter(model_path=PATH_TO_MODEL)

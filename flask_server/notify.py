@@ -41,7 +41,7 @@ def send_messages(lat, lon, radius):
         else:
             last_time = datetime.datetime.min
         times = current_time - last_time
-        if times > datetime.timedelta(seconds=600):
+        if times > datetime.timedelta(seconds=10):
             alert_coords = (lat, lon)
             distance = geodesic(alert_coords, user_coords).kilometers
             if distance <= radius:
