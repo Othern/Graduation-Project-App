@@ -15,12 +15,14 @@ from datetime import datetime, timedelta
 # import glob
 # import random
 from tensorflow.lite.python.interpreter import Interpreter
-import notify
+from notify import send_messages
+from map import get_elevation
 
 
 # 取得中央氣象局的API
 with open('../config.json') as f:
     config = json.load(f)
+registration_token = config["GOOGLE_MAP_API"]
 weather_API = config["WEATHER_API"]
 rtsp_path = config["RTSP_PATH"]
 
@@ -41,21 +43,31 @@ cur = conn.cursor()
 
 # PATH_TO_MODEL='./custom_model_lite_v1/detect_ssdmobilenetv2_60000.tflite'
 # PATH_TO_MODEL='C:/Users/mybea/Downloads/2nd_phase/2nd_phase_weights/non4_detect.tflite'
-PATH_TO_MODEL='c:/Users/eva13/Desktop/2nd_phase_weights/non4_detect.tflite'
+PATH_TO_MODEL='./detect.tflite'
 PATH_TO_LABELS='./labelmap.txt'
 
 # 從input details 去改 width 和 height
-width = 320
-height = 320
+width = 640
+height = 640
 
-camera_dict = {
-    1: ['國研大樓', 'rtsp1'],
-    2: ['管院', 'rtsp2'],
-    3: ['武嶺', 'rtsp3']
-}
-
+# 取得攝影機資料
 camera = 1
-location, rtsp_link = camera_dict.get(camera)
+cur.execute("SELECT Location, Longitude, Latitude FROM user WHERE PID=? AND isCamera=? LIMIT 1", (camera,"Y"))
+rows = cur.fetchall()
+if rows:
+    for row in rows:
+        location = row[0]
+else:
+    print("Camera fetch error!")
+
+# camera_dict = {
+#     1: [location, rtsp_path],
+#     2: ['管院', 'rtsp2'],
+#     3: ['武嶺', 'rtsp3']
+# }
+
+
+# location, rtsp_link = camera_dict.get(camera)
 #print(location, rtsp_link)
 
 ########################### ADD和修改 ####################################
@@ -91,9 +103,9 @@ def get_weather():
 
             if precipitation is not None:
                 if precipitation > 0:
-                    weather_dict['Precipitation'] = 'Y'
+                    weather_dict['Precipitation'] = 1
                 elif precipitation == 0:
-                    weather_dict['Precipitation'] = 'N'
+                    weather_dict['Precipitation'] = 0
 #########################################################################                    
 def post_backend(camera, location, time, label_count):
     # print 連後端要傳的 - time
@@ -106,9 +118,9 @@ def post_backend(camera, location, time, label_count):
     for label, count in label_count.items():
         print(f"{label}: {count}")
 
-    lon = 121.66364203684343  # 經度
-    lat = 25.06887209139951  # 緯度
-    alt = 5  # 高度
+    lon = None  # 經度
+    lat = None  # 緯度
+    alt = None  # 高度
   
    # 修改post_backend的天氣資料部分
 ########################### ADD和修改 ####################################    
@@ -137,12 +149,10 @@ def post_backend(camera, location, time, label_count):
     # check if the data is fetched
     if camera_data:
         lon, lat = camera_data
-        user_locations, user_tokens, last_sent_time = notify.get_dict()
-        print(user_locations)
-        notify.send_messages(lat, lon, 0.1)
+        alt = get_elevation(lat, lon, registration_token)
+        send_messages(lat, lon, 0.1)
         cur.execute( "INSERT INTO monkey_history (Date_time, Longitude, Latitude, Altitude, Location, Number, Temperature, Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Week, Weekday, Notifier, Picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (time, lon, lat, alt, location, count, temp, hum, wspd, wdir, precip, tptype, wday, iswday, camera, img_url) )
-
         conn.commit()
     else: # if data is not found
         print('No valid camera!')
@@ -218,10 +228,10 @@ def tflite_detect_video(interpreter, image, labels, min_conf=0.5):
 def main():
 
     # for mp4 video testing
-    # video_path = './VID_20240313_134833.mp4'
+    video_path = './VID_20240313_134833.mp4'
 
     # for rtsp testing
-    video_path = rtsp_path
+    # video_path = rtsp_path
     cap = cv2.VideoCapture(video_path)
 
     interpreter = Interpreter(model_path=PATH_TO_MODEL)
