@@ -7,7 +7,7 @@ cred = credentials.Certificate("./Graduation-Project-App/flask_server/google.jso
 default_app = firebase_admin.initialize_app(cred)
 
 # 定義主題名稱
-token = "dyboQwC_SAuuwyMA3Iq3m8:APA91bFgi0rZz1e9zEhT901HyVTPDWpY4kRbiAy5ZEliwzqFJNei9ifjzM-lkmKVgywJ6c0nbXk6tdOvRVO65fAFJVV1GHxEvR1N9HfhZHnw9yfJS9A2dD0HoC7AUYHBK5t_KpHMXrx2"
+token = "eKVjfaouQau82V6Z3fLgW0:APA91bFVS4zDOZy0alSjzxLIlWyqv8Jj0ykuSFGhajvlczE5yXkrmt844vlR_T6T3_YACeN2HNJb5ASzFDZOO7vFGdZW6dMg37qWNbtGcH7Zfn5_SR2Kp90XjvpRl5VrSMtg6wxV5y5D"
 
 
 def send_test():
