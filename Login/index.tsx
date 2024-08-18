@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
   DefaultTheme,
   DarkTheme,
 } from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import {
   submitLogin,
   submitRegister,
@@ -26,7 +26,7 @@ import {
   requestNotificationPermission
 } from './function';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Notify} from '../Function/Notify';
+import { Notify } from '../Function/Notify';
 import BackgroundLocation from '../Function/BackgroundLocation';
 // //2. 處理後端溝通 測試範例:貼function response data中
 // const loginReturndata = {
@@ -79,7 +79,7 @@ const LoginAssociate = (props: any) => {
         if (test) {
           // change the state to false if we have server on
           showToast('登入成功.', '');
-          props.navigation.push('tab', {From: 'login'});
+          props.navigation.push('tab', { From: 'login' });
           //The problem that 徐 got about login fail and stuck in the page after login might because line 44 isn't be commented, or might be some other problems.
         } else {
           submitLogin(
@@ -98,7 +98,7 @@ const LoginAssociate = (props: any) => {
               showToast('登入成功.', '');
               Notify();
               BackgroundLocation();
-              props.navigation.push('tab', {From: 'login'});
+              props.navigation.push('tab', { From: 'login' });
             },
             (data: any) => {
               // fail = show the reason (setHint)
@@ -151,7 +151,7 @@ const LoginAssociate = (props: any) => {
       showToast('登入成功.', '');
       Notify();
       BackgroundLocation();
-      props.navigation.push('tab', {From: 'login'}); //做為測試(由於伺服器未完成，待完成後取消)
+      props.navigation.push('tab', { From: 'login' }); //做為測試(由於伺服器未完成，待完成後取消)
     } else {
       submitLogin(
         emailL,
@@ -173,7 +173,7 @@ const LoginAssociate = (props: any) => {
           showToast('登入成功.', '');
           Notify();
           BackgroundLocation();
-          props.navigation.push('tab', {From: 'login'});
+          props.navigation.push('tab', { From: 'login' });
         },
         (data: any) => {
           // fail = show the reason (setHint)
@@ -210,7 +210,7 @@ const LoginAssociate = (props: any) => {
       //turn to false if server had been started
       saveCredentials(email, password);
       const headImgRS = '';
-      const UserData = JSON.stringify({email, username, headImg: headImgRS});
+      const UserData = JSON.stringify({ email, username, headImg: headImgRS });
       saveData('UserData', UserData);
       setEmail('');
       setPassword('');
@@ -220,7 +220,7 @@ const LoginAssociate = (props: any) => {
       showToast('註冊成功.', '');
       Notify();
       BackgroundLocation();
-      props.navigation.push('tab', {From: 'login'}); //做為測試(由於伺服器未完成，待完成後取消)
+      props.navigation.push('tab', { From: 'login' }); //做為測試(由於伺服器未完成，待完成後取消)
     } else {
       submitRegister(
         email,
@@ -230,7 +230,7 @@ const LoginAssociate = (props: any) => {
           // success = save the logindata that response on clint device also their password and also activate a toast message
           saveCredentials(email, password);
           const headImgRS = data.headImg;
-          const UserData = JSON.stringify({email, username, headImgRS});
+          const UserData = JSON.stringify({ email, username, headImgRS });
           saveData('UserData', UserData);
           setEmail('');
           setPassword('');
@@ -239,7 +239,7 @@ const LoginAssociate = (props: any) => {
           showToast('註冊成功.', '');
           Notify();
           BackgroundLocation();
-          props.navigation.push('tab', {From: 'login'});
+          props.navigation.push('tab', { From: 'login' });
         },
         (data: any) => {
           // error = show the reason (setHint)
@@ -321,7 +321,7 @@ const LoginAssociate = (props: any) => {
           <View style={styles.row}>
             <Pressable
               onPress={toggleRegistration}
-              style={({pressed}) => [
+              style={({ pressed }) => [
                 styles.pressable,
                 {
                   opacity: pressed ? 0.8 : 1,
@@ -332,7 +332,7 @@ const LoginAssociate = (props: any) => {
             </Pressable>
             <Pressable
               onPress={handleRegister}
-              style={({pressed}) => [
+              style={({ pressed }) => [
                 styles.pressable,
                 {
                   opacity: pressed ? 0.8 : 1,
@@ -352,7 +352,6 @@ const LoginAssociate = (props: any) => {
             placeholder="Email"
             placeholderTextColor="gray"
             value={emailL}
-            maxLength={20}
             onChangeText={text => setEmailL(text)}
           />
           <TextInput
@@ -374,7 +373,7 @@ const LoginAssociate = (props: any) => {
           <View style={styles.row}>
             <Pressable
               onPress={toggleRegistration}
-              style={({pressed}) => [
+              style={({ pressed }) => [
                 styles.pressable,
                 {
                   opacity: pressed ? 0.8 : 1,
@@ -385,7 +384,7 @@ const LoginAssociate = (props: any) => {
             </Pressable>
             <Pressable
               onPress={handleLogin}
-              style={({pressed}) => [
+              style={({ pressed }) => [
                 styles.pressable,
                 {
                   opacity: pressed ? 0.8 : 1,
@@ -401,7 +400,7 @@ const LoginAssociate = (props: any) => {
             ) : (
               <Icon name="square-outline" size={25} aria-label="Unselected" />
             )}
-            <Text style={{fontSize: 16}}> 下次進入程式是否直接登入</Text>
+            <Text style={{ fontSize: 16 }}> 下次進入程式是否直接登入</Text>
           </Pressable>
         </View>
       )}
