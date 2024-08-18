@@ -4,7 +4,6 @@ from flask_socketio import SocketIO
 import json
 import time
 from werkzeug.utils import secure_filename
-from notification import send_test
 from config import configs
 import os
 
@@ -67,5 +66,5 @@ def handle_button_click():
     socketio.emit('response', 'Message from Flask!!!')
 
 if __name__ == '__main__':
-    socketio.run(app,debug=True,host='0.0.0.0',port=4000)
+    app.run(ssl_context=('server.crt', 'server.key'), port=8080,host="0.0.0.0")
     
