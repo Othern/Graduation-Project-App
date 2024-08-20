@@ -66,5 +66,5 @@ def handle_button_click():
     socketio.emit('response', 'Message from Flask!!!')
 
 if __name__ == '__main__':
-    app.run(ssl_context=('server.crt', 'server.key'), port=8080,host="0.0.0.0")
+    app.run( port=8080,host="0.0.0.0")
     
