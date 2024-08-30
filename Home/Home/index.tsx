@@ -49,8 +49,8 @@ export default () => {
   const [loading, setLoading] = useState(true);
   const [RTData, setRTData] = useState(data);
   const [PDData, setPDData] = useState(data);
-  const [refreshInterval, setRefreshInterval] = useState(10000); // 每分鐘更新一次地圖資訊
-  // 要使用Networking 取消quote，並要改成你的url
+  const [refreshInterval, setRefreshInterval] = useState(100); // 每分鐘更新一次地圖資訊
+  //要使用Networking 取消quote，並要改成你的url
   const getData = async () => {
     const RTUrl = URL+'api/data/getRealTimeData';
     try {
