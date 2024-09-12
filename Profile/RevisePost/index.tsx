@@ -5,7 +5,7 @@ import { ShowMediaLibrary, showToast, formReviseData, uploadToServer, getDataJSO
 import Video from "react-native-video"
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function MediaUploader(props: any, { theme }: any) {
+export default function MediaUploader(props: any) {
     const id = props.route.params.id
     const image = useState(props.route.params.image)
     const [contentUri, setContentUri] = useState(props.route.params.contentUri)

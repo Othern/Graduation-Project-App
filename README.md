@@ -52,10 +52,13 @@ This project is a React Native application utilizing various libraries to enhanc
 4. **Configure API key and permissions:**
    In the `android/app/src/main/AndroidManifest.xml` file, inside the `<application ...>...</application>` tag, add the following lines:
    ```xml
-   <meta-data
-       android:name="com.google.android.geo.API_KEY"
-       android:value="Replace this with your API key"/>
-   <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+   <application ... android:usesCleartextTraffic="true">
+      <meta-data
+         android:name="com.google.android.geo.API_KEY"
+         android:value="Replace this with your API key"/>
+      <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+      ...
+   </application>
    ```
 
 5. **Add required permissions:**
