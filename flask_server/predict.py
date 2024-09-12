@@ -232,11 +232,7 @@ region_centers = {
 
 # 模型超參數
 best_params = {
-    'subsample': 0.9087919226291457,
-    'n_estimators': 2000,
-    'eta': 0.06477528416088997,
-    'min_child_weight': 2,
-    'colsample_bytree': 0.8707440237807236
+    'max_depth': 5, 'subsample': 0.9687733850427525, 'eta': 0.03527776162897478, 'min_child_weight': 8, 'colsample_bytree': 0.8752346029680633
 }
 
 
@@ -266,9 +262,9 @@ def get_weather():
     weather_url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-065'
 
     # 設定明天的日期，並指定時間範圍
-    tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
-    time_from = f"{tomorrow}T06:00:00"
-    time_to = f"{tomorrow}T18:00:01"
+    today = datetime.today().strftime('%Y-%m-%d')
+    time_from = f"{today}T06:00:00"
+    time_to = f"{today}T18:00:01"
 
     parameters = {
         'Authorization': weather_API,
@@ -335,9 +331,9 @@ def get_weather():
 
         # 確保每小時都有資料
         start_time = datetime.strptime(
-            f"{tomorrow} 06:00:00", '%Y-%m-%d %H:%M:%S')
+            f"{today} 06:00:00", '%Y-%m-%d %H:%M:%S')
         end_time = datetime.strptime(
-            f"{tomorrow} 18:00:00", '%Y-%m-%d %H:%M:%S')
+            f"{today} 18:00:00", '%Y-%m-%d %H:%M:%S')
         all_times = pd.date_range(start=start_time, end=end_time, freq='H')
 
         # 創建一個包含所有時間的DataFrame
@@ -581,12 +577,13 @@ def predict_model():
 
     y = data_df["Number"].values
 
+   
     model = xgb.XGBRegressor(**best_params)
     model.fit(X, y)
 
     # # 設定今天的日期
-    # today = (datetime.now()).strftime("%Y-%m-%d")
-    tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+    today = (datetime.now()).strftime("%Y-%m-%d")
+    
 
     weather_df = get_weather()
     if weather_df.empty:
@@ -626,11 +623,11 @@ def predict_model():
                 time_type = 1 if (6 <= hour <= 12) else (
                     2 if (13 <= hour <= 18) else 3)
                 weekday = 0 if pd.to_datetime(
-                    tomorrow).weekday() in [5, 6] else 1
+                    today).weekday() in [5, 6] else 1
 
                 # 創建 input_data，並添加 one-hot 編碼列
                 input_data = {
-                    "date": tomorrow,
+                    "date": today,
                     "hour": f"{hour:02d}:00:00",
                     "Location": region,
                     "Weekday_0": 1 if weekday == 0 else 0,
@@ -769,10 +766,10 @@ scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 # 測試用，每分鐘呼叫function一次
 # scheduler.add_job(preprocess_data, 'cron', minute='*')
 # scheduler.add_job(predict_model, 'cron', minute='*')
-# # 實際用
+# # # 實際用
 scheduler.add_job(preprocess_data, "cron", hour=0, minute=0)  # 半夜12:00
 scheduler.add_job(predict_model, "cron", hour=0, minute=5)  # 半夜12:05
-
+              
 print("Scheduler started. Jobs are set up.")
 scheduler.start()
 
@@ -791,45 +788,50 @@ def predict_model_endpoint():
 
     try:
         # 計算明天的日期
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        today = datetime(year=datetime.today().year, month=8, day=17)
 
         # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
         query = "SELECT Date_time, Location, Number FROM monkey_predict WHERE DATE(Date_time) = %s"
-        cur.execute(query, (tomorrow,))
+        cur.execute(query, (today,))
         rows = cur.fetchall()
 
         # 將結果轉換為 DataFrame
         columns = [desc[0] for desc in cur.description]
         total_count = pd.DataFrame(rows, columns=columns)
 
-        # 將 Date_time 轉換為 datetime 格式，並提取小時
-        total_count["Date_time"] = pd.to_datetime(total_count["Date_time"])
-        total_count["Hour"] = total_count["Date_time"].dt.hour
+        # 將 "Date_time" 轉換為 datetime 格式
 
-        # 按 Location 和 12 小時內分組，計算每個 12 小時內的平均 Number
+        total_count["Date_time"] = pd.to_datetime(total_count["Date_time"])
+
+        # 將 "Date_time" 設置為索引，並按 Location 和每 12 小時分組，計算每個分組的 Number 總和
+
         total_count.set_index("Date_time", inplace=True)
-        total_count = total_count.groupby([pd.Grouper(freq='12H'), 'Location'])[
-            "Number"].mean().reset_index()
+        total_count_resampled = total_count.groupby([pd.Grouper(freq='12h'), 'Location'])["Number"].sum().reset_index()
+
+        # 計算每個地點每個時段的 Number 平均值（即總和除以 12）
+
+        total_count_resampled["Number"] = total_count_resampled.groupby('Location')["Number"].transform(lambda x: x / 12)
 
         # 定義分級函數
+
         def categorize_amount(value):
-            if value > 15:
+            if value > 4:
                 return "大量"
-            elif value > 10:
+            elif value > 3.5:
                 return "中量"
             else:
                 return "少量"
 
         # 新增分類欄位
-        total_count["Category"] = total_count["Number"].apply(
-            categorize_amount)
 
-        # 按照 Location 彙總總數和分類
-        final_counts = total_count.groupby("Location", as_index=False).agg({
-            "Number": "mean",  # 可以選擇使用平均數量作為代表值
-            "Category": "first"  # 只取第一個分類結果
+        total_count_resampled["Category"] = total_count_resampled["Number"].apply(categorize_amount)
+
+        # 按照 Location 彙總每個地點的平均數量和分類結果
+
+        final_counts = total_count_resampled.groupby("Location", as_index=False).agg({
+        "Number": "mean",  # 計算每個地點的平均數量
+        "Category": "first"  # 只取第一個分類結果
         })
-
         # 最後選擇需要的欄位
         final_counts = final_counts[["Location", "Number", "Category"]]
 
@@ -870,15 +872,15 @@ def get_details():
         cur = conn.cursor()
 
         # 計算明天的日期
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        today = datetime(year=datetime.today().year, month=8, day=17)
 
-        # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
+        # 從資料庫中提取今天的 Date_time, Location 和 Number 的資料
         query = """
         SELECT Date_time, Location, Number
         FROM monkey_predict
         WHERE DATE(Date_time) = ? AND Location = ?
         """
-        cur.execute(query, (tomorrow, location))
+        cur.execute(query, (today, location))
         results = cur.fetchall()
 
         # 將結果轉換為字典列表
@@ -897,7 +899,7 @@ def get_details():
                 row['Date_time'] = date_time_obj.hour  # 小時部分以整數形式表示
             except AttributeError:
                 row['Date_time'] = None  # 或者設置為其他適當的值
-
+            print(data)
         return jsonify(data)
 
     except mariadb.Error as e:
