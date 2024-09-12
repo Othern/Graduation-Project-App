@@ -218,7 +218,7 @@ const Item = ({
   );
 };
 
-export default (props: any, {kind}: any) => {
+export default (props: any) => {
   const theme = useColorScheme();
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
@@ -233,7 +233,7 @@ export default (props: any, {kind}: any) => {
   //先將loading設為false，若是後端完成後要設為true
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    getPostData(setPostData, kind, page);
+    getPostData(setPostData,  page);
     setLoading(false);
   }, []);
   const isFocused = useIsFocused();
@@ -254,24 +254,24 @@ export default (props: any, {kind}: any) => {
     if (!loading) {
       setLoading(true);
       // 調用getpostdata 來獲取更多數據，如果寫好則可以替代下面兩行
-      // getPostData(setMoreData,page + 1, kind)
+      // getPostData(setMoreData,page + 1)
       // setPostData((prev)=>[...prev,...MoreData])
       setMoreData(POSTDATA);
       setPostData(prev => [...prev, ...prev]);
       setLoading(false);
     }
-  }, [page, kind, loading]);
+  }, [page, loading]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      await getPostData(setPostData, kind, page);
+      await getPostData(setPostData,  page);
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
       setIsRefreshing(false);
     }
-  }, [kind, page]);
+  }, [ page]);
   useEffect(() => {
     if (isFocused) {
       handleRefresh();
@@ -287,7 +287,7 @@ export default (props: any, {kind}: any) => {
           setShowDeleteWarning={setShowDeleteWarning}
           onConfirmDelete={async () => {
             await deletePost(deletePostId);
-            await getPostData(setPostData, kind, page);
+            await getPostData(setPostData,  page);
           }}
         />
         <FlatList

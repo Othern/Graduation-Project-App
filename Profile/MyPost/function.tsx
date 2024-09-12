@@ -44,7 +44,7 @@ export const deletePost = async(id:string)=>{
 }
 
 // 取得貼文資料，這邊要取得的是使用者寫的文章
-export const getPostData = async (setPostData: any, kind: string, page: number) => {
+export const getPostData = async (setPostData: any,  page: number) => {
   const Url = URL+"api/data/getMyPostData";
   const email = await getUserData('email');
   try {
@@ -55,7 +55,7 @@ export const getPostData = async (setPostData: any, kind: string, page: number) 
       },
       body: JSON.stringify(
         {
-          "kind": kind,
+          
           "page": page,
           "email": email
         })
