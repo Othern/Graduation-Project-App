@@ -787,8 +787,9 @@ def predict_model_endpoint():
     cur = conn.cursor()
 
     try:
-        # 計算明天的日期
-        today = datetime(year=datetime.today().year, month=8, day=17)
+        # 計算今天的日期
+        today = (datetime.now()).strftime("%Y-%m-%d")
+
 
         # 從資料庫中提取明天的 Date_time, Location 和 Number 的資料
         query = "SELECT Date_time, Location, Number FROM monkey_predict WHERE DATE(Date_time) = %s"
@@ -871,8 +872,8 @@ def get_details():
     try:
         cur = conn.cursor()
 
-        # 計算明天的日期
-        today = datetime(year=datetime.today().year, month=8, day=17)
+        # 計算今天的日期
+        today = (datetime.now()).strftime("%Y-%m-%d")
 
         # 從資料庫中提取今天的 Date_time, Location 和 Number 的資料
         query = """
