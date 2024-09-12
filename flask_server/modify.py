@@ -167,6 +167,5 @@ def change_headimg():
 
     return jsonify({"success": success, "headImg": headImg})
 
-# 執行程式
-if __name__ == '__main__':
-    modify.run(host="0.0.0.0", port=5000)  # 我先設這個，有更好的話可以直接提出來討論修改
+
+

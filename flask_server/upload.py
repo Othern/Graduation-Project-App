@@ -62,9 +62,10 @@ def forFun_submit():
 
         media.save(f'static/forFun/{media_name}')
         media_path = url + "static/forFun/" + media_name
-        x = datetime.datetime(2024, 8, 2)  # baseline
+        x = datetime.datetime(2024, 8, 1)  # baseline
         now = datetime.datetime.now()
         delta = now - x
+        
         cur.execute(
             "INSERT INTO post (`PID`,  `Heart_sum`,  `Post_type`, `Content`, `Path`, `Post_time`, `Post_phase`, `Type`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (userid, 0, category, text, media_path,

@@ -112,7 +112,7 @@ def get_register_data():
             else:
                 if password.isalnum():
                     try: 
-                        cur.execute("INSERT INTO user (Email, User_name, Password, isCamera, Headimg_link) VALUES (?, ?, ?, ?, ?)", (email, username, password, "N", "profile-user.png"))
+                        cur.execute("INSERT INTO user (Email, User_name, Password, isCamera, Headimg_link) VALUES (?, ?, ?, ?, ?)", (email, username, password, "N", "http://140.117.71.54:5000/static/headImg/profile-user.png"))
                         conn.commit() 
                     except mariadb.Error as e: 
                         print(f"Error: {e}")
@@ -128,6 +128,4 @@ def get_register_data():
     session.clear() # 將session裡的資料清除，不清除的話下次測試會直接登入
     
     return jsonify({"state": state, "headImg": "profile-user.png"})
-# 執行程式
-if __name__ == '__main__':
-    login.run(host="0.0.0.0", port=5000) # 我先設這個，有更好的話可以直接提出來討論修改
+
