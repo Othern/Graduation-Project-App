@@ -25,21 +25,16 @@ const getUserData = async(key: string)=>{
     }
   }
 //Submit Report
-export async function submit(data: any, success = () => { }, fail = () => { }) {
+export async function submit(data: any) {
+  console.log(data)
     try {
-        const response = await fetch(URL+'reportSubmit', {
+        await fetch(URL+'reportSubmit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
             body: data
-        }).then(response => response.json());
-        if (response.success == 1) {
-            success();
-        } else {
-            fail();
-            Alert.alert("Submission failed.");
-        }
+        });
     } catch (error) {
         console.error('Error sending data:', error);
     }
