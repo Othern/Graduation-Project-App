@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import messaging
 
 # 初始化 Firebase Admin SDK
-cred = credentials.Certificate("./Graduation-Project-App/flask_server/google.json")
+cred = credentials.Certificate("./flask_server/google.json")
 firebase_admin.initialize_app(cred)
 
 # 定義主題名稱

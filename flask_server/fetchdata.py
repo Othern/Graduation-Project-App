@@ -65,7 +65,7 @@ def get_RealTimeData():
     # 取得資料庫的指標(類似pointer的意思，不須理解)
     cur = conn.cursor()
     cur.execute(
-        "SELECT Location, Longitude, Latitude, NUMBER AS Quantity, Date_time FROM monkey_history WHERE Date_time BETWEEN NOW() - INTERVAL 1 MINUTE AND NOW()",
+        "SELECT Location, Longitude, Latitude, NUMBER AS Quantity, Date_time FROM monkey_history WHERE Date_time BETWEEN NOW() - INTERVAL 10 MINUTE AND NOW()",
     )
 
     transformed_data = [
