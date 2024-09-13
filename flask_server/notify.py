@@ -63,11 +63,13 @@ def send_messages(lat, lon, radius):
                 alert_coords = (lat, lon)
                 user_coords = (user_lat, user_lon)
                 distance = geodesic(alert_coords, user_coords).kilometers
+                print(distance,user_id)
                 if distance <= radius:
                     cur.execute("SELECT token FROM user_data_cache WHERE user_id = ? LIMIT 1", (user_id,))
                     token = cur.fetchone()
-                    messages = [
-                        messaging.Message(
+
+                    # 構建消息
+                    messages = messaging.Message(
                             notification=messaging.Notification(
                                 title="附近有猴猴出沒",
                                 body="請將食物、塑膠袋、紙袋收好\n不要直視獼猴的眼睛，將背包置於胸前\n請勿餵食野生動物",
@@ -76,12 +78,10 @@ def send_messages(lat, lon, radius):
                             data={
                                 "test": "great match!",
                             },
-                            token=token[0],
-                        ),
-                    ]
-                    response = messaging.send_all(messages)
-                    print("{0} messages were sent successfully".format(
-                        response.success_count))
+                            token= token[0],
+                        )
+                    response = messaging.send(messages)
+                    
                     # 更新上次發送訊息的時間
                     cur.execute("UPDATE user_data_cache SET last_send_time = ? WHERE user_id = ?", (current_time, user_id))
                     conn.commit()

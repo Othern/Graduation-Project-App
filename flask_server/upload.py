@@ -113,7 +113,7 @@ def forFun_Revise():
         )
         for row in cur:
             userid = row[0]
-
+        print(userid)
         if reviseMedia == 'true':
             media_name = str(
                 userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")) + '_' + media_name
