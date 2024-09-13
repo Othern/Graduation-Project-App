@@ -3,3 +3,4 @@ flask_server/google.json
 flask_server/static/forFun/*
 flask_server/static/headImg/*
 flask_server/static/reportImg/*
+*.pyc
