@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { View, StyleSheet, Pressable, TextInput, Image } from "react-native";
 import { Text } from "react-native-paper";
-import { ShowMediaLibrary, showToast, formReviseData, uploadToServer, getDataJSON } from './function';
+import { ShowMediaLibrary, showToast, formReviseData, uploadToServer } from './function';
 import Video from "react-native-video"
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -10,16 +10,7 @@ export default function MediaUploader(props: any) {
     const image = useState(props.route.params.image)
     const [contentUri, setContentUri] = useState(props.route.params.contentUri)
     const [desc, setDesc] = useState(props.route.params.desc)
-    const [email, setEmail] = useState('');
-    getDataJSON('UserData', (data) => {
-        if (data) {
-            setEmail(data.email);
-        }
-        else {
-            console.log('Not login, login again')
-        }
-    });
-
+    
     //Media 介面 定義 避免null 而不通過 ts 
     interface Media {
         uri: string;
@@ -44,7 +35,7 @@ export default function MediaUploader(props: any) {
 
     //確認 (上傳並離開), 使用useCallback 的相依性，決定重新建構，確保變動時使用最新
     const handleConfirm = useCallback(async () => {
-        const formData = formReviseData(media, id, desc, email);
+        const formData = await formReviseData(media, id, desc);
         try {
             console.log(formData);
             //待後端完成連接@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

@@ -68,7 +68,7 @@ export default () => {
     // 設置間隔為1分鐘（60000毫秒）
     const interval = setInterval(async () => {
       await getData();
-    }, 60000);
+    }, 30000);
   
     return () => clearInterval(interval);
   }, []);

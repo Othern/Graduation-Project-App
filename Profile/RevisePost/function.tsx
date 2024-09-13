@@ -9,17 +9,25 @@ interface Media {
     fileName?: string;
 }
 
-export const getDataJSON = async (key: any, success = (data: any) => { }) => {
+const getUserData = async (key: string) => {
     try {
-        const value = await AsyncStorage.getItem(key);
-        if (value) {
-            const valueParse = JSON.parse(value);
-            success(valueParse);
-        }
-    } catch (e) {
-        console.log("error", e);
+      // 获取存储的UserData
+      const userDataString = await AsyncStorage.getItem('UserData');
+  
+      if (userDataString !== null) {
+        // 解析字符串为对象
+        const userData = JSON.parse(userDataString);
+        const result = userData[key];
+        return result;
+      } else {
+        console.log('UserData not found');
+        return null;
+      }
+    } catch (error) {
+      console.error('Failed to retrieve or parse UserData:', error);
+      return null;
     }
-};
+  };
 
 export const ShowMediaLibrary = async (
     success: (img: Media) => void = () => { },
@@ -53,7 +61,7 @@ export const ShowMediaLibrary = async (
     });
 }
 
-export const formReviseData = (media: any, postID: string,text: string, email: string) => {
+export const formReviseData = async(media: any, postID: string,text: string, ) => {
     const formData = new FormData();
     if (media && media.uri) {
         formData.append('reviseMedia',true); // 表示需要更改
@@ -68,6 +76,7 @@ export const formReviseData = (media: any, postID: string,text: string, email: s
     }
     formData.append('PostId', postID)
     formData.append('text', text);
+    const email = await getUserData('email');
     formData.append('email', email);
     console.log(formData)
     return formData;
