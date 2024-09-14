@@ -14,7 +14,7 @@ import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {Card} from 'react-native-paper';
 import {reviceHeart} from '../../function';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {getPostData, sendHeart, POSTDATA} from './function';
+import {getPostData,getDaysRemaining, sendHeart, POSTDATA} from './function';
 import Video, {VideoRef} from 'react-native-video';
 import {useIsFocused} from '@react-navigation/native';
 import CommentSection from '../../../Comment';
@@ -258,8 +258,19 @@ const CommentItem = ({
   );
 };
 
+const ListHeader = ({daysRemaining}:any) => {
+  const theme = useColorScheme();
+  const color = theme === 'dark' ? 'white' : 'black';
+  return( 
+  <View style={{ marginTop: 95, justifyContent: 'center', alignItems: 'center' }}>
+    <Text style={{ fontSize: 18, fontWeight: 'bold' ,color:color}}>
+      本屆吱吱人氣比拼還剩 {daysRemaining} 天...
+    </Text>
+  </View>)
+};
 export default ({kind, scrollY}: any) => {
   const theme = useColorScheme();
+  const [daysRemaining, setDaysRemaining] = useState(0);
   const [postData, setPostData] = useState(POSTDATA);
   const [moreData, setMoreData] = useState(POSTDATA);
   const [focusPostId, setFocusPostId] = useState('');
@@ -302,6 +313,7 @@ export default ({kind, scrollY}: any) => {
     setIsRefreshing(true);
     try {
       await getPostData(setPostData, kind, page);
+      await getDaysRemaining(setDaysRemaining)
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
@@ -347,7 +359,7 @@ export default ({kind, scrollY}: any) => {
             );
           }}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{height: 80}} />}
+          ListHeaderComponent={<ListHeader daysRemaining={daysRemaining}/>}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {y: scrollY}}}],
             {useNativeDriver: false},
