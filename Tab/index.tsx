@@ -17,7 +17,7 @@ export default ({ theme }: any) => {
         <>
             <Report modalVisible={modalVisible} setModalVisible={setModalVisible} theme={theme} />
 
-            <Tab.Navigator initialRouteName="Fun"
+            <Tab.Navigator initialRouteName="Home"
 
                 screenOptions={{
                     header: (props) => <Header {...props} onPress={() => setModalVisible(true)} theme={theme} />,
