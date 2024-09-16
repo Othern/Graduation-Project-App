@@ -50,8 +50,14 @@ function ReportModal({ modalVisible, setModalVisible, theme }: any) {
 
   function submitButton() {
     setModalVisible(!modalVisible);
-    setData(initialReport);
-    showToast('Submission Succeeded.', '')
+    if(data.textInputValue == initialReport.textInputValue){
+      Alert.alert("請輸入大約獼猴數量.");
+    }
+    else{
+      setData(initialReport);
+      showToast('Submission Succeeded.', '')
+    }
+    
   }
 
   const containerStyle: ViewStyle = {

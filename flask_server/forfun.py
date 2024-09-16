@@ -117,12 +117,12 @@ def get_PostData():
     print(period)
     if (kind != 'recent'):
         cur.execute(
-            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Post_time",
+            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Post_time DESC",
             (kind, period)
         )
     else:
         cur.execute(
-            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_phase = ? ORDER BY P.Post_time",
+            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_phase = ? ORDER BY P.Post_time DESC",
             (period,)
         )
     transformed_data = []
@@ -274,7 +274,7 @@ def get_PreviousPostData():
         )
     else:
         cur.execute(
-            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum",
+            "SELECT P.Post_id, U.User_name, P.Content, U.Headimg_link, P.Type, P.Heart_sum, P.Path, P.PID FROM user AS U JOIN post AS P ON U.PID = P.PID WHERE P.Post_type = ? AND P.Post_phase = ? ORDER BY P.Heart_sum DESC",
             (kind, period)
         )
     transformed_data = []

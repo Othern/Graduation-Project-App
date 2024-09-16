@@ -137,11 +137,11 @@ def submit_report():
                     (time, lon, lat, alt, count, temp, hum, wspd, wdir, precip, pid, img_url))  # location, tptype, wday, iswday
         conn.commit()
         session['success'] = 1
-        conn.close()
 
         # 發送獼猴警示訊息(若使用者未開啟APP，則提示顯示於提示欄；反之，則顯示於APP內)
         send_messages(lat, lon, 0.1)
 
+        conn.close()
         return redirect(url_for("history.submit_report"))  # 網頁重新導向，避免重複提交資料
     # 讀取session資料
     success = session.get('success', 0)

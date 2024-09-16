@@ -4,6 +4,7 @@ import secrets
 import mariadb
 import sys
 import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 from shapely.geometry import Point, Polygon
 from sklearn.preprocessing import LabelEncoder
@@ -254,7 +255,9 @@ wind_direction_dict = {
 
 # 全域變數
 final_counts = pd.DataFrame()
-
+train = 1
+model = None
+frequency_dict = {}
 
 def get_weather():
     print("getting weather data...")
@@ -334,7 +337,7 @@ def get_weather():
             f"{today} 06:00:00", '%Y-%m-%d %H:%M:%S')
         end_time = datetime.strptime(
             f"{today} 18:00:00", '%Y-%m-%d %H:%M:%S')
-        all_times = pd.date_range(start=start_time, end=end_time, freq='H')
+        all_times = pd.date_range(start=start_time, end=end_time, freq='h')
 
         # 創建一個包含所有時間的DataFrame
         all_times_df = pd.DataFrame(all_times, columns=['ObservationTime'])
@@ -350,8 +353,9 @@ def get_weather():
         weather_df.interpolate(method='linear', inplace=True)
 
         # 填補缺失的降雨值
-        weather_df['Precipitation'].fillna(precipitation_value, inplace=True)
-        print("2222")
+        weather_df['Precipitation'] = weather_df['Precipitation'].fillna(precipitation_value)
+
+       
         return weather_df
 
     else:
@@ -481,7 +485,6 @@ def preprocess_data():
         conn.commit()
         cur.close()
         conn.close()
-        print("1111")
     except mariadb.Error as e:
         print(f"Error updating MariaDB Platform: {e}")
 
@@ -489,6 +492,9 @@ def preprocess_data():
 # 預測資料函數
 def predict_model():
     print("Predicting model...")
+    global train
+    global model 
+    global frequency_dict
 
     try:
         conn = mariadb.connect(**DB_CONFIG)
@@ -551,15 +557,6 @@ def predict_model():
     for feature in numeric_features:
         data_df[feature] = scaled_features_df[feature]
 
-#    #標準化器
-#     scaler = StandardScaler()
-
-#     # 用原始數據擬合標準化器
-#     scaler.fit(data_df[['Number']])
-
-#     # 標準化目標特徵
-#     data_df['Number'] = scaler.transform(data_df[['Number']])
-    # 對weekday和Time_type做one_hot_encoding
 
     data_df = pd.get_dummies(data_df, columns=['Weekday'], drop_first=False)
     data_df = pd.get_dummies(data_df, columns=['Time_type'], drop_first=False)
@@ -569,18 +566,21 @@ def predict_model():
 
     # 創建映射字典
     frequency_dict = frequency_encoding.to_dict()
-
+    print(1)
+    print(frequency_dict)
     # 用 Frequency Encoding 替換 Location 特徵
     data_df['Location'] = data_df['Location'].map(frequency_dict)
+    if (train == 1):
+        X = data_df.drop(["Number", "Date_time", "hour"], axis=1)
 
-    X = data_df.drop(["Number", "Date_time", "hour"], axis=1)
+        y = data_df["Number"].values
 
-    y = data_df["Number"].values
 
-   
-    model = xgb.XGBRegressor(**best_params)
-    model.fit(X, y)
-
+        model = xgb.XGBRegressor(**best_params)
+        model.fit(X, y)
+        print('model is ready')
+    train = 0
+    print(train)
     # # 設定今天的日期
     today = (datetime.now()).strftime("%Y-%m-%d")
     
@@ -661,11 +661,12 @@ def predict_model():
     )
 
     # 將 Location 欄位進行編碼
+    
     prediction_df["Location"] = prediction_df["Location"].map(location_mapping)
-
+    
     # 用 Frequency Encoding 替換 Location 特徵
     prediction_df['Location'] = prediction_df['Location'].map(frequency_dict)
-
+    
     # 選擇要標準化的數值特徵
     numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed',
                         'Wind_direction']
@@ -807,26 +808,27 @@ def predict_model_endpoint():
         # 將 "Date_time" 設置為索引，並按 Location 和每 12 小時分組，計算每個分組的 Number 總和
 
         total_count.set_index("Date_time", inplace=True)
-        total_count_resampled = total_count.groupby([pd.Grouper(freq='12h'), 'Location'])["Number"].sum().reset_index()
-
-        # 計算每個地點每個時段的 Number 平均值（即總和除以 12）
-
+        total_count_resampled = total_count.groupby([ 'Location'])["Number"].sum().reset_index()
+        print(total_count_resampled['Number'])
+        # 計算每個地點每個時段的 Number 平均值（即總和除以 12
         total_count_resampled["Number"] = total_count_resampled.groupby('Location')["Number"].transform(lambda x: x / 12)
 
         # 定義分級函數
 
         def categorize_amount(value):
-            if value > 4:
+            # 根據分位數進行分類
+            if value > 10:
                 return "大量"
-            elif value > 3.5:
+            elif value > 8:
                 return "中量"
             else:
                 return "少量"
 
+        
+
         # 新增分類欄位
-
         total_count_resampled["Category"] = total_count_resampled["Number"].apply(categorize_amount)
-
+        print(total_count_resampled["Number"])
         # 按照 Location 彙總每個地點的平均數量和分類結果
 
         final_counts = total_count_resampled.groupby("Location", as_index=False).agg({
