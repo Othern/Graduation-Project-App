@@ -4,6 +4,4 @@ flask_server/google.json
 flask_server/static/forFun/*
 flask_server/static/headImg/*
 flask_server/static/reportImg/*
-flask_server/__pycache__/modify.cpython-311.pyc
-flask_server/__pycache__/login.cpython-311.pyc
-flask_server/__pycache__/predict.cpython-311.pyc
+
