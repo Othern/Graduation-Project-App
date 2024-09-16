@@ -808,29 +808,27 @@ def predict_model_endpoint():
         # 將 "Date_time" 設置為索引，並按 Location 和每 12 小時分組，計算每個分組的 Number 總和
 
         total_count.set_index("Date_time", inplace=True)
-        total_count_resampled = total_count.groupby([pd.Grouper(freq='12h'), 'Location'])["Number"].sum().reset_index()
-
-        # 計算每個地點每個時段的 Number 平均值（即總和除以 12）
-
+        total_count_resampled = total_count.groupby([ 'Location'])["Number"].sum().reset_index()
+        print(total_count_resampled['Number'])
+        # 計算每個地點每個時段的 Number 平均值（即總和除以 12
         total_count_resampled["Number"] = total_count_resampled.groupby('Location')["Number"].transform(lambda x: x / 12)
 
         # 定義分級函數
 
-        def categorize_amount(value, q25, q75):
+        def categorize_amount(value):
             # 根據分位數進行分類
-            if value > q75:
+            if value > 10:
                 return "大量"
-            elif value > q25:
+            elif value > 8:
                 return "中量"
             else:
                 return "少量"
 
         
-        # 計算25%跟75%分位數
-        q25, q75 = np.percentile(total_count_resampled["Number"], [25, 75])
+
         # 新增分類欄位
-        total_count_resampled["Category"] = total_count_resampled["Number"].apply(lambda x: categorize_amount(x, q25, q75))
-    
+        total_count_resampled["Category"] = total_count_resampled["Number"].apply(categorize_amount)
+        print(total_count_resampled["Number"])
         # 按照 Location 彙總每個地點的平均數量和分類結果
 
         final_counts = total_count_resampled.groupby("Location", as_index=False).agg({
