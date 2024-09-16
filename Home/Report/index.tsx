@@ -43,11 +43,19 @@ export default (props: any,  ) => {
     }
     , [props.route.params?.photo])
   const submitClicked = async() => {
-    const formData = await createFormData(data);
-    await submit(formData);
-    setData(initialReport);
-    props.navigation.pop();
-    showToast('Submission Succeeded.', '')
+    
+      if(data.textInputValue == initialReport.textInputValue){
+        showToast("請輸入大約獼猴數量.","");
+      }
+      else{
+        const formData = await createFormData(data);
+        await submit(formData);
+        setData(initialReport);
+        props.navigation.pop();
+        showToast('通報成功', '')
+      }
+    
+    
   }
   return (
 
