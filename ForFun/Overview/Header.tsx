@@ -19,7 +19,7 @@ export default ({ theme, onPress, onPressRank, onPressTitle, heart, translateY }
         >
             <Appbar.Header style={{ backgroundColor: theme === "dark" ? "#1C1C1E" : "#F0C750", height: 40 }}>
                 <Appbar.Content
-                    title={'ForFun'}
+                    title={'Fun'}
                     titleStyle={{ fontSize: 25, fontWeight: 'bold', color: fontColor }} />
 
                 {/* For Showing Top Three Ranking in the Past @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/}

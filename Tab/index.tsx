@@ -17,7 +17,7 @@ export default ({ theme }: any) => {
         <>
             <Report modalVisible={modalVisible} setModalVisible={setModalVisible} theme={theme} />
 
-            <Tab.Navigator initialRouteName="Forfun"
+            <Tab.Navigator initialRouteName="Fun"
 
                 screenOptions={{
                     header: (props) => <Header {...props} onPress={() => setModalVisible(true)} theme={theme} />,
@@ -42,7 +42,7 @@ export default ({ theme }: any) => {
                     } >
                     {() => <Home theme={theme} />}
                 </Tab.Screen>
-                <Tab.Screen name="ForFun"
+                <Tab.Screen name="Fun"
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <Ionicons name="tv" color={color} size={size} />

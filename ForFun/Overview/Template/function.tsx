@@ -66,6 +66,19 @@ export const sendHeart = async (pid: string) => {
   }
 }
 
+// 取得剩餘投票天數
+export const getDaysRemaining = async(setDaysRemaining:any) => {
+  const Url = URL+"getDaysRemaining";
+  try {
+    const response = await fetch(Url).then(response => response.json())
+    // 回傳格式
+    // {daysRemaining: 20}
+    setDaysRemaining(response.daysRemaining)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
 type PostData = {
   id: string;                // post id
   name: string;              // author's name
