@@ -17,18 +17,18 @@ export async function requestGeolocationPermission() {
   }
 }
 
-export const regions = [
-  [
+export const regions = {
+  '武嶺':[
     '武嶺',
-    [
-      { longitude: 120.26325051366383, latitude: 22.63131423396974 },
+    [ { longitude: 120.2629,latitude: 22.6314},
       { longitude: 120.26351467795561, latitude: 22.62887597596471 },
+      { longitude: 120.2641, latitude: 22.6286},
       { longitude: 120.26450301677248, latitude: 22.62887177203434 },
       { longitude: 120.26432538905905, latitude: 22.631293214689123 }
     ],
     { longitude: 120.263751,latitude: 22.630101}
   ],
-  [
+  '翠亨':[
     '翠亨',
     [
       { longitude: 120.26739872290042, latitude: 22.629042764151503 },
@@ -42,7 +42,7 @@ export const regions = [
     ],
     { longitude: 120.268184, latitude: 22.627162}
   ],
-  [
+  '文學院和藝術學院':[
     '文學院和藝術學院',
     [
       { longitude: 120.26004403737878, latitude: 22.634358736379614 },
@@ -53,7 +53,7 @@ export const regions = [
     ],
     { longitude: 120.261477,latitude: 22.634256}
   ],
-  [
+  '教學區':[
     '教學區',
     [
       { longitude: 120.2649867912452, latitude: 22.627934634912 },
@@ -63,7 +63,7 @@ export const regions = [
     ],
     { longitude: 120.265847,latitude: 22.626845}
   ],
-  [
+  '電資大樓':[
     '電資大樓',
     [
       { longitude: 120.26676668285094, latitude: 22.628117734802885 },
@@ -75,7 +75,7 @@ export const regions = [
     ],
     { longitude: 120.267177,latitude: 22.627887}
   ],
-  [
+  '活動中心':[
     '活動中心',
     [
       { longitude: 120.26440449075304, latitude: 22.628717980001145 },
@@ -86,7 +86,7 @@ export const regions = [
     ],
     { longitude: 120.265060,latitude: 22.628629}
   ],
-  [
+  '海院':[
     '海院',
     [
       { longitude: 120.26067338088106, latitude: 22.632473951480502 },
@@ -97,7 +97,7 @@ export const regions = [
     ],
     { longitude: 120.262265,latitude: 22.629662}
   ],
-  [
+  '國研大樓和體育館':[
     '國研大樓和體育館',
     [
       { longitude: 120.2650612786277, latitude: 22.625221018773832 },
@@ -110,7 +110,7 @@ export const regions = [
     ],
     { longitude: 120.265229,latitude: 22.624883}
   ],
-  [
+  '教學區西側':[
     '教學區西側',
     [
       { longitude: 120.26402911107782, latitude: 22.62797854782038 },
@@ -120,7 +120,7 @@ export const regions = [
     ],
     { longitude: 120.264330, latitude: 22.626300}
   ],
-  [
+  '體育場和海堤':[
     '體育場和海堤',
     [
       { longitude: 120.2611410286546, latitude: 22.622881429509075 },
@@ -130,33 +130,21 @@ export const regions = [
     ],
     { longitude: 120.264437,latitude:  22.623661}
   ]
-];
+};
 type DataItem = {
   Category: string;
   Location: string;
   Number: number;
 };
 
-type CategoryData = Record<string, string>;
-
 export const transformAndMergeData = (data: DataItem[]) => {
-  // Step 1: Transform data into { Location: Category }
-  const categoryData: CategoryData = data.reduce((acc, curr) => {
-    acc[curr.Location] = curr.Category;
-    return acc;
-  }, {} as Record<string, string>);
-
-  // Step 2: Find locations that intersect and merge data
-  return regions
-    .filter(([location]) => typeof location === 'string' && categoryData.hasOwnProperty(location)) // Ensure location is a string
-    .map(([location, coordinates, center]) => {
-      return [
-        location,
-        coordinates,
-        center,
-        categoryData[location] // Get the corresponding category from the transformed data
-      ];
-    });
+  const result = data.map((item,key)=>{
+    const regionKey = item.Location as keyof typeof regions;
+    const temp = regions[regionKey]
+    temp.push(item.Category)
+    return temp
+  }) 
+  return result
 };
 
 

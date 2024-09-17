@@ -5,9 +5,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useState, useEffect} from 'react';
 import {MultiSelect} from 'react-native-element-dropdown';
-import {requestGeolocationPermission, Data, regions,transformAndMergeData} from './function';
+import {
+  requestGeolocationPermission,
+  Data,
+  transformAndMergeData,
+} from './function';
 import setting from '../../config.json';
-import {getPreviewlData, previewData} from '../../Prediction/Preview/function';
+import {getPreviewlData} from '../../Prediction/Preview/function';
 
 const data = Data;
 const URL = setting['URl'];
@@ -50,7 +54,7 @@ export default () => {
   const [selected, setSelected] = useState(['RT', 'PD']);
   const [loading, setLoading] = useState(true);
   const [RTData, setRTData] = useState(data);
-  const [PDData, setPDData] = useState([]);
+  const [PDData, setPDData] = useState<any[][]>([]);
   const [refreshInterval, setRefreshInterval] = useState(100); // 每分鐘更新一次地圖資訊
   //要使用Networking 取消quote，並要改成你的url
   const getData = async () => {
@@ -63,21 +67,16 @@ export default () => {
       console.error(error);
     }
   };
-  
-  
+
   useEffect(() => {
     // 立即執行一次
     getData();
-    getPreviewlData((pd: any) => { 
+    getPreviewlData((pd: any) => {
       const transformedData = transformAndMergeData(pd);
-      setPDData(transformedData); 
+      setPDData(transformedData);
     });
     // 設置間隔為1分鐘（60000毫秒）
     const interval = setInterval(async () => {
-      await getPreviewlData((pd: any) => { 
-        const transformedData = transformAndMergeData(pd);
-        setPDData(transformedData); 
-      });
       await getData();
     }, 10000);
     return () => clearInterval(interval);
@@ -122,39 +121,56 @@ export default () => {
         showsUserLocation={true}>
         {selected.includes('RT') && (
           <>
-            {RTData.map((item, key) => (
-              <Marker
-                coordinate={{
-                  longitude: item.longitude,
-                  latitude: item.latitude,
-                }}
-                key={key}
-                pinColor="red">
-                <Callout style={styles.callout}>
-                  <View style={styles.callout}>
-                    <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
-                  </View>
-                </Callout>
-              </Marker>
-            ))}
+            {RTData.map((item, key) => {
+              return (
+                <Marker
+                  coordinate={{
+                    longitude: item.longitude,
+                    latitude: item.latitude,
+                  }}
+                  key={key}
+                  pinColor="red">
+                  <Callout style={styles.callout}>
+                    <View style={styles.callout}>
+                      <Text style={styles.text}>獼猴數量:{item.quantity}</Text>
+                    </View>
+                  </Callout>
+                </Marker>
+              );
+            })}
           </>
         )}
         {selected.includes('PD') && (
           <>
-            {PDData.map((item, key) => (
-              <>
-                <Polygon
-                  key={key}
-                  coordinates={item[1]}
-                  fillColor = {item[3] == "少量" ? "rgba(0, 255, 0, 0.3)" : item[3] == "中量" ? "rgba(255, 255, 0, 0.3)" : "rgba(255, 0, 0, 0.3)"}
-                  strokeColor = {item[3] == "少量" ? "rgba(0, 255, 0, 0.3)" : item[3] == "中量" ? "rgba(255, 255, 0, 0.3)" : "rgba(255, 0, 0, 0.3)"}
-                  strokeWidth={3}
-                  tappable={true}/>
-                {/* <Marker coordinate={item[2]}>
+            {PDData.map((item, key) => {
+              return (
+                <>
+                  <Polygon
+                    key={key}
+                    coordinates={item[1]}
+                    fillColor={
+                      item[3] == '少量'
+                        ? 'rgba(0, 255, 0, 0.3)'
+                        : item[3] == '中量'
+                        ? 'rgba(255, 255, 0, 0.3)'
+                        : 'rgba(255, 0, 0, 0.3)'
+                    }
+                    strokeColor={
+                      item[3] == '少量'
+                        ? 'rgba(0, 255, 0, 0.3)'
+                        : item[3] == '中量'
+                        ? 'rgba(255, 255, 0, 0.3)'
+                        : 'rgba(255, 0, 0, 0.3)'
+                    }
+                    strokeWidth={3}
+                    tappable={true}
+                  />
+                  {/* <Marker coordinate={item[2]}>
                   <Text style={styles.text}>{item[0]}</Text>
                 </Marker> */}
-              </>
-            ))}
+                </>
+              );
+            })}
           </>
         )}
       </MapView>
