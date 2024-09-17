@@ -9,10 +9,6 @@ import {requestGeolocationPermission, Data, regions,transformAndMergeData} from 
 import setting from '../../config.json';
 import {getPreviewlData, previewData} from '../../Prediction/Preview/function';
 
-type PDRegion = any[]
-
-type PDData = PDRegion[] 
-
 const data = Data;
 const URL = setting['URl'];
 // const data = [
@@ -54,7 +50,7 @@ export default () => {
   const [selected, setSelected] = useState(['RT', 'PD']);
   const [loading, setLoading] = useState(true);
   const [RTData, setRTData] = useState(data);
-  const [PDData, setPDData] = useState<PDData>([]);
+  const [PDData, setPDData] = useState([]);
   const [refreshInterval, setRefreshInterval] = useState(100); // 每分鐘更新一次地圖資訊
   //要使用Networking 取消quote，並要改成你的url
   const getData = async () => {
@@ -145,7 +141,7 @@ export default () => {
         )}
         {selected.includes('PD') && (
           <>
-            {PDData.map(({item, key}:any) => (
+            {PDData.map((item, key) => (
               <>
                 <Polygon
                   key={key}

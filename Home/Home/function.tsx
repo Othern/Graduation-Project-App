@@ -17,14 +17,7 @@ export async function requestGeolocationPermission() {
   }
 }
 
-type Coordinate = {
-  longitude: number;
-  latitude: number;
-};
-
-type Region = [string, Coordinate[], Coordinate];
-
-export const regions: Region[] = [
+export const regions = [
   [
     '武嶺',
     [
