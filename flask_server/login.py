@@ -112,7 +112,7 @@ def get_register_data():
             else:
                 if password.isalnum():
                     try: 
-                        cur.execute("INSERT INTO user (Email, User_name, Password, isCamera, Headimg_link) VALUES (?, ?, ?, ?, ?)", (email, username, password, "N", "http://140.117.71.54:5000/static/headImg/profile-user.png"))
+                        cur.execute("INSERT INTO user (Email, User_name, Password, isCamera, Headimg_link) VALUES (?, ?, ?, ?, ?)", (email, username, password, "N", ""))
                         conn.commit() 
                     except mariadb.Error as e: 
                         print(f"Error: {e}")

@@ -32,22 +32,36 @@ notify.secret_key = secrets.token_hex(16)  # 保護session
 cred = credentials.Certificate("./google.json")
 default_app = firebase_admin.initialize_app(credential=cred)
 
-try:
-    conn = mariadb.connect(
-        user="root",
-        password="mis114monkey",
-        host="127.0.0.1",
-        port=3307,
-        database="mis114_monkey"
-    )
+# try:
+#     conn = mariadb.connect(
+#         user="root",
+#         password="mis114monkey",
+#         host="127.0.0.1",
+#         port=3307,
+#         database="mis114_monkey"
+#     )
 
-except mariadb.Error as e:
-    print(f"Error connecting to MariaDB Platform: {e}")
-    sys.exit(1)
+# except mariadb.Error as e:
+#     print(f"Error connecting to MariaDB Platform: {e}")
+#     sys.exit(1)
 
-cur = conn.cursor()
+# cur = conn.cursor()
 
 def send_messages(lat, lon, radius):
+    try:
+        conn = mariadb.connect(
+            user="root",
+            password="mis114monkey",
+            host="127.0.0.1",
+            port=3307,
+            database="mis114_monkey"
+        )
+
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
+
+    cur = conn.cursor()
     current_time = datetime.datetime.now()
     cur.execute("SELECT user_id, user_lat, user_lon FROM user_data_cache")
     rows = cur.fetchall()
@@ -67,27 +81,28 @@ def send_messages(lat, lon, radius):
                 if distance <= radius:
                     cur.execute("SELECT token FROM user_data_cache WHERE user_id = ? LIMIT 1", (user_id,))
                     token = cur.fetchone()
-
-                    # 構建消息
-                    messages = messaging.Message(
-                            notification=messaging.Notification(
-                                title="附近有猴猴出沒",
-                                body="請將食物、塑膠袋、紙袋收好\n不要直視獼猴的眼睛，將背包置於胸前\n請勿餵食野生動物",
-                                image="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2023/03/23/realtime/20786797.jpg&s=Y&x=54&y=0&sw=1439&sh=959&exp=3600&w=800",
-                            ),
-                            data={
-                                "test": "great match!",
-                            },
-                            token= token[0],
-                        )
-                    response = messaging.send(messages)
-                    
-                    # 更新上次發送訊息的時間
-                    cur.execute("UPDATE user_data_cache SET last_send_time = ? WHERE user_id = ?", (current_time, user_id))
-                    conn.commit()
+                    if token[0]:
+                        # 構建消息
+                        messages = messaging.Message(
+                                notification=messaging.Notification(
+                                    title="附近有猴猴出沒",
+                                    body="請將食物、塑膠袋、紙袋收好\n不要直視獼猴的眼睛，將背包置於胸前\n請勿餵食野生動物",
+                                    image="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2023/03/23/realtime/20786797.jpg&s=Y&x=54&y=0&sw=1439&sh=959&exp=3600&w=800",
+                                ),
+                                data={
+                                    "test": "great match!",
+                                },
+                                token= token[0],
+                            )
+                        response = messaging.send(messages)
+                        
+                        # 更新上次發送訊息的時間
+                        cur.execute("UPDATE user_data_cache SET last_send_time = ? WHERE user_id = ?", (current_time, user_id))
+                        conn.commit()
             else:
                 print(
                     f"Please wait {600 - times.seconds} seconds before sending the next batch of messages.")
+    conn.close()
 
 
 @notify.route('/tokenSubmit', methods=["GET", "POST"])
