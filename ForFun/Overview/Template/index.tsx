@@ -263,9 +263,14 @@ const ListHeader = ({daysRemaining}:any) => {
   const color = theme === 'dark' ? 'white' : 'black';
   return( 
   <View style={{ marginTop: 95, justifyContent: 'center', alignItems: 'center' }}>
+    {daysRemaining != 0 ?  
     <Text style={{ fontSize: 18, fontWeight: 'bold' ,color:color}}>
       本屆吱吱人氣比拼還剩 {daysRemaining} 天...
+    </Text>:
+    <Text style={{ fontSize: 18, fontWeight: 'bold' ,color:color}}>
+      吱吱人氣比拼今晚結算，速速參與！
     </Text>
+    }
   </View>)
 };
 export default ({kind, scrollY}: any) => {

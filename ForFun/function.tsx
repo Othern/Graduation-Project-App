@@ -10,13 +10,13 @@ const showToast = (text1: string, text2: string, type = 'forfun') => {
 }
 export const processDailyReward =(dailyReward: boolean, consume: any) => {
     if (dailyReward) {
-        showToast('恭喜你獲得五顆愛心，可用於人氣比拼投票', '')
+        showToast('恭喜你獲得五根香蕉，可用於人氣比拼投票', '')
         const today =new Date();
         saveLogin(today.getMonth(),today.getDate())
         consume(false)
     }
     else {
-        showToast('本日愛心已領取,請隔日再來領取', '')
+        showToast('本日香蕉已領取,請隔日再來領取', '')
     }
 }
 
@@ -48,7 +48,7 @@ export const reviceHeart = async(heart:boolean,success:any)=>{
         success()
     }
     if(leftover < 0){
-        showToast('本日愛心已使用完畢,請隔日再來領取', '')
+        showToast('本日香蕉已使用完畢,請隔日再來領取', '')
     }
     
 }

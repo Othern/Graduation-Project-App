@@ -234,6 +234,7 @@ const LoginAssociate = (props: any) => {
           saveData('UserData', UserData);
           setEmail('');
           setPassword('');
+          setPasswordCheck('');
           setUsername('');
           setHint('');
           showToast('註冊成功.', '');
