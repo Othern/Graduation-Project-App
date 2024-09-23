@@ -168,7 +168,7 @@ regions = {
 
 # 定義位置類別數據
 location_categories = [
-    "Location_1", "Location_2", "Location_3", "Location_4",
+    "location_0","Location_1", "Location_2", "Location_3", "Location_4",
     "Location_5", "Location_6", "Location_7", "Location_8",
     "Location_9"
 ]

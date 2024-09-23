@@ -39,7 +39,7 @@ const ShowImageLibrary = async (success = (img: any) => { }, fail = () => { }) =
 export default function (props: any) {
     const { From, Email, Username, HeadImg } = props.route.params;
     const image =
-        HeadImg == "" ? require("../../../asset/profile-user.png") : { uri: HeadImg }//
+        HeadImg == "" ? { uri: "http://140.117.71.54:5000/static/headImg/profile-user.png" } : { uri: HeadImg }//
     // 等決定預設頭項後，把該圖放入asset中，並把rain 改掉. require 可以接這裡面的，uri則是可以接網址，地址
 
     const [photo, setPhoto] = useState(image);

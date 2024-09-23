@@ -91,7 +91,7 @@ const Profile = (props: any) => {
         }, [])
     );
     const image =
-        headImg == "" ? require("../asset/profile-user.png") : { uri: headImg }
+        headImg == "" ? { uri: "http://140.117.71.54:5000/static/headImg/profile-user.png" } : { uri: headImg }
     // 等決定預設頭項後，把該圖放入asset中，並把rain 改掉. require 可以接這裡面的，uri則是可以接網址，地址
 
     return (
