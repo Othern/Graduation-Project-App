@@ -74,6 +74,15 @@ def get_CommentData():
     return jsonify(transformed_data)
 
 
+@forfun.route('/getDaysRemaining', methods=['GET'])
+def get_DaysRemaining():
+    x = datetime.datetime(2024, 8, 1)  # baseline
+    now = datetime.datetime.now()
+    delta = now - x
+    response = {"daysRemaining": 6 - (delta.days) % 7}
+    return jsonify(response)
+
+
 @forfun.route('/api/data/getPostData', methods=['POST'])
 def get_PostData():
     data = request.get_json()
