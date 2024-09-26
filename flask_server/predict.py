@@ -341,8 +341,6 @@ def get_weather():
 
         # 將 DataFrame 中的 object 類型轉換為適當的數值類型
         weather_df = weather_df.infer_objects()
-        # 使用線性插值填補缺失值
-        weather_df.interpolate(method='linear', inplace=True)
         
         return weather_df
 
