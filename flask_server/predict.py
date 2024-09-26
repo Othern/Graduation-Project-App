@@ -721,8 +721,8 @@ def predict_model():
     y_pred = model.predict(prediction_df.drop('hour', axis=1))
 
     # 反轉Frequent_encoding
-    reverse_frequency_encoding = {v: k for k, v in frequency_encoding.items()}
-    prediction_df['Location'] = prediction_df['Location'].map(reverse_frequency_encoding)
+    reverse_frequency_dict = {v: k for k, v in frequency_dict.items()}
+    prediction_df['Location'] = prediction_df['Location'].map(reverse_frequency_dict)
     
  
 
@@ -736,8 +736,7 @@ def predict_model():
     hourly_counts["date"] = pd.to_datetime(hourly_counts["date"], unit="s").dt.strftime(
         "%Y-%m-%d"
     )
-    print("this2")
-    print(prediction_df["Location"].drop_duplicates())
+    
 
     # 創建 Date_time 欄位
     hourly_counts["Date_time"] = hourly_counts.apply(
