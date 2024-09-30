@@ -264,7 +264,7 @@ def get_weather():
 
     weather_url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-065'
 
-    # 設定明天的日期，並指定時間範圍
+    # 設定今天的日期，並指定時間範圍
     today = datetime.today().strftime('%Y-%m-%d')
     time_from = f"{today}T06:00:00"
     time_to = f"{today}T18:00:01"
@@ -291,8 +291,7 @@ def get_weather():
             for weather_element in location['weatherElement']:
                 element_name = weather_element['elementName']
                 for time_data in weather_element['time']:
-                    obs_time = time_data.get(
-                        'dataTime') or time_data.get('startTime')
+                    obs_time = time_data.get('dataTime') or time_data.get('startTime')
                     obs_datetime = datetime.fromisoformat(obs_time)
                     obs_time_str = obs_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -307,23 +306,17 @@ def get_weather():
                         }
 
                     if element_name == 'T':
-                        weather_dict[obs_time_str]['Temperature'] = float(
-                            time_data['elementValue'][0]['value'])
+                        weather_dict[obs_time_str]['Temperature'] = float(time_data['elementValue'][0]['value'])
                     elif element_name == 'RH':
-                        weather_dict[obs_time_str]['Relative_Humidity'] = float(
-                            time_data['elementValue'][0]['value'])
+                        weather_dict[obs_time_str]['Relative_Humidity'] = float(time_data['elementValue'][0]['value'])
                     elif element_name == 'WS':
-                        weather_dict[obs_time_str]['Wind_Speed'] = float(
-                            time_data['elementValue'][0]['value'])
+                        weather_dict[obs_time_str]['Wind_Speed'] = float(time_data['elementValue'][0]['value'])
                     elif element_name == 'WD':
                         wind_direction_text = time_data['elementValue'][0]['value']
-                        weather_dict[obs_time_str]['Wind_Direction'] = wind_direction_dict.get(
-                            wind_direction_text, None)
+                        weather_dict[obs_time_str]['Wind_Direction'] = wind_direction_dict.get(wind_direction_text, None)
                     elif element_name == 'PoP12h':
-                        # 只更新初始的降雨值
                         if precipitation_value is None:
-                            precipitation_value = 1 if float(
-                                time_data['elementValue'][0]['value']) > 80 else 0
+                            precipitation_value = 1 if float(time_data['elementValue'][0]['value']) > 80 else 0
 
         # 更新所有紀錄中的降雨值
         for obs_time_str in weather_dict:
@@ -333,34 +326,28 @@ def get_weather():
         weather_df = pd.DataFrame(weather_list)
 
         # 確保每小時都有資料
-        start_time = datetime.strptime(
-            f"{today} 06:00:00", '%Y-%m-%d %H:%M:%S')
-        end_time = datetime.strptime(
-            f"{today} 18:00:00", '%Y-%m-%d %H:%M:%S')
+        start_time = datetime.strptime(f"{today} 06:00:00", '%Y-%m-%d %H:%M:%S')
+        end_time = datetime.strptime(f"{today} 18:00:00", '%Y-%m-%d %H:%M:%S')
         all_times = pd.date_range(start=start_time, end=end_time, freq='h')
 
         # 創建一個包含所有時間的DataFrame
         all_times_df = pd.DataFrame(all_times, columns=['ObservationTime'])
 
         # 將原有的weather_df與all_times_df合併
-        weather_df = all_times_df.merge(
-            weather_df, on='ObservationTime', how='left')
+        weather_df = all_times_df.merge(weather_df, on='ObservationTime', how='left')
+
+        # 使用前一個小時的資料來填補缺失值
+        weather_df.ffill(inplace=True)
 
         # 將 DataFrame 中的 object 類型轉換為適當的數值類型
         weather_df = weather_df.infer_objects()
-
-        # 使用線性插值填補缺失值
-        weather_df.interpolate(method='linear', inplace=True)
-
-        # 填補缺失的降雨值
-        weather_df['Precipitation'] = weather_df['Precipitation'].fillna(precipitation_value)
-
-       
+        
         return weather_df
 
     else:
         print("Failed to retrieve data")
         return pd.DataFrame()  # 保證總是返回一個 DataFrame
+
 
 
 # 處理資料函數
@@ -495,82 +482,109 @@ def predict_model():
     global train
     global model 
     global frequency_dict
-
+    today = (datetime.now()).strftime("%Y-%m-%d")
+    yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+    # 刪除舊資料
     try:
         conn = mariadb.connect(**DB_CONFIG)
+        cur = conn.cursor()
+
+        # 假設你想刪除特定日期之前的資料
+        delete_before_date = yesterday
+        cur.execute(
+            """
+            DELETE FROM monkey_predict
+            WHERE Date_time < ?
+            """,
+            (delete_before_date,)
+        )
+        conn.commit()
+        print(f"Successfully deleted {cur.rowcount} rows from monkey_predict.")
+
     except mariadb.Error as e:
-        print(f"Error connecting to MariaDB Platform: {e}")
-        sys.exit(1)
+        print(f"Error deleting data from MariaDB Platform: {e}")
 
-    cur = conn.cursor()
-    query = """
-        SELECT 
-            Date_time, Location, Number, Temperature, 
-            Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Weekday 
-        FROM 
-            monkey_history 
-    """
-    cur.execute(query)
-    rows = cur.fetchall()
-    columns = [
-        "Date_time",
-        "Location",
-        "Number",
-        "Temperature",
-        "Relative_humidity",
-        "Wind_speed",
-        "Wind_direction",
-        "Precipitation",
-        "Time_type",
-        "Weekday",
-    ]
-    data_df = pd.DataFrame(rows, columns=columns)
-
-    cur.close()
-    conn.close()
-
-    # 資料預處理
-    data_df["Date_time"] = data_df["Date_time"].astype(str)
-    data_df[["date", "hour"]] = data_df["Date_time"].str.split(
-        " ", n=1, expand=True)
-    data_df['date'] = pd.to_datetime(data_df['date']).astype("int64") / 10**9
-
-    # 將 Location 欄位進行編碼
-    data_df["Location"] = data_df["Location"].map(location_mapping)
-    data_df["Location"] = data_df["Location"].astype("int64")
-
-    # 選擇要標準化的數值特徵
-    numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed',
-                        'Wind_direction']
-
-    # 初始化StandardScaler
-    scaler = StandardScaler()
-
-    # 對數值特徵進行標準化
-    scaled_features = scaler.fit_transform(data_df[numeric_features])
-
-    # 將標準化後的數據轉換為DataFrame
-    scaled_features_df = pd.DataFrame(
-        scaled_features, columns=numeric_features)
-
-    # 將標準化後的數據替換回原data_df中
-    for feature in numeric_features:
-        data_df[feature] = scaled_features_df[feature]
-
-
-    data_df = pd.get_dummies(data_df, columns=['Weekday'], drop_first=False)
-    data_df = pd.get_dummies(data_df, columns=['Time_type'], drop_first=False)
-
-    # 計算每個類別的頻率
-    frequency_encoding = data_df['Location'].value_counts()
-
-    # 創建映射字典
-    frequency_dict = frequency_encoding.to_dict()
-    print(1)
-    print(frequency_dict)
-    # 用 Frequency Encoding 替換 Location 特徵
-    data_df['Location'] = data_df['Location'].map(frequency_dict)
+    finally:
+        # 確保游標和連接安全關閉
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
     if (train == 1):
+        try:
+            conn = mariadb.connect(**DB_CONFIG)
+        except mariadb.Error as e:
+            print(f"Error connecting to MariaDB Platform: {e}")
+            sys.exit(1)
+
+        cur = conn.cursor()
+        query = """
+            SELECT 
+                Date_time, Location, Number, Temperature, 
+                Relative_humidity, Wind_speed, Wind_direction, Precipitation, Time_type, Weekday 
+            FROM 
+                monkey_history 
+        """
+        cur.execute(query)
+        rows = cur.fetchall()
+        columns = [
+            "Date_time",
+            "Location",
+            "Number",
+            "Temperature",
+            "Relative_humidity",
+            "Wind_speed",
+            "Wind_direction",
+            "Precipitation",
+            "Time_type",
+            "Weekday",
+        ]
+        data_df = pd.DataFrame(rows, columns=columns)
+
+        cur.close()
+        conn.close()
+
+        # 資料預處理
+        data_df["Date_time"] = data_df["Date_time"].astype(str)
+        data_df[["date", "hour"]] = data_df["Date_time"].str.split(
+            " ", n=1, expand=True)
+        data_df['date'] = pd.to_datetime(data_df['date']).astype("int64") / 10**9
+
+        # 將 Location 欄位進行編碼
+        data_df["Location"] = data_df["Location"].map(location_mapping)
+        data_df["Location"] = data_df["Location"].astype("int64")
+
+        # 選擇要標準化的數值特徵
+        numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed',
+                            'Wind_direction']
+
+        # 初始化StandardScaler
+        scaler = StandardScaler()
+
+        # 對數值特徵進行標準化
+        scaled_features = scaler.fit_transform(data_df[numeric_features])
+
+        # 將標準化後的數據轉換為DataFrame
+        scaled_features_df = pd.DataFrame(
+            scaled_features, columns=numeric_features)
+
+        # 將標準化後的數據替換回原data_df中
+        for feature in numeric_features:
+            data_df[feature] = scaled_features_df[feature]
+
+
+        data_df = pd.get_dummies(data_df, columns=['Weekday'], drop_first=False)
+        data_df = pd.get_dummies(data_df, columns=['Time_type'], drop_first=False)
+
+        # 計算每個類別的頻率
+        frequency_encoding = data_df['Location'].value_counts()
+
+        # 創建映射字典
+        frequency_dict = frequency_encoding.to_dict()
+        
+        # 用 Frequency Encoding 替換 Location 特徵
+        data_df['Location'] = data_df['Location'].map(frequency_dict)
+        
         X = data_df.drop(["Number", "Date_time", "hour"], axis=1)
 
         y = data_df["Number"].values
@@ -580,11 +594,7 @@ def predict_model():
         model.fit(X, y)
         print('model is ready')
     train = 0
-    print(train)
-    # # 設定今天的日期
-    today = (datetime.now()).strftime("%Y-%m-%d")
     
-
     weather_df = get_weather()
     if weather_df.empty:
         print("Weather data is not available.")
@@ -595,22 +605,21 @@ def predict_model():
 
     # 確保 weather_df 按照 ObservationTime 排序
     weather_df = weather_df.sort_values('ObservationTime')
-
+    
     if not weather_df.empty:
-        for region, info in region_centers.items():
+        for region_key, region_value in region_centers.items():  # 解構 region
+
             for hour in range(6, 19):
                 # 根據小時匹配天氣資料
                 weather_for_hour = weather_df[weather_df['ObservationTime'].dt.hour == hour]
 
                 if weather_for_hour.empty:
                     # 如果該小時沒有資料，找到最接近的資料
-                    # 計算每個時間點與目標小時的時間差
                     weather_df['time_diff'] = (
                         weather_df['ObservationTime'].dt.hour - hour).abs()
 
                     # 找到時間差最小的資料
-                    closest_hour = weather_df.loc[weather_df['time_diff'].idxmin(
-                    )]
+                    closest_hour = weather_df.loc[weather_df['time_diff'].idxmin()]
                     weather_for_hour = closest_hour.to_dict()
                 else:
                     weather_for_hour = weather_for_hour.iloc[0].to_dict()
@@ -620,16 +629,14 @@ def predict_model():
                     weather_df = weather_df.drop(columns=['time_diff'])
 
                 # 創建 one-hot 編碼的 Time_type 和 Weekday
-                time_type = 1 if (6 <= hour <= 12) else (
-                    2 if (13 <= hour <= 18) else 3)
-                weekday = 0 if pd.to_datetime(
-                    today).weekday() in [5, 6] else 1
+                time_type = 1 if (6 <= hour <= 12) else (2 if (13 <= hour <= 18) else 3)
+                weekday = 0 if pd.to_datetime(today).weekday() in [5, 6] else 1
 
                 # 創建 input_data，並添加 one-hot 編碼列
                 input_data = {
                     "date": today,
                     "hour": f"{hour:02d}:00:00",
-                    "Location": region,
+                    "Location": region_key,  # 使用 region_key 作為地區名稱
                     "Weekday_0": 1 if weekday == 0 else 0,
                     "Weekday_1": 1 if weekday == 1 else 0,
                     "Time_type_1": 1 if time_type == 1 else 0,
@@ -643,10 +650,12 @@ def predict_model():
                 }
 
                 prediction_df.append(input_data)
+        prediction_df = pd.DataFrame(prediction_df)
 
-    prediction_df = pd.DataFrame(prediction_df)
-
+    
     # 預處理預測資料
+    # 提取 Location 列中的字符串部分
+
     # 確保 'hour' 列的數據類型為字符串
     if prediction_df["hour"].dtype != object:
         prediction_df["hour"] = prediction_df["hour"].astype(str)
@@ -659,14 +668,18 @@ def predict_model():
     prediction_df["date"] = (
         pd.to_datetime(prediction_df["date"]).astype("int64") // 10**9
     )
-
+    
     # 將 Location 欄位進行編碼
-    
+
+    # 進行映射
     prediction_df["Location"] = prediction_df["Location"].map(location_mapping)
+
+    # 檢查是否有未成功映射的值
     
+
     # 用 Frequency Encoding 替換 Location 特徵
     prediction_df['Location'] = prediction_df['Location'].map(frequency_dict)
-    
+
     # 選擇要標準化的數值特徵
     numeric_features = ['Temperature', 'Relative_humidity', 'Wind_speed',
                         'Wind_direction']
@@ -708,9 +721,10 @@ def predict_model():
     y_pred = model.predict(prediction_df.drop('hour', axis=1))
 
     # 反轉Frequent_encoding
-    reverse_frequency_encoding = {v: k for k, v in frequency_encoding.items()}
-    prediction_df['Location'] = prediction_df['Location'].map(
-        reverse_frequency_encoding)
+    reverse_frequency_dict = {v: k for k, v in frequency_dict.items()}
+    prediction_df['Location'] = prediction_df['Location'].map(reverse_frequency_dict)
+    
+ 
 
     # 計算各地區每小時的獼猴數量
     prediction_df["Number"] = y_pred
@@ -718,12 +732,11 @@ def predict_model():
         "date", "hour", "Location", "Number"]].copy()
 
     location_reverse_mapping = {v: k for k, v in location_mapping.items()}
-    hourly_counts["Location"] = hourly_counts["Location"].map(
-        location_reverse_mapping)
-
+    hourly_counts["Location"] = hourly_counts["Location"].map(location_reverse_mapping)
     hourly_counts["date"] = pd.to_datetime(hourly_counts["date"], unit="s").dt.strftime(
         "%Y-%m-%d"
     )
+    
 
     # 創建 Date_time 欄位
     hourly_counts["Date_time"] = hourly_counts.apply(
@@ -809,7 +822,7 @@ def predict_model_endpoint():
 
         total_count.set_index("Date_time", inplace=True)
         total_count_resampled = total_count.groupby([ 'Location'])["Number"].sum().reset_index()
-        print(total_count_resampled['Number'])
+        
         # 計算每個地點每個時段的 Number 平均值（即總和除以 12
         total_count_resampled["Number"] = total_count_resampled.groupby('Location')["Number"].transform(lambda x: x / 12)
 
@@ -828,7 +841,7 @@ def predict_model_endpoint():
 
         # 新增分類欄位
         total_count_resampled["Category"] = total_count_resampled["Number"].apply(categorize_amount)
-        print(total_count_resampled["Number"])
+        
         # 按照 Location 彙總每個地點的平均數量和分類結果
 
         final_counts = total_count_resampled.groupby("Location", as_index=False).agg({
