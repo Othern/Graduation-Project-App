@@ -5,3 +5,5 @@ flask_server/static/forFun/*
 flask_server/static/headImg/*
 flask_server/static/reportImg/*
 
+.DS_Store
+asset/.DS_Store
