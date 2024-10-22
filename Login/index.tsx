@@ -286,7 +286,7 @@ const LoginAssociate = (props: any) => {
           />
           <TextInput
             style={styles.input}
-            placeholder="Username - Max Length 20"
+            placeholder="Username 最多20字"
             placeholderTextColor="gray"
             value={username}
             maxLength={20}
@@ -294,7 +294,7 @@ const LoginAssociate = (props: any) => {
           />
           <TextInput
             style={styles.input}
-            placeholder="Password - Max Length 20"
+            placeholder="Password 最多20字"
             placeholderTextColor="gray"
             secureTextEntry={!showPassword}
             value={password}
@@ -303,7 +303,7 @@ const LoginAssociate = (props: any) => {
           />
           <TextInput
             style={styles.input}
-            placeholder="Enter Your Password Again"
+            placeholder="再次輸入密碼"
             placeholderTextColor="gray"
             secureTextEntry={!showPassword}
             value={passwordCheck}

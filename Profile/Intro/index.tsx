@@ -6,7 +6,7 @@ const slides = [
     {
         key: 'sh1',
         title: '系統介紹: 首頁 - 地圖',
-        text: '這個地圖會顯示最近各個通報獼猴出沒的位置，可以透過1號紅框中的按鈕來控制被通報的獼猴位置是否在地圖上顯示。',
+        text: '這個地圖會顯示最近各個通報獼猴出沒的位置，可以透過１號紅框中的按鈕來控制被通報的獼猴位置是否在地圖上顯示。',
         image: require('../../asset/introduction/system/home.png'),
         backgroundColor: '#D6D6AD',
         noModal: 'false',
@@ -14,7 +14,7 @@ const slides = [
     {
         key: 'sh2',
         title: '系統介紹: 首頁 - 通報',
-        text: '如果您發現您周圍有猴猴出現，請使用2號紅框中的鈴鐺通報，幫助大家了解猴猴蹤跡。',
+        text: '如果您發現您周圍有猴猴出現，請使用２號紅框中的鈴鐺通報，幫助大家了解猴猴蹤跡。',
         image: require('../../asset/introduction/system/home.png'),
         backgroundColor: '#D6D6AD',
         noModal: 'false',
@@ -22,7 +22,7 @@ const slides = [
     {
         key: 'sh3',
         title: '系統介紹: 首頁 - 通報',
-        text: '這個頁面中可以填寫猴猴資訊，以及上傳或拍攝圖片，提供越詳細準確的資料會幫助我們能夠更準確的發現定位猴猴。',
+        text: '這個頁面中可以填寫猴猴資訊，以及上傳或拍攝圖片，提供越詳細準確的資料會幫助我們更準確的發現與定位猴猴。',
         image: require('../../asset/introduction/system/report.png'),
         backgroundColor: '#D6D6AD',
         noModal: 'false',
@@ -30,7 +30,7 @@ const slides = [
     {
         key: 'sh4',
         title: '系統介紹: 首頁 - 功能列',
-        text: '3號紅框中是此系統其他功能分別是:ForFun猴猴短影音功能、Predict預測猴猴功能、以及個人頁面在',
+        text: '３號紅框中是此系統其他功能，分別是:Fun－猴猴短影音功能、Predict－預測猴猴功能、以及個人頁面。',
         image: require('../../asset/introduction/system/home.png'),
         backgroundColor: '#D6D6AD',
         noModal: 'false',
@@ -38,7 +38,7 @@ const slides = [
     {
         key: 'sf1',
         title: '系統介紹: 猴猴短影音 - 介紹',
-        text: '這個頁面可以分享有關猴猴的可愛逗趣的短片或照片，並且可以餐與人氣投票(可愛或好笑)的機制,讓大家選出最喜歡的貼文，獲勝者還可以獲得獨特稱號',
+        text: '這個頁面可以分享可愛逗趣的猴猴短片與照片，並且可以參與人氣投票(可愛或有趣)的機制，讓大家選出最喜歡的貼文，獲勝者還可以獲得獨特稱號。',
         image: require('../../asset/introduction/system/forfun.png'),
         backgroundColor: '#AFAF61',
         noModal: 'false',
@@ -46,7 +46,7 @@ const slides = [
     {
         key: 'sf2',
         title: '系統介紹: 猴猴短影音 - 主要',
-        text: '1號紅框分別是可以查看過去人氣投票比賽的前三名，調整使用獲得的稱號，以及領取每日用來給貼文投票的香蕉',
+        text: '１號紅框分別是可以查看過去人氣投票比賽的前三名（頒獎台），調整使用者的稱號顯示（獎盃），以及領取每日用來給貼文投票的香蕉。',
         image: require('../../asset/introduction/system/forfun.png'),
         backgroundColor: '#AFAF61',
         noModal: 'false',
@@ -54,7 +54,7 @@ const slides = [
     {
         key: 'sf3',
         title: '系統介紹: 猴猴短影音 - 主要',
-        text: '2號紅框則是可以查看這屆人氣投票的貼文，分別是最新貼文，可愛類貼文，好笑類貼文',
+        text: '２號紅框則是可以查看這屆人氣投票的貼文，分別是最新貼文、可愛類貼文、有趣類貼文。',
         image: require('../../asset/introduction/system/forfun.png'),
         backgroundColor: '#AFAF61',
         noModal: 'false',
@@ -62,7 +62,7 @@ const slides = [
     {
         key: 'sf4',
         title: '系統介紹: 猴猴短影音 - 主要',
-        text: '3號紅框是可以查看貼文的留言或給予留言，4號紅框是投票按鈕，5號紅框是則是新增一篇貼文',
+        text: '３號紅框是查看貼文的留言相關功能，４號紅框是投票按鈕，５號紅框則是新增一篇貼文。',
         image: require('../../asset/introduction/system/forfun.png'),
         backgroundColor: '#AFAF61',
         noModal: 'false',
@@ -70,7 +70,7 @@ const slides = [
     {
         key: 'sf5',
         title: '系統介紹: 猴猴短影音 - 發布',
-        text: '這是發佈貼文的頁面，1號紅框是選擇圖片或影音，2號則是選擇想要參加的投票類別。',
+        text: '這是發佈貼文的頁面，１號紅框是選擇圖片或影音，２號則是選擇想要參加的投票類別。',
         image: require('../../asset/introduction/system/uploadPost.png'),
         backgroundColor: '#AFAF61',
         noModal: 'false',
@@ -78,7 +78,7 @@ const slides = [
     {
         key: 'spre1',
         title: '系統介紹: 預測 - 主要',
-        text: '這個頁面可以看到猴猴常見地點可能出現的猴猴數量，其中的單元也可以點開看一天之中各個時間的預測數量',
+        text: '這個頁面可以看到猴猴常見地點可能出現的猴猴數量，其中的地區也可以點開來看一天之中各個時間的預測數量。',
         image: require('../../asset/introduction/system/predict.png'),
         backgroundColor: '#6FB7B7',
         noModal: 'false',
@@ -86,7 +86,7 @@ const slides = [
     {
         key: 'spre2',
         title: '系統介紹: 預測 - 細部',
-        text: '點開剛才的單元後可以看到該地點一天之中各個時間的預測數量，其中的紅框是可以左右移動，查看各時間可能的的變化',
+        text: '點開地區後可以看到該地區一天之中各個時間的預測數量，其中的紅框範圍可以左右移動以查看各時間可能的數量變化。',
         image: require('../../asset/introduction/system/predictDetail.png'),
         backgroundColor: '#6FB7B7',
         noModal: 'false',
@@ -94,7 +94,7 @@ const slides = [
     {
         key: 'spro1',
         title: '系統介紹: 個人 - 主要',
-        text: '這個頁面可以點選修改帳號資訊，確認開啟手機權限，修改在猴猴短影音中發布的Post，以及開啟這個介紹',
+        text: '這個頁面可以點選修改帳號資訊，確認開啟手機權限、修改在猴猴短影音中發布的Post、以及開啟這個介紹。',
         image: require('../../asset/introduction/system/profile.png'),
         backgroundColor: '#B87070',
         noModal: 'false',
@@ -102,7 +102,7 @@ const slides = [
     {
         key: 'spro2',
         title: '系統介紹: 個人 - Mypost',
-        text: '這個頁面可以修改在猴猴短影音中發布的Post，1號紅框是刪除該貼文，會連該貼文的留言一起刪除，2號紅框則是修改貼文，調整貼文內容。',
+        text: '這個頁面可以修改在猴猴短影音中發布的Post，１號紅框是刪除該貼文，會連該貼文的留言一起刪除，２號紅框則是修改貼文，調整貼文內容。',
         image: require('../../asset/introduction/system/mypost.png'),
         backgroundColor: '#B87070',
         noModal: 'false',

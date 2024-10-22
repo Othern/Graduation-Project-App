@@ -39,7 +39,7 @@ const PasswordModal = ({ visible, onClose, onSave, currentEmail }: any) => {
             // }
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-            const response = await fetch(URL+'ModifyPassword', {
+            const response = await fetch(URL + 'ModifyPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ const PasswordModal = ({ visible, onClose, onSave, currentEmail }: any) => {
                     <Text style={styles.intro}>輸入舊密碼</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="舊密碼 - Max Length 20"
+                        placeholder="輸入舊密碼"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
                         value={oldPassword}
@@ -91,7 +91,7 @@ const PasswordModal = ({ visible, onClose, onSave, currentEmail }: any) => {
                     <Text style={styles.intro}>輸入新密碼</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="新密碼 - Max Length 20"
+                        placeholder="輸入新密碼(最多20字)"
                         placeholderTextColor="gray"
                         secureTextEntry={true}
                         value={newPassword}
