@@ -10,9 +10,18 @@ import Preview from './Preview';
 
 const HomeStack = createStackNavigator();
 const App = ({theme}:any) => {
+  const [popLocked, setPopLocked] = useState(false);
   return (
     <HomeStack.Navigator screenOptions={{
-        header: (props) => <Header {...props} push ={props.navigation.push} theme={theme}/>,
+        header: (props) => <Header {...props} push ={(screen:string)=>{
+          if (popLocked == false) {
+              setPopLocked(true);
+              props.navigation.push(screen);
+              setTimeout(function () {
+                setPopLocked(false);
+              }, 1000);
+            }
+        }} theme={theme}/>,
         
         gestureEnabled: true,
         gestureDirection: 'vertical',

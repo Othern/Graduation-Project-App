@@ -11,7 +11,7 @@ export default (props: any) => {
   const [isActive, setIsActive] = useState(false);
   const [selected, setSelected] = useState(false);
   const [photo, setPhoto] = useState<PhotoFile>();
-
+  const [popLocked, setPopLocked] = useState(false);
   const camera = useRef<Camera>(null);
 
   useEffect(() => {
@@ -37,7 +37,14 @@ export default (props: any) => {
       });
       if (tempPhoto) {
         const photo = {...tempPhoto,path:`file://${tempPhoto.path}`};
-        props.navigation.push('Preview',{'photo':photo})
+        if(popLocked == false){
+          setPopLocked(true);
+          props.navigation.push('Preview',{'photo':photo})
+          setTimeout(function(){
+              setPopLocked(false);
+          }, 1000);
+      }
+        
       }
       setSelected(false);
     } catch (error) {

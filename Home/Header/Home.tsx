@@ -7,7 +7,7 @@ import { Appbar } from "react-native-paper";
 
 const fontColor = '#E7F5F3';
 export default ({title,push }: any) => {
-    
+   
     return (    
             <>
                 <Appbar.Content

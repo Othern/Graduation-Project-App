@@ -1,59 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView,useColorScheme } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, ScrollView, useColorScheme} from 'react-native';
 import Seperator from './Seperator';
 import Content from './Content';
 import Footer from './Footer';
 import Modal from './Modal';
-import { submit, createFormData, showToast,ShowImageLibrary } from './function';
+import {submit, createFormData, showToast, ShowImageLibrary} from './function';
 const initialReport = {
   fraid: false,
   frequency: 'always',
   textInputValue: '0',
-  photo: {}
-}
+  photo: {},
+};
 
-export default (props: any,  ) => {
+export default (props: any) => {
   const [data, setData] = useState(initialReport);
   const [photo, setPhoto] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [submitLock, setSubmitLocked] = useState(false);
+  const [popLocked, setPopLocked] = useState(false);
   const theme = useColorScheme();
-  const successSelected = (image:any)=>{
-    setData((prev) => ({ ...prev, photo: image }));
+  const successSelected = (image: any) => {
+    setData(prev => ({...prev, photo: image}));
     setPhoto(image?.uri);
-  }
-  const failSelected = ()=>{
+  };
+  const failSelected = () => {
     setPhoto(null);
-    setData((prev) => ({ ...prev }))
-  }
-  useEffect(
-    () => {
-      if (props.route.params?.photo) {
-        let photo = props.route.params?.photo
-        setPhoto(photo?.path)
-        setData({
-          ...data, photo:
-          {
-            fileName: photo.path.split('/').pop(),
-            type: "image/jpeg",
-            uri: photo.path
-          }
-        })
-      }
-      
+    setData(prev => ({...prev}));
+  };
+  useEffect(() => {
+    if (props.route.params?.photo) {
+      let photo = props.route.params?.photo;
+      setPhoto(photo?.path);
+      setData({
+        ...data,
+        photo: {
+          fileName: photo.path.split('/').pop(),
+          type: 'image/jpeg',
+          uri: photo.path,
+        },
+      });
     }
-    , [props.route.params?.photo])
-  const submitClicked = async() => {
-    const formData = await createFormData(data);
-    await submit(formData);
-    setData(initialReport);
-    props.navigation.pop();
-    showToast('Submission Succeeded.', '')
-  }
+  }, [props.route.params?.photo]);
+  const submitClicked = async () => {
+    if (submitLock == false && data.textInputValue != '0') {
+      setSubmitLocked(true);
+      const formData = await createFormData(data);
+      await submit(formData);
+      setData(initialReport);
+      props.navigation.pop();
+      showToast('Submission Succeeded.', '');
+      setSubmitLocked(false);
+    }
+  };
   return (
-
-    <View style={{ flex: 1 ,padding:40}}>
+    <View style={{flex: 1, padding: 40}}>
       <ScrollView>
-        <Content data={data} theme={theme} setData={setData} uploadPicture={() => { setModalVisible(true) }} />
+        <Content
+          data={data}
+          theme={theme}
+          setData={setData}
+          uploadPicture={() => {
+            setModalVisible(true);
+          }}
+        />
         <Seperator />
         <Footer submit={submitClicked} photo={photo} />
         <Modal
@@ -61,16 +70,23 @@ export default (props: any,  ) => {
           theme={theme}
           camera={() => {
             setModalVisible(false);
-            props.navigation.push('Camera');
+            if (popLocked == false) {
+              setPopLocked(true);
+              props.navigation.push('Camera');
+              setTimeout(function () {
+                setPopLocked(false);
+              }, 1000);
+            }
           }}
           gallery={() => {
-            ShowImageLibrary(successSelected,failSelected);
+            ShowImageLibrary(successSelected, failSelected);
             setModalVisible(false);
-
           }}
-          close={() => { setModalVisible(false) }} />
+          close={() => {
+            setModalVisible(false);
+          }}
+        />
       </ScrollView>
     </View>
   );
-}
-
+};

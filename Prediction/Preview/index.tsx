@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useCallback} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   StyleSheet,
   ImageBackground,
@@ -23,7 +23,7 @@ const locationImages: {[key: string]: any} = {
   翠亨: require('../../asset/backGround/Cuiheng.png'),
   電資大樓: require('../../asset/backGround/electricalAndComputerEngineeringBuilding.png'),
   體育場和海堤: require('../../asset/backGround/stadiumAndSeawall.png'),
-  文學院和藝術學院: require('../../asset/backGround/collegeOfLiteratureAndArts.png'), 
+  文學院和藝術學院: require('../../asset/backGround/collegeOfLiteratureAndArts.png'),
 };
 
 const PredictionCard = ({onPress, location, category}: any) => {
@@ -118,14 +118,23 @@ export default (props: any) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [data, setData] = useState(previewData);
   const isFocused = useIsFocused();
+  const [popLocked, setPopLocked] = useState(false);
   const handlePress = (screenName: string, params: any) => {
-    props.navigation.push(screenName, params);
+    if (popLocked == false) {
+      setPopLocked(true);
+      props.navigation.push(screenName, params);
+      setTimeout(function () {
+        setPopLocked(false);
+      }, 1000);
+    }
   };
   //測試時將此註解拿掉即可
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      await getPreviewlData((pd: any) => { setData(pd) });
+      await getPreviewlData((pd: any) => {
+        setData(pd);
+      });
     } catch (error) {
       console.error('Error fetching new data:', error);
     } finally {
@@ -135,9 +144,12 @@ export default (props: any) => {
   useEffect(() => {
     if (isFocused) {
       try {
-        getPreviewlData((pd: any) => { setData(pd) });
+        getPreviewlData((pd: any) => {
+          setData(pd);
+        });
       } catch (error) {
-        console.error('Error fetching preview data', error);}
+        console.error('Error fetching preview data', error);
+      }
     }
   }, [isFocused, handleRefresh]);
   return (
@@ -159,14 +171,21 @@ export default (props: any) => {
           />
         );
       }}
-      refreshControl={<RefreshControl
-        refreshing={isRefreshing}
-        onRefresh={handleRefresh}
-        tintColor={theme === 'dark' ? 'white' : 'black'}
-      />}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          tintColor={theme === 'dark' ? 'white' : 'black'}
+        />
+      }
       ListEmptyComponent={
         <View
-          style={{alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 20}}>
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1,
+            marginTop: 20,
+          }}>
           <Text style={{fontSize: 18, fontWeight: 'bold'}}>
             目前沒有預測資訊，請稍候試試
           </Text>
