@@ -37,17 +37,45 @@ export default (props: any) => {
   }));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(chartData);
+  const [selectedDataPoint, setSelectedDataPoint] = useState<{value: number, label: string} | null>(null);
   const graphTitle = '今日獼猴預測出現數量'
   //測試時將此註解拿掉即可
   useEffect(()=>{getDetailData(title,
       (data:any)=>{
       const temp = data.map((item:any) => ({
               value: item.Number,
-              label: item.Date_time
+              label: item.Date_time,
+              onPress: () => setSelectedDataPoint({value: item.Number, label: item.Date_time}),
           }));
-      setData(temp)
+      setData(temp);
+      
       })},[])
-
+      const renderTooltip = () => {
+        if (!selectedDataPoint) return null;
+        
+        return (
+          <View style={styles.tooltip}>
+            <View style={styles.tooltipHeader}>
+              <Text style={styles.tooltipHeaderText}>詳細資訊</Text>
+              <TouchableOpacity 
+                onPress={() => setSelectedDataPoint(null)}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>×</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.tooltipContent}>
+              <Text style={styles.tooltipText}>
+                時間: {selectedDataPoint.label}
+              </Text>
+              <Text style={styles.tooltipText}>
+                數量: {selectedDataPoint.value}
+              </Text>
+            </View>
+          </View>
+        );
+      };
+    
   return loading ? (
     <Text>Loading</Text>
   ) : (
@@ -85,15 +113,18 @@ export default (props: any) => {
                 startOpacity={0.7}
                 endOpacity={0.1}
                 areaChart
+                dataPointsHeight={18}
+                dataPointsWidth={18}
+                dataPointsColor="rgb(84,219,234)"
                 yAxisThickness={0}
                 xAxisThickness={0}
                 curved
-                hideDataPoints
                 yAxisTextStyle={{color: 'lightgray', fontWeight: 'bold'}}
                 xAxisLabelTextStyle={{color: 'lightgray', fontWeight: 'bold'}}
                 spacing={30} // 調整這個值來縮小 x 軸標籤之間的距離
                 width={320}
               />
+              {renderTooltip()}
             </View>
           </View>
           <View style={styles.footer}></View>
@@ -135,7 +166,55 @@ const styles = StyleSheet.create({
   chart: {
     backgroundColor: 'rgba(150, 150, 150, 0.75)',
     borderRadius: 20,
-    
-    
+  },
+  tooltip: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(150, 150, 150, 0.9)',
+    borderRadius: 10,
+    overflow: 'hidden',
+    width: 150,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  tooltipHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(150, 150, 150, 0.9)',
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.3)',
+  },
+  tooltipHeaderText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  tooltipContent: {
+    padding: 8,
+  },
+  tooltipText: {
+    color: 'white',
+    fontSize: 12,
+    marginVertical: 2,
+  },
+  closeButton: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
