@@ -113,8 +113,8 @@ export default (props: any) => {
                 startOpacity={0.7}
                 endOpacity={0.1}
                 areaChart
-                dataPointsHeight={18}
                 dataPointsWidth={18}
+                dataPointsHeight={18}
                 dataPointsColor="rgb(84,219,234)"
                 yAxisThickness={0}
                 xAxisThickness={0}
