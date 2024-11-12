@@ -89,6 +89,7 @@ type PostData = {
   contentUri: string;        // contentUri
   like: boolean;             // user like or not this post
   hearts: number;            // how many hearts does the post get
+  comments: number;
 };
 
 // Post data
@@ -104,7 +105,8 @@ export const POSTDATA: PostData[] = [];
 //     image: true, // whether image or video
 //     contentUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTreBuOexL-mU-nxKgDnvnXQfLFmar1NhcfJg&s', // contentUri
 //     like: true, // user like or not this post
-//     hearts: 100 // how mant heart does the post get
+//     hearts: 100, // how mant heart does the post get
+//     comments:10
 //   },
 //   {
 //     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
@@ -115,7 +117,8 @@ export const POSTDATA: PostData[] = [];
 //     image: true,
 //     contentUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTreBuOexL-mU-nxKgDnvnXQfLFmar1NhcfJg&s',
 //     like: false,
-//     hearts: 50
+//     hearts: 50,
+//     comments:10
 
 //   },
 //   {
@@ -127,7 +130,8 @@ export const POSTDATA: PostData[] = [];
 //     image: false,
 //     contentUri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
 //     like: false,
-//     hearts: 10
+//     hearts: 10,
+//     comments:10
 
 //   },
 //   {
@@ -139,7 +143,8 @@ export const POSTDATA: PostData[] = [];
 //     image: false,
 //     contentUri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
 //     like: false,
-//     hearts: 100
+//     hearts: 100,
+//     comments:10
 
 //   },
 // ];

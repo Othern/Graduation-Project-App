@@ -32,6 +32,7 @@ type ItemProps = {
   hearts: number;
   like: boolean;
   viewable: boolean;
+  comments: number;
   handleComment: any;
 };
 
@@ -46,6 +47,7 @@ const Item = ({
   hearts,
   like,
   viewable,
+  comments,
   handleComment,
 }: ItemProps) => {
   const theme = useColorScheme();
@@ -156,6 +158,7 @@ const Item = ({
               style={{}}
             />
           </Pressable>
+          <Text style={[{color: color, fontSize: 15, marginRight:10}]}>{comments}</Text>
           <Pressable
             onPress={() => {
               // 修改愛心剩餘數量
@@ -167,6 +170,7 @@ const Item = ({
               // 回傳後端用戶喜歡某貼文
               sendHeart(id);
             }}>
+           
             <Image
               source={!heart ? require(emptyBanana) : require(fullBanana)}
               style={{height: 30, width: 30, marginRight: 10}}
@@ -354,6 +358,7 @@ export default ({kind, scrollY}: any) => {
                 contentUri={item.contentUri}
                 hearts={item.hearts}
                 like={item.like}
+                comments={item.comments}
                 key={index}
                 viewable={viewable}
                 handleComment={() => {
