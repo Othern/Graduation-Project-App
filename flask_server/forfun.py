@@ -105,6 +105,7 @@ def get_PostData():
     # 取得資料庫的指標(類似pointer的意思，不須理解)
     cur = conn.cursor()
     cur2 = conn.cursor()
+    cur3 = conn.cursor()
     cur.execute(
         "SELECT PID FROM user WHERE Email = ?",
         (email,)
@@ -141,6 +142,11 @@ def get_PostData():
             (row[7], 'Y')
         )
         rows = cur2.fetchone()
+        cur3.execute(
+            "SELECT Message_ID FROM message WHERE Post_ID = ?",
+            (row[0], )
+        )
+        countMNum = len([element for element in cur3])
         if rows:
             transformed_data.append({
                 "id": str(row[0]),
@@ -151,7 +157,8 @@ def get_PostData():
                 "image": 'image' in row[4],
                 "contentUri": row[6],
                 "like": row[0] in data,
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
         else:
             transformed_data.append({
@@ -163,7 +170,8 @@ def get_PostData():
                 "image": 'image' in row[4],
                 "contentUri": row[6],
                 "like": row[0] in data,
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
 
     conn.commit()
@@ -191,6 +199,7 @@ def get_MyPostData():
     # 取得資料庫的指標(類似pointer的意思，不須理解)
     cur = conn.cursor()
     cur2 = conn.cursor()
+    cur3 = conn.cursor()
     cur.execute(
         "SELECT PID FROM user WHERE Email = ?",
         (email,)
@@ -219,6 +228,11 @@ def get_MyPostData():
             (row[7], 'Y')
         )
         rows = cur2.fetchone()
+        cur3.execute(
+            "SELECT Message_ID FROM message WHERE Post_ID = ?",
+            (row[0], )
+        )
+        countMNum = len([element for element in cur3])
         if rows:
             transformed_data.append({
                 "id": str(row[0]),
@@ -229,7 +243,8 @@ def get_MyPostData():
                 "image": 'image' in row[4],
                 "contentUri": row[6],
                 "like": row[0] in data,
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
         else:
             transformed_data.append({
@@ -241,7 +256,8 @@ def get_MyPostData():
                 "image": 'image' in row[4],
                 "contentUri": row[6],
                 "like": row[0] in data,
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
 
     conn.commit()
@@ -271,6 +287,7 @@ def get_PreviousPostData():
     # 取得資料庫的指標(類似pointer的意思，不須理解)
     cur = conn.cursor()
     cur2 = conn.cursor()
+    cur3 = conn.cursor()
 
     x = datetime.datetime(2024, 8, 2)  # baseline
     now = datetime.datetime.now()
@@ -293,6 +310,11 @@ def get_PreviousPostData():
             (row[7], 'Y')
         )
         rows = cur2.fetchone()
+        cur3.execute(
+            "SELECT Message_ID FROM message WHERE Post_ID = ?",
+            (row[0], )
+        )
+        countMNum = len([element for element in cur3])
         if rows:
             transformed_data.append({
                 "id": str(row[0]),
@@ -302,7 +324,8 @@ def get_PreviousPostData():
                 "avatarUrl": row[3],
                 "image": 'image' in row[4],
                 "contentUri": row[6],
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
         else:
             transformed_data.append({
@@ -313,7 +336,8 @@ def get_PreviousPostData():
                 "avatarUrl": row[3],
                 "image": 'image' in row[4],
                 "contentUri": row[6],
-                "hearts": row[5]
+                "hearts": row[5], 
+                "comments": countMNum
             })
 
     conn.commit()
