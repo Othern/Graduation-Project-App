@@ -148,7 +148,7 @@ def change_headimg():
             sys.exit(1)
 
         image.save(f'static/headImg/{image_name}')
-        img_path = url + "static/headImg/" + image_name
+        img_path = "static/headImg/" + image_name
 
         # 讀取資料庫資料
         cur = conn.cursor()
@@ -157,7 +157,7 @@ def change_headimg():
         conn.commit()
         conn.close()
         session['success'] = 1
-        session['headImg'] = img_path
+        session['headImg'] = url + img_path
 
         return redirect(url_for("modify.change_headimg"))  # 網頁重新導向，避免重複提交資料
     # 讀取session資料
