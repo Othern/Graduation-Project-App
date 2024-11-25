@@ -5,6 +5,7 @@ import mariadb
 import sys
 import datetime
 import os
+import json
 
 # 建立實體
 forfun = Blueprint('forfun', __name__,
@@ -13,6 +14,10 @@ CORS(forfun)  # 跨平台使用
 
 forfun.secret_key = secrets.token_hex(16)  # 保護session
 
+# 取伺服器位址
+with open('../config.json') as f:
+    config = json.load(f)
+url = config["URl"]
 
 @forfun.route('/')
 def index():
@@ -57,7 +62,7 @@ def get_CommentData():
                 "mockTitle": rows[0],
                 "username": row[1],
                 "content": row[2],
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "timestamp": row[4].strftime("%Y-%m-%d %H:%M:%S")
             })
         else:
@@ -66,7 +71,7 @@ def get_CommentData():
                 "mockTitle": ' ',
                 "username": row[1],
                 "content": row[2],
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "timestamp": row[4].strftime("%Y-%m-%d %H:%M:%S")
             })
     conn.commit()
@@ -153,9 +158,9 @@ def get_PostData():
                 "name": str(row[1]),
                 "mockTitle": rows[0],
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "like": row[0] in data,
                 "hearts": row[5], 
                 "comments": countMNum
@@ -166,9 +171,9 @@ def get_PostData():
                 "name": str(row[1]),
                 "mockTitle": ' ',
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "like": row[0] in data,
                 "hearts": row[5], 
                 "comments": countMNum
@@ -239,9 +244,9 @@ def get_MyPostData():
                 "name": str(row[1]),
                 "mockTitle": rows[0],
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "like": row[0] in data,
                 "hearts": row[5], 
                 "comments": countMNum
@@ -252,9 +257,9 @@ def get_MyPostData():
                 "name": str(row[1]),
                 "mockTitle": ' ',
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "like": row[0] in data,
                 "hearts": row[5], 
                 "comments": countMNum
@@ -321,9 +326,9 @@ def get_PreviousPostData():
                 "name": str(row[1]),
                 "mockTitle": rows[0],
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "hearts": row[5], 
                 "comments": countMNum
             })
@@ -333,9 +338,9 @@ def get_PreviousPostData():
                 "name": str(row[1]),
                 "mockTitle": ' ',
                 "description": str(row[2]),
-                "avatarUrl": row[3],
+                "avatarUrl": url + row[3],
                 "image": 'image' in row[4],
-                "contentUri": row[6],
+                "contentUri": url + row[6],
                 "hearts": row[5], 
                 "comments": countMNum
             })

@@ -3,6 +3,7 @@ from flask_cors import CORS
 import secrets
 import mariadb
 import sys
+import json
 
 
 # 建立實體
@@ -10,6 +11,11 @@ login = Blueprint('login', __name__, template_folder='..\\Login')
 CORS(login) # 跨平台使用
 
 login.secret_key = secrets.token_hex(16) # 保護session
+
+# 取伺服器位址
+with open('../config.json') as f:
+    config = json.load(f)
+url = config["URl"]
 
 # # 資料庫提取資料
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:mis114monkey@localhost:3307/mis114_monkey' 
@@ -23,7 +29,7 @@ def index():
     return render_template("index.tsx")
 
 # 登入功能
-# 預設照片為no_pic，預設名字為no_name
+# 預設照片為""
 @login.route('/loginSubmit', methods=["GET", "POST"])
 def get_login_data():
     
@@ -53,7 +59,10 @@ def get_login_data():
         if rows:
             for Password, Headimg_link, User_name  in rows:
                 if password == Password:
-                    session['img'] = Headimg_link
+                    if Headimg_link == "":
+                        session['img'] = Headimg_link
+                    else:
+                        session['img'] = url + Headimg_link
                     session['name'] = User_name
                     session['state'] = "success"
                 else:
@@ -66,7 +75,7 @@ def get_login_data():
         return redirect(url_for("login.get_login_data")) # 網頁重新導向，避免重複提交資料
 
     # 讀取session資料
-    img = session.get('img', "profile-user.png")
+    img = session.get('img', "")
     name = session.get('name', "no_name")
     state = session.get('state', "wrongEmail")
     session.clear() # 將session裡的資料清除，不清除的話下次測試會直接登入
@@ -127,5 +136,5 @@ def get_register_data():
     state = session.get('state', "wrongEmail")
     session.clear() # 將session裡的資料清除，不清除的話下次測試會直接登入
     
-    return jsonify({"state": state, "headImg": "profile-user.png"})
+    return jsonify({"state": state, "headImg": ""})
 

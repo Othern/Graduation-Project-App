@@ -16,10 +16,10 @@ CORS(upload)  # 跨平台使用
 
 upload.secret_key = secrets.token_hex(16)  # 保護session
 
-# 獲取所需API
-with open('../config.json') as f:
-    config = json.load(f)
-url = config["URl"]
+# # 獲取所需API
+# with open('../config.json') as f:
+#     config = json.load(f)
+# url = config["URl"]
 
 @upload.route('/')
 def index():
@@ -61,7 +61,7 @@ def forFun_submit():
             userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + '_' + media_name
 
         media.save(f'static/forFun/{media_name}')
-        media_path = url + "static/forFun/" + media_name
+        media_path = "static/forFun/" + media_name
         x = datetime.datetime(2024, 8, 1)  # baseline
         now = datetime.datetime.now()
         delta = now - x
@@ -118,7 +118,7 @@ def forFun_Revise():
             media_name = str(
                 userid) + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")) + '_' + media_name
             media.save(f'static/forFun/{media_name}')
-            media_path = url + "static/forFun/" + media_name
+            media_path = "static/forFun/" + media_name
         # 取得資料庫的指標(類似pointer的意思，不須理解)
 
         if reviseMedia == 'true':
