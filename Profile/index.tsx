@@ -91,7 +91,7 @@ const Profile = (props: any) => {
         }, [])
     );
     const image =
-        headImg == "" ? { uri: URL + "/static/headImg/profile-user.png" } : { uri: headImg } // 徐改
+        headImg == "" ? { uri: URL + "static/headImg/profile-user.png" } : { uri: headImg } // 徐改
     // 等決定預設頭項後，把該圖放入asset中，並把rain 改掉. require 可以接這裡面的，uri則是可以接網址，地址
 
     return (
